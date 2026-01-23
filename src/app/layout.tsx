@@ -95,7 +95,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  // Google Analytics 4 Measurement ID
+  const GA_MEASUREMENT_ID = "G-2VW3FJ9LRX";
 
   // Organization and Website Schema for SEO
   const organizationSchema = {
@@ -161,29 +162,21 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
         <link rel="dns-prefetch" href="https://api.frankfurter.app" />
         
-        {/* Google Analytics 4 - Deferred loading for better performance */}
-        {gaId && (
-          <>
-            <script
-              defer
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            />
-            <script
-              defer
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                    send_page_view: true,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
+        {/* Google Analytics 4 (gtag.js) */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
         {/* Skip to content link for accessibility */}
