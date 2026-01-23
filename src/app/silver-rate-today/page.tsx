@@ -295,8 +295,11 @@ export default async function SilverRateTodayPage() {
                 {/* Bookmark Your City - New Feature */}
                 <BookmarkCity cities={cityPrices} />
                 
-                {/* Seasonal Comparison - vs Dhanteras */}
-                <SeasonalComparison currentPrice={price.pricePerKg} />
+                {/* Seasonal Comparison - Uses real historical data */}
+                <SeasonalComparison 
+                  currentPrice={price.pricePerKg} 
+                  historicalPrices={historicalPrices}
+                />
                 
                 {/* Why Price Changed Today - Key Differentiator */}
                 <WhyPriceChanged />
