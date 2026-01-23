@@ -105,11 +105,12 @@ export default function Header() {
                 className="rounded-lg shadow-sm"
                 priority
               />
-              <div className="hidden sm:block">
-                <span className="text-xl font-bold text-gray-900">
+              {/* Mobile: Compact name, Desktop: Full name with tagline */}
+              <div>
+                <span className="text-lg sm:text-xl font-bold text-gray-900">
                   Silver<span className="text-[#1e3a5f]">Info</span>
                 </span>
-                <span className="text-xs text-gray-500 block -mt-1">.in</span>
+                <span className="text-[10px] sm:text-xs text-gray-500 block -mt-1">.in</span>
               </div>
             </Link>
           </div>
