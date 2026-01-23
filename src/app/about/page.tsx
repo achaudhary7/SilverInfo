@@ -51,11 +51,14 @@ export default function AboutPage() {
             <div className="prose prose-gray max-w-none">
               <h2>Our Mission</h2>
               <div className="bg-blue-50 border-l-4 border-[#1e3a5f] p-4 mb-6 not-prose">
-                <p className="text-[#1e3a5f] font-semibold text-lg">
-                  India&apos;s most transparent, fast &amp; explanatory silver price platform - not just a rate card.
+                <p className="text-[#1e3a5f] font-bold text-xl mb-1">
+                  Calculated, Not Copied.
+                </p>
+                <p className="text-[#1e3a5f] text-sm">
+                  Prices derived from COMEX futures + USD/INR exchange rates — not scraped from other websites.
                 </p>
                 <Link href="/how-we-calculate" className="text-sm text-[#1e3a5f] underline hover:no-underline mt-2 inline-block">
-                  See how we calculate prices →
+                  See Our Formula →
                 </Link>
               </div>
               <p>

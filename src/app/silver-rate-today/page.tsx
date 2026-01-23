@@ -110,12 +110,18 @@ export default async function SilverRateTodayPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Silver Rate Today in India
             </h1>
-            <p className="text-gray-600">
-              Live silver price per gram, per kg with historical charts and
-              city-wise prices
+            <p className="text-[#1e3a5f] font-semibold mb-1">
+              Calculated, Not Copied.
             </p>
-            <p className="text-xs text-gray-400 mt-2">
-              Content last reviewed: {new Date(LAST_UPDATED).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })} • Prices auto-refresh every 30 seconds
+            <p className="text-gray-600 mb-2">
+              Live silver price per gram, per kg with historical charts and city-wise prices. 
+              Prices derived from COMEX futures + USD/INR exchange rates.{" "}
+              <a href="/how-we-calculate" className="text-[#1e3a5f] font-medium hover:underline">
+                See Our Formula →
+              </a>
+            </p>
+            <p className="text-xs text-gray-400">
+              Content last reviewed: {new Date(LAST_UPDATED).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
         </section>

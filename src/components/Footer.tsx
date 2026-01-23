@@ -40,13 +40,13 @@ export default function Footer() {
       {/* Tagline Banner */}
       <div className="bg-[#1e3a5f] py-4 sm:py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-white text-base sm:text-lg font-medium">
-            India&apos;s most transparent silver price platform
+          <p className="text-white text-base sm:text-lg font-semibold">
+            Calculated, Not Copied.
           </p>
           <p className="text-blue-200 text-xs sm:text-sm mt-1">
-            We explain <em>why</em> prices change, not just what they are.{" "}
+            Prices derived from COMEX futures + USD/INR exchange rates.{" "}
             <Link href="/how-we-calculate" className="underline hover:text-white">
-              Learn how →
+              See Our Formula →
             </Link>
           </p>
         </div>
