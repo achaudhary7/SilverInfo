@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 
+interface SearchItem {
+  text: string;
+  href: string;
+  external?: boolean;
+}
+
 interface RelatedSearchesProps {
   currentPage?: "home" | "silver-rate" | "city" | "calculator" | "learn";
   cityName?: string;
@@ -15,22 +21,22 @@ interface RelatedSearchesProps {
  */
 export default function RelatedSearches({ currentPage = "home", cityName }: RelatedSearchesProps) {
   // Define related searches based on context
-  const getSearches = () => {
-    const baseSearches = [
+  const getSearches = (): SearchItem[] => {
+    const baseSearches: SearchItem[] = [
       { text: "Gold rate today", href: "https://www.goodreturns.in/gold-rates/", external: true },
       { text: "Silver coins price", href: "/learn/silver-vs-gold-investment" },
       { text: "Silver purity check", href: "/learn/how-to-check-silver-purity" },
       { text: "BIS hallmark guide", href: "/learn/silver-hallmark-guide" },
     ];
 
-    const citySearches = [
+    const citySearches: SearchItem[] = [
       { text: "Mumbai silver rate", href: "/city/mumbai" },
       { text: "Delhi silver rate", href: "/city/delhi" },
       { text: "Chennai silver rate", href: "/city/chennai" },
       { text: "Bangalore silver rate", href: "/city/bangalore" },
     ];
 
-    const calculatorSearches = [
+    const calculatorSearches: SearchItem[] = [
       { text: "Silver price calculator", href: "/silver-price-calculator" },
       { text: "Investment calculator", href: "/investment-calculator" },
       { text: "Capital gains tax", href: "/capital-gains-tax-calculator" },
