@@ -74,13 +74,13 @@ export default function BookmarkCity({ cities }: BookmarkCityProps) {
       {favoriteCityData ? (
         // Show favorite city price
         <Link 
-          href={`/city/${favoriteCity.toLowerCase()}`}
+          href={`/city/${favoriteCityData.city.toLowerCase()}`}
           className="block group"
         >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-lg font-bold text-gray-900 group-hover:text-[#1e3a5f] transition-colors">
-                {favoriteCity}
+                {favoriteCityData.city}
               </p>
               <p className="text-xs text-gray-500">Your saved city</p>
             </div>
