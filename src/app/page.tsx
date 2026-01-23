@@ -242,15 +242,19 @@ export default async function HomePage() {
                 {/* Full Price Chart */}
                 <DynamicPriceChart data={historicalPrices} />
                 
-                {/* City-wise Prices - Lazy Loaded */}
-                <DynamicCityTable cities={cityPrices} limit={10} />
+                {/* City-wise Prices - Lazy Loaded with content-visibility for performance */}
+                <div className="content-auto">
+                  <DynamicCityTable cities={cityPrices} limit={10} />
+                </div>
                 
-                {/* FAQ Section - Lazy Loaded */}
-                <DynamicFAQ
-                  items={faqItems}
-                  title="Frequently Asked Questions About Silver"
-                  description="Common questions about silver prices, purity, and buying in India"
-                />
+                {/* FAQ Section - Lazy Loaded with content-visibility for performance */}
+                <div className="content-auto">
+                  <DynamicFAQ
+                    items={faqItems}
+                    title="Frequently Asked Questions About Silver"
+                    description="Common questions about silver prices, purity, and buying in India"
+                  />
+                </div>
               </div>
               
               {/* Right Column - 1/3 width */}

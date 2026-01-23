@@ -161,14 +161,15 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
         <link rel="dns-prefetch" href="https://api.frankfurter.app" />
         
-        {/* Google Analytics 4 - Only loads if GA_ID is configured */}
+        {/* Google Analytics 4 - Deferred loading for better performance */}
         {gaId && (
           <>
             <script
-              async
+              defer
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
             />
             <script
+              defer
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
@@ -176,6 +177,7 @@ export default function RootLayout({
                   gtag('js', new Date());
                   gtag('config', '${gaId}', {
                     page_path: window.location.pathname,
+                    send_page_view: true,
                   });
                 `,
               }}

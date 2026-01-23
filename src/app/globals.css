@@ -30,6 +30,19 @@ img, video, canvas, svg {
   contain: layout style paint;
 }
 
+/* Chart container optimization - reduces forced reflows */
+.recharts-wrapper,
+.recharts-surface {
+  contain: strict;
+  will-change: contents;
+}
+
+/* Content visibility for below-fold content (improves initial render) */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+
 :root {
   /* Silver Theme Colors */
   --color-silver-50: #fafafa;

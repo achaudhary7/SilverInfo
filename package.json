@@ -9,6 +9,15 @@
     "lint": "eslint",
     "generate-assets": "node scripts/generate-assets.js"
   },
+  "browserslist": [
+    "chrome >= 91",
+    "firefox >= 90",
+    "safari >= 15",
+    "edge >= 91",
+    "iOS >= 15",
+    "not dead",
+    "not op_mini all"
+  ],
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",

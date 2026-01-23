@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Optimize package imports to reduce bundle size
+  experimental: {
+    // Tree-shake recharts to reduce unused JavaScript
+    optimizePackageImports: ["recharts", "date-fns"],
+  },
+
   // Image optimization
   images: {
     remotePatterns: [
