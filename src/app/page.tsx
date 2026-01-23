@@ -116,10 +116,24 @@ export default async function HomePage() {
       item: {
         "@type": "Product",
         name: `Silver in ${city.city}`,
+        description: `Live silver price per gram in ${city.city}, India. Real-time rates from COMEX.`,
+        image: "https://silverinfo.in/og-image.png",
+        category: "Precious Metals",
+        brand: {
+          "@type": "Brand",
+          name: "COMEX Silver",
+        },
         offers: {
           "@type": "Offer",
           price: city.pricePerGram,
           priceCurrency: "INR",
+          availability: "https://schema.org/InStock",
+          priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          url: `https://silverinfo.in/city/${city.city.toLowerCase()}`,
+          seller: {
+            "@type": "Organization",
+            name: "SilverInfo.in",
+          },
         },
       },
     })),
