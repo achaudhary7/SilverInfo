@@ -245,9 +245,85 @@ export default async function HomePage() {
         {/* Main Content */}
         <section className="py-6 sm:py-8 lg:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Full Price Chart - Full Width */}
-            <div className="mb-6 sm:mb-8">
-              <DynamicPriceChart data={historicalPrices} />
+            
+            {/* Price History + Calculator + Updates - 3 Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              {/* Price Chart - Takes 2/4 (50%) on desktop */}
+              <div className="lg:col-span-2">
+                <DynamicPriceChart data={historicalPrices} />
+              </div>
+              
+              {/* Quick Calculator - Takes 1/4 (25%) on desktop */}
+              <div className="lg:col-span-1">
+                <div className="h-full">
+                  <DynamicCalculator currentPrice={price.pricePerGram} compact />
+                </div>
+              </div>
+              
+              {/* Latest Updates + Quick Links - Takes 1/4 (25%) on desktop */}
+              <div className="lg:col-span-1 space-y-4">
+                {/* Recent Updates */}
+                <div className="card p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Latest Updates</h3>
+                    <Link
+                      href="/updates"
+                      className="text-xs font-medium text-[#1e3a5f] hover:underline"
+                    >
+                      All →
+                    </Link>
+                  </div>
+                  
+                  {recentUpdates.length > 0 ? (
+                    <div className="space-y-2">
+                      {recentUpdates.slice(0, 3).map((post) => (
+                        <Link
+                          key={post.slug}
+                          href={`/updates/${post.slug}`}
+                          className="block group py-1.5 -mx-1 px-1 rounded hover:bg-gray-50"
+                        >
+                          <p className="text-[10px] text-gray-400 mb-0.5">
+                            {new Date(post.date).toLocaleDateString("en-IN", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                          <p className="text-xs font-medium text-gray-900 group-hover:text-[#1e3a5f] line-clamp-2">
+                            {post.title}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500">No updates yet.</p>
+                  )}
+                </div>
+                
+                {/* Quick Links - Compact */}
+                <div className="card p-4">
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">Quick Links</h3>
+                  <div className="space-y-1">
+                    <Link
+                      href="/silver-rate-today"
+                      className="flex items-center gap-2 text-xs text-gray-600 hover:text-[#1e3a5f] py-1.5 rounded hover:bg-gray-50"
+                    >
+                      <span>📊</span> Full Dashboard
+                    </Link>
+                    <Link
+                      href="/silver-price-calculator"
+                      className="flex items-center gap-2 text-xs text-gray-600 hover:text-[#1e3a5f] py-1.5 rounded hover:bg-gray-50"
+                    >
+                      <span>🧮</span> Advanced Calculator
+                    </Link>
+                    <Link
+                      href="/learn/silver-hallmark-guide"
+                      className="flex items-center gap-2 text-xs text-gray-600 hover:text-[#1e3a5f] py-1.5 rounded hover:bg-gray-50"
+                    >
+                      <span>✓</span> Hallmark Guide
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Why Price Changed - Full Width Section */}
@@ -255,15 +331,16 @@ export default async function HomePage() {
               <WhyPriceChangedFull />
             </div>
             
+            {/* City Table + FAQ - 2 Column Layout */}
             <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
               {/* Left Column - 2/3 width */}
               <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-                {/* City-wise Prices - Lazy Loaded with content-visibility for performance */}
+                {/* City-wise Prices */}
                 <div className="content-auto">
                   <DynamicCityTable cities={cityPrices} limit={10} />
                 </div>
                 
-                {/* FAQ Section - Lazy Loaded with content-visibility for performance */}
+                {/* FAQ Section */}
                 <div className="content-auto">
                   <DynamicFAQ
                     items={faqItems}
@@ -273,76 +350,82 @@ export default async function HomePage() {
                 </div>
               </div>
               
-              {/* Right Column - 1/3 width */}
+              {/* Right Column - 1/3 width - Additional Resources */}
               <div className="space-y-6 sm:space-y-8">
-                
-                {/* Quick Calculator - Lazy Loaded */}
-                <DynamicCalculator currentPrice={price.pricePerGram} compact />
-                
-                {/* Recent Updates */}
+                {/* Learn Articles */}
                 <div className="card p-4 sm:p-6">
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">Latest Updates</h3>
-                    <Link
-                      href="/updates"
-                      className="text-xs sm:text-sm font-medium text-[#1e3a5f] hover:underline py-2 px-3 -mr-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px] flex items-center"
-                    >
-                      View All →
-                    </Link>
-                  </div>
-                  
-                  {recentUpdates.length > 0 ? (
-                    <div className="space-y-3 sm:space-y-4">
-                      {recentUpdates.map((post) => (
-                        <Link
-                          key={post.slug}
-                          href={`/updates/${post.slug}`}
-                          className="block group py-2 -mx-2 px-2 rounded-lg hover:bg-gray-50 active:bg-gray-100"
-                        >
-                          <p className="text-[10px] sm:text-xs text-gray-400 mb-1">
-                            {new Date(post.date).toLocaleDateString("en-IN", {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </p>
-                          <p className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#1e3a5f] line-clamp-2">
-                            {post.title}
-                          </p>
-                        </Link>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs sm:text-sm text-gray-500">No updates yet. Check back soon!</p>
-                  )}
-                </div>
-                
-                {/* Quick Links */}
-                <div className="card p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Links</h3>
-                  <div className="space-y-1">
-                    <Link
-                      href="/silver-rate-today"
-                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-3 sm:py-2 px-2 -mx-2 border-b border-gray-100 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
-                    >
-                      <span>📊</span> Full Price Dashboard
-                    </Link>
-                    <Link
-                      href="/silver-price-calculator"
-                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-3 sm:py-2 px-2 -mx-2 border-b border-gray-100 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
-                    >
-                      <span>🧮</span> Advanced Calculator
-                    </Link>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">📚 Learn About Silver</h3>
+                  <div className="space-y-2">
                     <Link
                       href="/learn/what-is-sterling-silver"
-                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-3 sm:py-2 px-2 -mx-2 border-b border-gray-100 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
+                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-2 px-2 -mx-2 border-b border-gray-100 rounded-lg hover:bg-gray-50"
                     >
-                      <span>📚</span> Silver Purity Guide
+                      <span className="text-lg">🥈</span>
+                      <div>
+                        <p className="font-medium">What is Sterling Silver?</p>
+                        <p className="text-[10px] text-gray-400">Understanding 925 purity</p>
+                      </div>
                     </Link>
                     <Link
-                      href="/learn/silver-hallmark-guide"
-                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-3 sm:py-2 px-2 -mx-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
+                      href="/learn/silver-vs-gold-investment"
+                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-2 px-2 -mx-2 border-b border-gray-100 rounded-lg hover:bg-gray-50"
                     >
-                      <span>✓</span> Hallmark Verification
+                      <span className="text-lg">⚖️</span>
+                      <div>
+                        <p className="font-medium">Silver vs Gold Investment</p>
+                        <p className="text-[10px] text-gray-400">Which is better for you?</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/learn/how-to-check-silver-purity"
+                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-[#1e3a5f] py-2 px-2 -mx-2 rounded-lg hover:bg-gray-50"
+                    >
+                      <span className="text-lg">🔍</span>
+                      <div>
+                        <p className="font-medium">How to Check Purity</p>
+                        <p className="text-[10px] text-gray-400">5 easy methods at home</p>
+                      </div>
+                    </Link>
+                  </div>
+                  <Link
+                    href="/learn"
+                    className="block text-center text-xs font-medium text-[#1e3a5f] hover:underline mt-4 py-2 bg-gray-50 rounded-lg"
+                  >
+                    View All Guides →
+                  </Link>
+                </div>
+                
+                {/* Tools Section */}
+                <div className="card p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">🛠️ Calculator Tools</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/investment-calculator"
+                      className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-center"
+                    >
+                      <span className="text-xl">📈</span>
+                      <span className="text-xs font-medium text-gray-700">Investment</span>
+                    </Link>
+                    <Link
+                      href="/capital-gains-tax-calculator"
+                      className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-center"
+                    >
+                      <span className="text-xl">💰</span>
+                      <span className="text-xs font-medium text-gray-700">Tax Calculator</span>
+                    </Link>
+                    <Link
+                      href="/inflation-adjusted-calculator"
+                      className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-center"
+                    >
+                      <span className="text-xl">📊</span>
+                      <span className="text-xs font-medium text-gray-700">Inflation Adj.</span>
+                    </Link>
+                    <Link
+                      href="/break-even-calculator"
+                      className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-center"
+                    >
+                      <span className="text-xl">⚖️</span>
+                      <span className="text-xs font-medium text-gray-700">Break-Even</span>
                     </Link>
                   </div>
                 </div>
