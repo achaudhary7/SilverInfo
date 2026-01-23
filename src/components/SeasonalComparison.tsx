@@ -150,16 +150,18 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
   const isMuchHigher = comparison.diffPercent > 5;
   const isMuchLower = comparison.diffPercent < -5;
 
-  // Get price status indicator (neutral, factual language only)
+  // Get price change indicator (market style: up = green, down = red)
   const getPriceStatus = () => {
-    if (isMuchLower) {
-      return { icon: "↓", text: "Below average", color: "text-green-700", bg: "bg-green-50" };
-    } else if (isMuchHigher) {
-      return { icon: "↑", text: "Above average", color: "text-red-700", bg: "bg-red-50" };
+    if (isMuchHigher) {
+      return { icon: "↑", text: "Higher", color: "text-green-700", bg: "bg-green-50" };
+    } else if (isMuchLower) {
+      return { icon: "↓", text: "Lower", color: "text-red-700", bg: "bg-red-50" };
     } else if (isHigher) {
-      return { icon: "→", text: "Near average", color: "text-yellow-700", bg: "bg-yellow-50" };
+      return { icon: "↗", text: "Slightly higher", color: "text-green-600", bg: "bg-green-50" };
+    } else if (comparison.diff < 0) {
+      return { icon: "↘", text: "Slightly lower", color: "text-red-600", bg: "bg-red-50" };
     }
-    return { icon: "↓", text: "Below average", color: "text-green-700", bg: "bg-green-50" };
+    return { icon: "→", text: "Unchanged", color: "text-gray-600", bg: "bg-gray-50" };
   };
 
   const priceStatus = getPriceStatus();
@@ -179,10 +181,10 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[10px] text-gray-500 mb-0.5">Current vs {comparison.event}</p>
-          <p className={`text-lg font-bold ${isHigher ? "text-red-600" : "text-green-600"}`}>
+          <p className={`text-lg font-bold ${isHigher ? "text-green-600" : "text-red-600"}`}>
             {isHigher ? "+" : ""}₹{Math.abs(comparison.diff).toLocaleString("en-IN", { maximumFractionDigits: 0 })}/kg
           </p>
-          <p className={`text-xs ${isHigher ? "text-red-500" : "text-green-500"}`}>
+          <p className={`text-xs ${isHigher ? "text-green-500" : "text-red-500"}`}>
             ({isHigher ? "+" : ""}{comparison.diffPercent.toFixed(1)}%)
           </p>
         </div>
