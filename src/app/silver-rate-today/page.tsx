@@ -6,6 +6,9 @@ import CityTable from "@/components/CityTable";
 import FAQ from "@/components/FAQ";
 import MarketStatus from "@/components/MarketStatus";
 import WhyPriceChanged from "@/components/WhyPriceChanged";
+import RelatedSearches from "@/components/RelatedSearches";
+import SeasonalComparison from "@/components/SeasonalComparison";
+import BookmarkCity from "@/components/BookmarkCity";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
 export const revalidate = 600;
@@ -288,7 +291,13 @@ export default async function SilverRateTodayPage() {
               </div>
 
               {/* Right Column */}
-              <div className="space-y-8">
+              <div className="space-y-6">
+                {/* Bookmark Your City - New Feature */}
+                <BookmarkCity cities={cityPrices} />
+                
+                {/* Seasonal Comparison - vs Dhanteras */}
+                <SeasonalComparison currentPrice={price.pricePerKg} />
+                
                 {/* Why Price Changed Today - Key Differentiator */}
                 <WhyPriceChanged />
                 
@@ -375,6 +384,11 @@ export default async function SilverRateTodayPage() {
             {/* City Prices Section */}
             <div className="mt-8" id="cities">
               <CityTable cities={cityPrices} showViewAll={false} />
+            </div>
+
+            {/* Related Searches - SEO & Internal Linking */}
+            <div className="mt-8">
+              <RelatedSearches currentPage="silver-rate" />
             </div>
 
             {/* FAQ Section */}
