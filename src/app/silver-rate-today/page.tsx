@@ -5,6 +5,7 @@ import { DynamicPriceChart } from "@/components/DynamicChart";
 import CityTable from "@/components/CityTable";
 import FAQ from "@/components/FAQ";
 import MarketStatus from "@/components/MarketStatus";
+import WhyPriceChanged from "@/components/WhyPriceChanged";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
 export const revalidate = 600;
@@ -219,6 +220,9 @@ export default async function SilverRateTodayPage() {
 
               {/* Right Column */}
               <div className="space-y-8">
+                {/* Why Price Changed Today - Key Differentiator */}
+                <WhyPriceChanged />
+                
                 {/* Price Units Card */}
                 <div className="card p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">

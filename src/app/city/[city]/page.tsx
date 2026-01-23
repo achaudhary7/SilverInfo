@@ -5,6 +5,7 @@ import { getSilverPriceWithChange, INDIAN_CITIES, formatIndianPrice, calculateSi
 import LivePriceCard from "@/components/LivePriceCard";
 import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
+import WhyPriceChanged from "@/components/WhyPriceChanged";
 import { generateFAQSchema, type FAQItem } from "@/lib/schema";
 
 // Generate static paths for all cities
@@ -310,6 +311,9 @@ export default async function CityPage({
 
               {/* Right Column */}
               <div className="space-y-6">
+                {/* Why Price Changed Today */}
+                <WhyPriceChanged />
+                
                 {/* City Info Card */}
                 <div className="card p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
