@@ -12,6 +12,21 @@ interface MarketData {
 }
 
 /**
+ * Tooltip wrapper component
+ */
+function Tooltip({ children, text }: { children: React.ReactNode; text: string }) {
+  return (
+    <span className="relative group cursor-help">
+      {children}
+      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] sm:text-xs text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50 shadow-lg">
+        {text}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></span>
+      </span>
+    </span>
+  );
+}
+
+/**
  * WhyPriceChangedTeaser Component
  * 
  * A compact one-line teaser that appears in the hero area.
@@ -75,27 +90,33 @@ export default function WhyPriceChangedTeaser() {
           </span>
           
           {/* COMEX Price */}
-          <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono">
-            <span className="text-gray-500 mr-1">COMEX</span>
-            <span className="font-semibold text-gray-900">${comexUsd.toFixed(2)}</span>
-          </span>
+          <Tooltip text="COMEX Silver Futures - International benchmark price per troy ounce">
+            <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono hover:shadow-md transition-shadow">
+              <span className="text-gray-500 mr-1">COMEX</span>
+              <span className="font-semibold text-gray-900">${comexUsd.toFixed(2)}</span>
+            </span>
+          </Tooltip>
           
           {/* USD/INR */}
-          <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono">
-            <span className="text-gray-500 mr-1">₹/$</span>
-            <span className="font-semibold text-gray-900">{usdInr.toFixed(2)}</span>
-          </span>
+          <Tooltip text="USD to INR Exchange Rate - RBI Reference Rate">
+            <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono hover:shadow-md transition-shadow">
+              <span className="text-gray-500 mr-1">₹/$</span>
+              <span className="font-semibold text-gray-900">{usdInr.toFixed(2)}</span>
+            </span>
+          </Tooltip>
           
           {/* 24h Change */}
-          <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs sm:text-sm font-semibold ${
-            change > 0 
-              ? "bg-green-100 text-green-700" 
-              : change < 0 
-              ? "bg-red-100 text-red-700"
-              : "bg-gray-100 text-gray-700"
-          }`}>
-            {change > 0 ? "↑" : change < 0 ? "↓" : "→"} {Math.abs(change).toFixed(2)}%
-          </span>
+          <Tooltip text="24-hour price change in Indian silver rate">
+            <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs sm:text-sm font-semibold hover:shadow-md transition-shadow ${
+              change > 0 
+                ? "bg-green-100 text-green-700" 
+                : change < 0 
+                ? "bg-red-100 text-red-700"
+                : "bg-gray-100 text-gray-700"
+            }`}>
+              {change > 0 ? "↑" : change < 0 ? "↓" : "→"} {Math.abs(change).toFixed(2)}%
+            </span>
+          </Tooltip>
         </div>
         
         {/* Right: Explanation + Link */}
