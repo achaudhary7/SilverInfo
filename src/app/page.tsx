@@ -145,12 +145,20 @@ export default async function HomePage() {
             </div>
             
             {/* Cards Grid - Stack on mobile, side-by-side on desktop */}
+            {/* Using CSS order to position teaser between cards on mobile, below on desktop */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-              {/* Left: Price Card */}
-              <LivePriceCard initialPrice={price} pollInterval={30000} />
+              {/* Price Card - First on both mobile and desktop */}
+              <div className="order-1">
+                <LivePriceCard initialPrice={price} pollInterval={30000} />
+              </div>
               
-              {/* Right: Mini Chart */}
-              <div className="card p-4 sm:p-6">
+              {/* Market Pulse Teaser - Second on mobile, Third (below both) on desktop */}
+              <div className="order-2 lg:order-3 lg:col-span-2 lg:mt-2">
+                <WhyPriceChangedTeaser />
+              </div>
+              
+              {/* Mini Chart - Third on mobile, Second on desktop */}
+              <div className="card p-4 sm:p-6 order-3 lg:order-2">
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div>
                     <h2 className="text-base sm:text-lg font-semibold text-gray-900">7-Day Trend</h2>
@@ -197,11 +205,6 @@ export default async function HomePage() {
                   );
                 })()}
               </div>
-            </div>
-            
-            {/* Market Pulse Teaser - Links to full section below */}
-            <div className="mt-4 sm:mt-6">
-              <WhyPriceChangedTeaser />
             </div>
           </div>
         </section>
