@@ -102,14 +102,14 @@ export default function WhyPriceChangedTeaser() {
   const getPrimaryReason = () => {
     if (Math.abs(change) > 2) {
       return change > 0 
-        ? { icon: "🚀", text: "High volatility — Strong buying interest today" }
-        : { icon: "⚠️", text: "High volatility — Selling pressure in markets" };
+        ? { icon: "🚀", text: "High volatility - Strong buying interest today" }
+        : { icon: "⚠️", text: "High volatility - Selling pressure in markets" };
     } else if (Math.abs(change) > 0.5) {
       return change > 0
         ? { icon: "💱", text: "Weaker rupee + global demand pushing prices up" }
         : { icon: "💱", text: "Stronger rupee bringing prices down" };
     }
-    return { icon: "📊", text: "Markets stable — Minor price fluctuations" };
+    return { icon: "📊", text: "Markets stable - Minor price fluctuations" };
   };
 
   const primaryReason = getPrimaryReason();
