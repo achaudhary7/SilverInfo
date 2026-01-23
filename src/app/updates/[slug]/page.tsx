@@ -10,6 +10,7 @@ import {
   getRecentUpdates,
 } from "@/lib/markdown";
 import { LivePriceWidget } from "@/components/price";
+import AuthorBio from "@/components/AuthorBio";
 
 // Generate static paths for all posts
 export async function generateStaticParams() {
@@ -72,31 +73,33 @@ export default async function UpdatePostPage({
   const recentPosts = getRecentUpdates(5).filter((p) => p.slug !== slug);
   const readingTime = getReadingTime(post.content);
 
-  // Article Schema
+  // Article Schema - Enhanced for Google 2026
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    image: post.image ? `https://silverinfo.in${post.image}` : "https://silverinfo.in/og-image.png",
     author: {
       "@type": "Person",
       name: post.author,
+      url: "https://silverinfo.in/about",
     },
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.date, // Content is current as of publish date
     publisher: {
       "@type": "Organization",
       name: "SilverInfo.in",
       logo: {
         "@type": "ImageObject",
-        url: "https://silverinfo.in/icon-512.png",
+        url: "https://silverinfo.in/logo.png",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://silverinfo.in/updates/${slug}`,
     },
-    image: post.image || "https://silverinfo.in/og-image.png",
+    keywords: post.tags?.join(", "),
   };
 
   // Breadcrumb Schema
@@ -174,17 +177,15 @@ export default async function UpdatePostPage({
                 </h1>
 
                 {/* Description */}
-                <p className="text-base sm:text-lg text-gray-600 mb-6">{post.description}</p>
+                <p className="text-base sm:text-lg text-gray-600 mb-4">{post.description}</p>
 
-                {/* Author */}
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-semibold">
-                    {post.author.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{post.author}</p>
-                    <p className="text-sm text-gray-500">SilverInfo.in</p>
-                  </div>
+                {/* Author Bio with E-E-A-T Signals */}
+                <div className="pt-4 border-t border-gray-100">
+                  <AuthorBio 
+                    author={post.author} 
+                    date={post.date} 
+                    readingTime={`${readingTime} min read`}
+                  />
                 </div>
               </div>
 

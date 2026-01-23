@@ -11,47 +11,47 @@ import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
 export const revalidate = 600;
 
-// FAQ Data
+// FAQ Data - Optimized for Google Featured Snippets (<300 chars per answer)
 const faqItems: FAQItem[] = [
   {
     question: "What is the current silver rate in India today?",
     answer:
-      "Silver rates in India fluctuate daily based on international market prices (COMEX), currency exchange rates (USD/INR), and local demand. The indicative silver rate displayed on this page is calculated from international spot prices and auto-refreshes every 30 seconds. Actual retail prices may vary by 2-5%. For official rates, check with MCX or your local jeweller.",
+      "Silver rates are derived from COMEX prices + USD/INR exchange rate, refreshed every 30 seconds. Retail prices vary 2-5% due to local taxes. Check our live price card above for the current rate.",
   },
   {
     question: "How is silver price per gram calculated in India?",
     answer:
-      "Silver price per gram in India is calculated by converting the international spot price (in USD per troy ounce) to INR, then dividing by 31.1035 (grams per troy ounce). Import duties, GST (3%), and local taxes are added to arrive at the final retail price.",
+      "Formula: (COMEX USD price ÷ 31.1035 grams) × USD/INR rate + Import duty (7.5%) + GST (3%). See our methodology page for the complete calculation breakdown.",
   },
   {
     question: "What is the difference between 999 and 925 silver?",
     answer:
-      "999 silver (also called fine silver or pure silver) contains 99.9% pure silver. 925 silver (sterling silver) contains 92.5% silver mixed with 7.5% other metals (usually copper) for added durability. 999 is preferred for coins and bars, while 925 is popular for jewelry due to its strength.",
+      "999 silver = 99.9% pure, ideal for coins/bars. 925 sterling = 92.5% silver + 7.5% copper for durability, preferred for jewelry. Price difference is about 7.5%.",
   },
   {
     question: "What factors affect silver prices in India?",
     answer:
-      "Silver prices in India are primarily influenced by: (1) International COMEX prices, (2) USD/INR exchange rate, (3) Import duties and GST, (4) Local demand patterns. Prices tend to fluctuate daily based on global market conditions. Use our historical charts to understand price trends over time.",
+      "Four key factors: (1) COMEX international prices, (2) USD/INR rate, (3) Import duty & GST, (4) Seasonal demand (peaks during Dhanteras/weddings). See our charts for trends.",
   },
   {
     question: "What are making charges for silver jewelry?",
     answer:
-      "Making charges are the labor cost for crafting silver into jewelry. They typically range from 6-15% of the silver value, varying by city and complexity. Handcrafted pieces have higher charges. Our calculator includes making charges to give you the total cost.",
+      "Making charges range 6-15% of silver value. Machine-made: ~6-8%, Handcrafted: ~12-15%. Our calculator includes making charges in the total cost estimate.",
   },
   {
     question: "Is GST applicable on silver purchases in India?",
     answer:
-      "Yes, GST of 3% is applicable on silver purchases in India. This applies to silver bars, coins, and jewelry. The GST is calculated on the total value (silver + making charges). Our calculator automatically includes GST in the final price.",
+      "Yes, 3% GST applies to all silver purchases (bars, coins, jewelry). Calculated on: Silver value + Making charges. Our calculator includes GST automatically.",
   },
   {
     question: "How do silver rates vary across different cities in India?",
     answer:
-      "Silver rates can vary by ₹50-200 per 10 grams across cities due to local taxes, transportation costs, and dealer margins. Metro cities like Mumbai and Delhi often have competitive rates, while smaller cities may have slightly higher prices. Check our city-wise price table for current rates.",
+      "Silver varies ₹50-200 per 10g across cities due to local taxes and dealer margins. Metro cities typically have competitive rates. Check our city-wise table above.",
   },
   {
     question: "What is a tola in silver measurement?",
     answer:
-      "Tola is a traditional Indian unit of weight used for precious metals. 1 tola equals approximately 11.6638 grams. Silver jewelry and coins are often sold by tola in India. Our calculator supports conversion between grams, tola, and other units.",
+      "Tola = traditional Indian weight unit. 1 tola = 11.6638 grams. Commonly used for jewelry in India. Our calculator converts between grams, tola, and kg instantly.",
   },
 ];
 
@@ -266,8 +266,25 @@ export default async function HomePage() {
         <section className="py-6 sm:py-8 lg:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
+            {/* Jump Links - SEO: Passage Indexing Optimization */}
+            <nav className="flex flex-wrap gap-2 mb-6 p-3 bg-gray-50 rounded-lg" aria-label="Jump to section">
+              <span className="text-xs text-gray-500 font-medium self-center">Jump to:</span>
+              <a href="#price-history" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Price History
+              </a>
+              <a href="#market-factors" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Market Factors
+              </a>
+              <a href="#city-prices" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                City Prices
+              </a>
+              <a href="#faq" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                FAQ
+              </a>
+            </nav>
+            
             {/* Price History + Updates + Calculator - 3 Column Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div id="price-history" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8 scroll-mt-20">
               {/* Price Chart - Takes 50% on XL, 100% on MD */}
               <div className="md:col-span-2 xl:col-span-6">
                 <DynamicPriceChart data={historicalPrices} />
@@ -345,7 +362,7 @@ export default async function HomePage() {
             </div>
             
             {/* Why Price Changed - Full Width Section */}
-            <div className="mb-6 sm:mb-8">
+            <div id="market-factors" className="mb-6 sm:mb-8 scroll-mt-20">
               <WhyPriceChangedFull />
             </div>
             
@@ -354,12 +371,12 @@ export default async function HomePage() {
               {/* Left Column - 2/3 width */}
               <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                 {/* City-wise Prices */}
-                <div className="content-auto">
+                <div id="city-prices" className="content-auto scroll-mt-20">
                   <DynamicCityTable cities={cityPrices} limit={10} />
                 </div>
                 
                 {/* FAQ Section */}
-                <div className="content-auto">
+                <div id="faq" className="content-auto scroll-mt-20">
                   <DynamicFAQ
                     items={faqItems}
                     title="Frequently Asked Questions About Silver"

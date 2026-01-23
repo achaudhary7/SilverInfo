@@ -9,6 +9,7 @@ import {
   getAllLearnArticles,
 } from "@/lib/markdown";
 import { LivePriceWidget } from "@/components/price";
+import AuthorBio, { ReviewedByBadge } from "@/components/AuthorBio";
 
 export async function generateStaticParams() {
   const slugs = getAllLearnSlugs();
@@ -63,19 +64,27 @@ export default async function LearnArticlePage({
     "@type": "Article",
     headline: article.title,
     description: article.description,
+    image: article.image ? `https://silverinfo.in${article.image}` : "https://silverinfo.in/og-image.png",
     author: {
       "@type": "Person",
       name: article.author,
+      url: "https://silverinfo.in/about",
     },
     datePublished: article.date,
+    dateModified: article.date, // Content is current as of publish date
     publisher: {
       "@type": "Organization",
       name: "SilverInfo.in",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://silverinfo.in/logo.png",
+      },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://silverinfo.in/learn/${slug}`,
     },
+    keywords: article.tags?.join(", "),
   };
 
   const breadcrumbSchema = {
@@ -152,7 +161,16 @@ export default async function LearnArticlePage({
                 </h1>
 
                 {/* Description */}
-                <p className="text-base sm:text-lg text-gray-600">{article.description}</p>
+                <p className="text-base sm:text-lg text-gray-600 mb-4">{article.description}</p>
+                
+                {/* Author Bio with E-E-A-T Signals */}
+                <div className="pt-4 border-t border-gray-100">
+                  <AuthorBio 
+                    author={article.author} 
+                    date={article.date} 
+                    readingTime={`${readingTime} min read`}
+                  />
+                </div>
               </div>
 
               {/* Article Content */}

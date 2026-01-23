@@ -184,21 +184,45 @@ export default async function SilverRateTodayPage() {
         {/* Main Content */}
         <section className="py-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Jump Links - SEO: Passage Indexing Optimization */}
+            <nav className="flex flex-wrap gap-2 mb-6 p-3 bg-gray-50 rounded-lg" aria-label="Jump to section">
+              <span className="text-xs text-gray-500 font-medium self-center">Jump to:</span>
+              <a href="#live-price" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Live Price
+              </a>
+              <a href="#price-chart" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Price Chart
+              </a>
+              <a href="#price-comparison" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Purity Comparison
+              </a>
+              <a href="#cities" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                City Prices
+              </a>
+              <a href="#faq" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                FAQ
+              </a>
+            </nav>
+            
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Price Card - with vs Last Week comparison */}
-                <LivePriceCard 
-                  initialPrice={price} 
-                  pollInterval={30000} 
-                  lastWeekPrice={lastWeekPrice}
-                />
+                <div id="live-price" className="scroll-mt-20">
+                  <LivePriceCard 
+                    initialPrice={price} 
+                    pollInterval={30000} 
+                    lastWeekPrice={lastWeekPrice}
+                  />
+                </div>
 
                 {/* Full Chart */}
-                <DynamicPriceChart data={historicalPrices} height={400} />
+                <div id="price-chart" className="scroll-mt-20">
+                  <DynamicPriceChart data={historicalPrices} height={400} />
+                </div>
 
                 {/* Price Comparison Table - with tooltips */}
-                <div className="card p-6">
+                <div id="price-comparison" className="card p-6 scroll-mt-20">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Silver Price Comparison
                   </h2>
@@ -385,7 +409,7 @@ export default async function SilverRateTodayPage() {
             </div>
 
             {/* City Prices Section */}
-            <div className="mt-8" id="cities">
+            <div id="cities" className="mt-8 scroll-mt-20">
               <CityTable cities={cityPrices} showViewAll={false} />
             </div>
 
@@ -395,7 +419,7 @@ export default async function SilverRateTodayPage() {
             </div>
 
             {/* FAQ Section */}
-            <div className="mt-8">
+            <div id="faq" className="mt-8 scroll-mt-20">
               <FAQ items={faqItems} />
             </div>
           </div>
