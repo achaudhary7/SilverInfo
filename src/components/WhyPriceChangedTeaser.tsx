@@ -188,10 +188,10 @@ export default function WhyPriceChangedTeaser() {
           </div>
         </Tooltip>
 
-        {/* Market Status - Desktop only */}
-        <div className="hidden lg:flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[200px]">
+        {/* Market Status - Shows on all screens */}
+        <div className="flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[120px] sm:min-w-[200px]">
           <span className="text-xs text-blue-600 font-medium mb-1">📈 Market Status</span>
-          <span className="text-sm text-blue-800">
+          <span className="text-xs sm:text-sm text-blue-800">
             {change > 0.5 
               ? "Prices trending higher than yesterday"
               : change < -0.5
