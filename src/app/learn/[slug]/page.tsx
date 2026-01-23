@@ -119,9 +119,9 @@ export default async function LearnArticlePage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Left Column - Header + Content */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 min-w-0">
               {/* Header Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 overflow-hidden">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 overflow-hidden min-w-0">
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-wrap">
                   <Link href="/" className="hover:text-[#1e3a5f]">
@@ -156,10 +156,10 @@ export default async function LearnArticlePage({
               </div>
 
               {/* Article Content */}
-              <article className="card p-4 sm:p-6 lg:p-8 overflow-hidden">
-                <div className="article-content">
+              <article className="card p-4 sm:p-6 lg:p-8 overflow-hidden min-w-0">
+                <div className="article-content min-w-0">
                   <div
-                    className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f]"
+                    className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f] min-w-0"
                     dangerouslySetInnerHTML={{ __html: article.content }}
                   />
                 </div>

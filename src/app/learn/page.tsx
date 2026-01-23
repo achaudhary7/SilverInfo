@@ -52,19 +52,19 @@ export default function LearnPage() {
       />
 
       {/* Header */}
-      <section className="bg-white border-b border-gray-200 py-8">
+      <section className="bg-white border-b border-gray-200 py-6 sm:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
             <Link href="/" className="hover:text-[#1e3a5f]">
               Home
             </Link>
             <span>/</span>
             <span>Learn</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Silver Guides & Education
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Comprehensive guides to help you understand silver - from purity and
             hallmarks to investment strategies. Everything you need to make
             informed decisions.
@@ -73,15 +73,15 @@ export default function LearnPage() {
       </section>
 
       {/* Articles Grid */}
-      <section className="py-12">
+      <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {articles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {articles.map((article) => (
                 <Link
                   key={article.slug}
                   href={`/learn/${article.slug}`}
-                  className="card overflow-hidden group hover:shadow-lg transition-shadow"
+                  className="card overflow-hidden group hover:shadow-lg active:shadow-md transition-shadow"
                 >
                   {/* Image */}
                   {article.image ? (
@@ -112,19 +112,19 @@ export default function LearnPage() {
                     </div>
                   )}
 
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                      <span className="text-[10px] sm:text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
                         {article.category}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] sm:text-xs text-gray-500">
                         {formatDate(article.date)}
                       </span>
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900 group-hover:text-[#1e3a5f] transition-colors line-clamp-2 mb-2">
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-900 group-hover:text-[#1e3a5f] transition-colors line-clamp-2 mb-2">
                       {article.title}
                     </h2>
-                    <p className="text-gray-600 text-sm line-clamp-3">
+                    <p className="text-gray-600 text-xs sm:text-sm line-clamp-3">
                       {article.description}
                     </p>
                     {article.tags && article.tags.length > 0 && (
@@ -177,24 +177,24 @@ export default function LearnPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-[#1e3a5f]">
+      <section className="py-8 sm:py-12 bg-[#1e3a5f]">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
             Ready to Check Silver Prices?
           </h2>
-          <p className="text-gray-300 mb-6">
+          <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">
             Use our live price tracker and calculator to make informed decisions.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link
               href="/silver-rate-today"
-              className="px-6 py-3 bg-white text-[#1e3a5f] rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              className="px-5 sm:px-6 py-3 bg-white text-[#1e3a5f] rounded-lg font-medium hover:bg-gray-100 active:bg-gray-200 transition-colors min-h-[48px] flex items-center justify-center"
             >
               View Live Prices
             </Link>
             <Link
               href="/silver-price-calculator"
-              className="px-6 py-3 border border-white text-white rounded-lg font-medium hover:bg-white/10 transition-colors"
+              className="px-5 sm:px-6 py-3 border border-white text-white rounded-lg font-medium hover:bg-white/10 active:bg-white/20 transition-colors min-h-[48px] flex items-center justify-center"
             >
               Open Calculator
             </Link>

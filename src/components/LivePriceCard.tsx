@@ -62,69 +62,70 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
   }, []);
   
   return (
-    <div className="card p-6 relative overflow-hidden">
+    <div className="card p-4 sm:p-6 relative overflow-hidden">
       {/* Refresh indicator */}
       {isRefreshing && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-green-500 to-blue-500 animate-pulse" />
       )}
       
       {/* Main Price Display */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <p className="text-sm text-gray-500">Silver Rate Today</p>
+            <p className="text-xs sm:text-sm text-gray-500">Silver Rate Today</p>
             {/* Live Indicator */}
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 border border-green-200">
-              <span className="relative flex h-2 w-2">
+            <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-green-50 border border-green-200">
+              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-green-500"></span>
               </span>
-              <span className="text-xs font-medium text-green-700">LIVE</span>
+              <span className="text-[10px] sm:text-xs font-medium text-green-700">LIVE</span>
             </span>
           </div>
           <p 
-            className={`text-4xl font-bold text-gray-900 price-display transition-all duration-300 ${
+            className={`text-3xl sm:text-4xl font-bold text-gray-900 price-display transition-all duration-300 ${
               hasNewPrice ? "scale-105 text-green-600" : ""
             }`}
           >
             {formatIndianPrice(price.pricePerGram)}
-            <span className="text-lg font-normal text-gray-500">/gram</span>
+            <span className="text-sm sm:text-lg font-normal text-gray-500">/gram</span>
           </p>
         </div>
         
         {/* Right Side: 24h Change + Market Status + Calculate */}
-        <div className="text-right space-y-2">
+        <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:space-y-2">
           {/* 24h Change Badge */}
           <div 
-            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border ${changeIndicator.bg} ${changeIndicator.border}`}
+            className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border ${changeIndicator.bg} ${changeIndicator.border}`}
             title={`24h change: ${price.change24h >= 0 ? "+" : ""}₹${price.change24h.toFixed(2)} vs yesterday's close (COMEX)`}
           >
-            <span className={`text-sm font-bold ${changeIndicator.color}`}>
+            <span className={`text-xs sm:text-sm font-bold ${changeIndicator.color}`}>
               {changeIndicator.icon} {Math.abs(price.changePercent24h).toFixed(2)}%
             </span>
           </div>
-          <p className="text-xs text-gray-400">24h change</p>
+          <p className="hidden sm:block text-xs text-gray-400">24h change</p>
           
           {/* Market Status + Calculate Row */}
-          <div className="flex items-center gap-2 justify-end">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Market Status */}
             <div 
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+              className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs ${
                 marketStatus.isOpen 
                   ? "bg-green-50 text-green-700" 
                   : "bg-gray-100 text-gray-600"
               }`}
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${
+              <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${
                 marketStatus.isOpen ? "bg-green-500 animate-pulse" : "bg-gray-400"
               }`} />
-              <span className="font-medium">{marketStatus.label}</span>
+              <span className="font-medium hidden sm:inline">{marketStatus.label}</span>
+              <span className="font-medium sm:hidden">{marketStatus.isOpen ? "Open" : "Closed"}</span>
             </div>
             
             {/* Quick Action Button */}
             <Link
               href="/silver-price-calculator"
-              className="inline-flex items-center gap-1 px-2 py-1 bg-[#1e3a5f] text-white rounded-full text-xs font-medium hover:bg-[#2c5282] transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-[#1e3a5f] text-white rounded-full text-xs font-medium hover:bg-[#2c5282] transition-colors min-h-[32px] sm:min-h-0"
             >
               <span>🧮</span>
               <span>→</span>

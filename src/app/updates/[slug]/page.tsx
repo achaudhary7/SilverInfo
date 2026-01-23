@@ -141,9 +141,9 @@ export default async function UpdatePostPage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Left Column - Header + Content */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 min-w-0">
               {/* Header Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 overflow-hidden">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 overflow-hidden min-w-0">
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-wrap">
                   <Link href="/" className="hover:text-[#1e3a5f]">
@@ -189,7 +189,7 @@ export default async function UpdatePostPage({
               </div>
 
               {/* Article Content */}
-              <article className="card p-4 sm:p-6 lg:p-8 overflow-hidden">
+              <article className="card p-4 sm:p-6 lg:p-8 overflow-hidden min-w-0">
                 {/* Featured Image */}
                 {post.image && (
                   <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden mb-6 sm:mb-8 relative">
@@ -205,9 +205,9 @@ export default async function UpdatePostPage({
                 )}
 
                 {/* Article Content */}
-                <div className="article-content">
+                <div className="article-content min-w-0">
                   <div
-                    className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f] prose-a:no-underline hover:prose-a:underline"
+                    className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f] prose-a:no-underline hover:prose-a:underline min-w-0"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                   />
                 </div>

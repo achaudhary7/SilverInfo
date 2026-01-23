@@ -265,6 +265,15 @@ select {
   word-break: break-word;
   -webkit-hyphens: auto;
   hyphens: auto;
+  /* Force all children to respect container width */
+  width: 100%;
+  min-width: 0;
+}
+
+/* Force width constraints on all prose children */
+.prose * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Mobile-specific prose adjustments */
@@ -272,6 +281,8 @@ select {
   .prose {
     font-size: 0.9375rem;
     line-height: 1.7;
+    /* Extra enforcement for mobile */
+    overflow-x: hidden;
   }
   
   .prose h1 {
@@ -481,11 +492,24 @@ select {
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
+    /* Force table to not expand container */
+    max-width: 100%;
+    width: 100%;
   }
   
   .prose thead th,
   .prose tbody td {
     padding: 0.5em 0.75em;
+    /* Prevent text from expanding cells */
+    word-break: keep-all;
+    white-space: nowrap;
+  }
+  
+  /* Allow table container to scroll */
+  .prose table thead,
+  .prose table tbody {
+    display: table;
+    width: 100%;
   }
 }
 
@@ -568,17 +592,30 @@ select {
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+  min-width: 0; /* Critical for flexbox children */
 }
 
 /* Ensure all prose children respect container width */
 .prose > * {
   max-width: 100%;
+  min-width: 0;
+}
+
+/* Specific enforcement for problematic elements */
+.prose strong,
+.prose b,
+.prose em,
+.prose i {
+  word-break: break-word;
 }
 
 /* Long URLs and text handling */
 .prose a {
   word-break: break-word;
   overflow-wrap: break-word;
+  /* Force long URLs to wrap */
+  max-width: 100%;
+  display: inline-block;
 }
 
 /* Heading anchors styling */
