@@ -79,6 +79,25 @@ export default function WhyPriceChangedTeaser() {
     ? "Rupee strengthened, prices cooling"
     : "Markets stable, prices steady";
 
+  // Dynamic tooltip content based on market conditions
+  const comexTooltip = change > 0.5
+    ? `🌍 COMEX at $${comexUsd.toFixed(2)}/oz ↑ Strong global demand from investors`
+    : change < -0.5
+    ? `🌍 COMEX at $${comexUsd.toFixed(2)}/oz ↓ Profit booking in international markets`
+    : `🌍 COMEX at $${comexUsd.toFixed(2)}/oz → Markets in consolidation`;
+
+  const usdInrTooltip = change > 0.3
+    ? `💱 Rupee at ₹${usdInr.toFixed(2)}/USD ↑ Weaker rupee makes silver costlier`
+    : change < -0.3
+    ? `💱 Rupee at ₹${usdInr.toFixed(2)}/USD ↓ Stronger rupee reduces silver prices`
+    : `💱 Rupee at ₹${usdInr.toFixed(2)}/USD → Exchange rate stable today`;
+
+  const changeTooltip = Math.abs(change) > 1
+    ? change > 0
+      ? `🚀 High Volatility! Silver surged ${change.toFixed(2)}% today`
+      : `⚠️ High Volatility! Silver dropped ${Math.abs(change).toFixed(2)}% today`
+    : `📊 24h change in Indian silver rate`;
+
   return (
     <div className="bg-gradient-to-r from-[#1e3a5f]/5 via-blue-50/50 to-[#1e3a5f]/5 rounded-xl p-3 sm:p-4 border border-[#1e3a5f]/10">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
@@ -90,7 +109,7 @@ export default function WhyPriceChangedTeaser() {
           </span>
           
           {/* COMEX Price */}
-          <Tooltip text="COMEX Silver Futures - International benchmark price per troy ounce">
+          <Tooltip text={comexTooltip}>
             <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono hover:shadow-md transition-shadow">
               <span className="text-gray-500 mr-1">COMEX</span>
               <span className="font-semibold text-gray-900">${comexUsd.toFixed(2)}</span>
@@ -98,7 +117,7 @@ export default function WhyPriceChangedTeaser() {
           </Tooltip>
           
           {/* USD/INR */}
-          <Tooltip text="USD to INR Exchange Rate - RBI Reference Rate">
+          <Tooltip text={usdInrTooltip}>
             <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white shadow-sm text-xs sm:text-sm font-mono hover:shadow-md transition-shadow">
               <span className="text-gray-500 mr-1">₹/$</span>
               <span className="font-semibold text-gray-900">{usdInr.toFixed(2)}</span>
@@ -106,7 +125,7 @@ export default function WhyPriceChangedTeaser() {
           </Tooltip>
           
           {/* 24h Change */}
-          <Tooltip text="24-hour price change in Indian silver rate">
+          <Tooltip text={changeTooltip}>
             <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs sm:text-sm font-semibold hover:shadow-md transition-shadow ${
               change > 0 
                 ? "bg-green-100 text-green-700" 
