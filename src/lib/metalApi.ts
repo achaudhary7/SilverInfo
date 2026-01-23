@@ -210,6 +210,64 @@ async function fetchUsdInrRate(): Promise<number | null> {
 }
 
 /**
+ * Fixed exchange rates for currencies pegged to USD
+ * These are official pegged rates that don't change
+ */
+const PEGGED_RATES: Record<string, number> = {
+  QAR: 3.64,    // Qatar Riyal - pegged to USD since 2001
+  AED: 3.6725,  // UAE Dirham - pegged to USD since 1997
+  SAR: 3.75,    // Saudi Riyal - pegged to USD since 1986
+  BHD: 0.376,   // Bahraini Dinar - pegged to USD
+  OMR: 0.385,   // Omani Rial - pegged to USD
+  KWD: 0.307,   // Kuwaiti Dinar - pegged to basket (approximate)
+};
+
+/**
+ * Fetch multiple exchange rates from Frankfurter API
+ * Used for international pages (Qatar, UAE, etc.)
+ * Falls back to pegged rates for Gulf currencies
+ */
+async function fetchExchangeRates(currencies: string[]): Promise<Record<string, number> | null> {
+  try {
+    // Separate pegged currencies from floating currencies
+    const peggedCurrencies = currencies.filter(c => PEGGED_RATES[c]);
+    const floatingCurrencies = currencies.filter(c => !PEGGED_RATES[c]);
+    
+    const result: Record<string, number> = {};
+    
+    // Add pegged rates directly
+    for (const currency of peggedCurrencies) {
+      result[currency] = PEGGED_RATES[currency];
+    }
+    
+    // Fetch floating currencies from Frankfurter (always need INR)
+    const currenciesToFetch = [...floatingCurrencies];
+    if (!currenciesToFetch.includes('INR')) {
+      currenciesToFetch.push('INR');
+    }
+    
+    if (currenciesToFetch.length > 0) {
+      const response = await fetch(
+        `https://api.frankfurter.app/latest?from=USD&to=${currenciesToFetch.join(',')}`,
+        { next: { revalidate: 3600 } } // Cache for 1 hour
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.rates) {
+          Object.assign(result, data.rates);
+        }
+      }
+    }
+    
+    return Object.keys(result).length > 0 ? result : null;
+  } catch (error) {
+    console.error("Error fetching exchange rates:", error);
+    return null;
+  }
+}
+
+/**
  * Calculate Indian silver price from international data
  * Formula: (COMEX_USD × USD_INR) / 31.1035 × (1 + import_duty) × (1 + IGST) × (1 + MCX_premium)
  * 
@@ -787,4 +845,170 @@ export function getPriceChangeIndicator(change: number): {
     return { direction: "down", color: "text-red-600", icon: "↓" };
   }
   return { direction: "neutral", color: "text-gray-500", icon: "→" };
+}
+
+// ============================================
+// INTERNATIONAL PRICE FUNCTIONS (Qatar, UAE, etc.)
+// ============================================
+
+/**
+ * International Silver Price interface
+ * For countries like Qatar, UAE, Saudi Arabia
+ */
+export interface InternationalSilverPrice {
+  pricePerGram: number;
+  pricePerKg: number;
+  pricePer10Gram: number;
+  pricePerTola: number;
+  pricePerOz: number;        // Troy ounce (international standard)
+  currency: string;
+  currencySymbol: string;
+  countryCode: string;
+  countryName: string;
+  timestamp: string;
+  // Exchange rates
+  usdRate: number;           // USD to local currency
+  usdInr: number;            // USD to INR (for NRI comparison)
+  comexUsd: number;          // COMEX price in USD
+  // INR equivalent (for NRIs)
+  pricePerGramInr: number;
+  pricePerKgInr: number;
+  source: string;
+}
+
+/**
+ * Country configuration for international prices
+ */
+interface CountryConfig {
+  code: string;
+  name: string;
+  currency: string;
+  currencySymbol: string;
+  frankfurterCode: string;   // Currency code for Frankfurter API
+  localPremium: number;      // Local market premium (%)
+  importDuty: number;        // Import duty (%)
+  vat: number;               // VAT/GST rate (%)
+}
+
+const COUNTRY_CONFIG: Record<string, CountryConfig> = {
+  qatar: {
+    code: "QA",
+    name: "Qatar",
+    currency: "QAR",
+    currencySymbol: "QAR",
+    frankfurterCode: "QAR",      // Uses pegged rate (3.64 USD)
+    localPremium: 0.02,          // 2% local premium
+    importDuty: 0.05,            // 5% customs duty
+    vat: 0,                      // No VAT on precious metals in Qatar
+  },
+  uae: {
+    code: "AE",
+    name: "UAE (Dubai)",
+    currency: "AED",
+    currencySymbol: "AED",
+    frankfurterCode: "AED",      // Uses pegged rate (3.6725 USD)
+    localPremium: 0.02,
+    importDuty: 0.05,
+    vat: 0.05,                   // 5% VAT
+  },
+  saudiarabia: {
+    code: "SA",
+    name: "Saudi Arabia",
+    currency: "SAR",
+    currencySymbol: "SAR",
+    frankfurterCode: "SAR",      // Uses pegged rate (3.75 USD)
+    localPremium: 0.02,
+    importDuty: 0.05,
+    vat: 0.15,                   // 15% VAT
+  },
+  kuwait: {
+    code: "KW",
+    name: "Kuwait",
+    currency: "KWD",
+    currencySymbol: "KWD",
+    frankfurterCode: "KWD",      // Uses pegged rate (0.307 USD)
+    localPremium: 0.02,
+    importDuty: 0.05,
+    vat: 0,
+  },
+};
+
+/**
+ * Get silver price for a specific country
+ * 
+ * @param countryKey - Country key (qatar, uae, saudiarabia, kuwait)
+ * @returns International silver price with local and INR equivalents
+ */
+export async function getInternationalSilverPrice(countryKey: string): Promise<InternationalSilverPrice | null> {
+  const config = COUNTRY_CONFIG[countryKey.toLowerCase()];
+  if (!config) {
+    console.error(`Unknown country: ${countryKey}`);
+    return null;
+  }
+
+  try {
+    // Fetch COMEX price and exchange rates
+    const [silverUsd, rates] = await Promise.all([
+      fetchSilverUSD(),
+      fetchExchangeRates([config.frankfurterCode, 'INR']),
+    ]);
+
+    if (!silverUsd || !rates) {
+      console.error("Failed to fetch price data for", countryKey);
+      return null;
+    }
+
+    const localRate = rates[config.frankfurterCode];
+    const inrRate = rates['INR'];
+
+    if (!localRate || !inrRate) {
+      console.error("Missing exchange rates for", countryKey);
+      return null;
+    }
+
+    // Calculate local price per gram
+    // Formula: (COMEX_USD × USD_LOCAL) / 31.1035 × (1 + import_duty) × (1 + vat) × (1 + local_premium)
+    const pricePerOzLocal = silverUsd * localRate;
+    const basePricePerGram = pricePerOzLocal / OZ_TO_GRAM;
+    const withDuty = basePricePerGram * (1 + config.importDuty);
+    const withVat = withDuty * (1 + config.vat);
+    const finalPrice = withVat * (1 + config.localPremium);
+
+    // Calculate INR equivalent (for NRI comparison)
+    const pricePerOzInr = silverUsd * inrRate;
+    const inrPricePerGram = (pricePerOzInr / OZ_TO_GRAM) * (1 + IMPORT_DUTY) * (1 + IGST) * (1 + MCX_PREMIUM);
+
+    return {
+      pricePerGram: Math.round(finalPrice * 100) / 100,
+      pricePerKg: Math.round(finalPrice * 1000 * 100) / 100,
+      pricePer10Gram: Math.round(finalPrice * 10 * 100) / 100,
+      pricePerTola: Math.round(finalPrice * TOLA_TO_GRAM * 100) / 100,
+      pricePerOz: Math.round(pricePerOzLocal * 100) / 100,
+      currency: config.currency,
+      currencySymbol: config.currencySymbol,
+      countryCode: config.code,
+      countryName: config.name,
+      timestamp: new Date().toISOString(),
+      usdRate: Math.round(localRate * 10000) / 10000,
+      usdInr: Math.round(inrRate * 100) / 100,
+      comexUsd: Math.round(silverUsd * 100) / 100,
+      pricePerGramInr: Math.round(inrPricePerGram * 100) / 100,
+      pricePerKgInr: Math.round(inrPricePerGram * 1000),
+      source: "calculated",
+    };
+  } catch (error) {
+    console.error("Error calculating international price:", error);
+    return null;
+  }
+}
+
+/**
+ * Get available countries for international prices
+ */
+export function getAvailableCountries(): { key: string; name: string; code: string }[] {
+  return Object.entries(COUNTRY_CONFIG).map(([key, config]) => ({
+    key,
+    name: config.name,
+    code: config.code,
+  }));
 }

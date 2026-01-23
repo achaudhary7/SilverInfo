@@ -6,6 +6,7 @@ import { getAllUpdateSlugs, getAllLearnSlugs, getAllUpdates, getAllLearnArticles
 const PAGE_DATES: Record<string, string> = {
   "/": "2026-01-23",
   "/silver-rate-today": "2026-01-23",
+  "/qatar/silver-rate-today": "2026-01-24",
   "/silver-price-calculator": "2026-01-23",
   "/investment-calculator": "2026-01-23",
   "/capital-gains-tax-calculator": "2026-01-23",
@@ -38,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: PAGE_DATES["/silver-rate-today"] || currentDate,
       changeFrequency: "hourly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/qatar/silver-rate-today`,
+      lastModified: PAGE_DATES["/qatar/silver-rate-today"] || currentDate,
+      changeFrequency: "hourly",
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/silver-price-calculator`,
