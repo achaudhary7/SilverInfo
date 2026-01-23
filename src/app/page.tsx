@@ -128,12 +128,18 @@ export default async function HomePage() {
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Silver Rate Today in India
               </h1>
-              <p className="text-sm sm:text-lg text-[#1e3a5f] font-medium mb-1 sm:mb-2">
-                India&apos;s most transparent silver price platform
+              <p className="text-sm sm:text-lg text-[#1e3a5f] font-semibold mb-1 sm:mb-2">
+                Calculated, Not Copied.
               </p>
-              <p className="text-xs sm:text-base text-gray-600 max-w-3xl">
-                Track live prices, view trends, and calculate exact costs. 
-                We explain <em>why</em> prices change.
+              <p className="text-xs sm:text-base text-gray-600 max-w-3xl mb-2 sm:mb-3">
+                Live silver price per gram, per kg with historical charts and city-wise prices. 
+                Prices derived from COMEX futures + USD/INR exchange rates.{" "}
+                <Link href="/how-we-calculate" className="text-[#1e3a5f] font-medium hover:underline">
+                  See Our Formula →
+                </Link>
+              </p>
+              <p className="text-[10px] sm:text-xs text-gray-400">
+                Content last reviewed: 23 January 2026
               </p>
             </div>
             
