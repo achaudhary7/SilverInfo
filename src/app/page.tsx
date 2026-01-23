@@ -74,10 +74,107 @@ export default async function HomePage() {
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
   ]);
+
+  // Product Schema for live silver price (Merchant Listing rich result)
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Silver Price Today in India",
+    description: "Live silver price per gram in India. Real-time rates from COMEX with INR conversion.",
+    image: "https://silverinfo.in/og-image.png",
+    category: "Precious Metals",
+    brand: {
+      "@type": "Brand",
+      name: "COMEX Silver",
+    },
+    offers: {
+      "@type": "Offer",
+      price: price.pricePerGram,
+      priceCurrency: "INR",
+      priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      availability: "https://schema.org/InStock",
+      url: "https://silverinfo.in",
+      seller: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
+    },
+  };
+
+  // ItemList Schema for city prices (helps with Featured Snippets)
+  const cityListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Silver Prices Across Indian Cities",
+    description: "Live silver rates in major Indian cities",
+    numberOfItems: cityPrices.slice(0, 10).length,
+    itemListElement: cityPrices.slice(0, 10).map((city, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: `${city.city} Silver Rate`,
+      url: `https://silverinfo.in/city/${city.city.toLowerCase()}`,
+      item: {
+        "@type": "Product",
+        name: `Silver in ${city.city}`,
+        offers: {
+          "@type": "Offer",
+          price: city.pricePerGram,
+          priceCurrency: "INR",
+        },
+      },
+    })),
+  };
+
+  // HowTo Schema for the calculator (helps with step-by-step rich results)
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Silver Price in India",
+    description: "Step-by-step guide to calculate the total cost of silver in India including GST and making charges.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT2M",
+    estimatedCost: {
+      "@type": "MonetaryAmount",
+      currency: "INR",
+      value: "0",
+    },
+    tool: [
+      {
+        "@type": "HowToTool",
+        name: "SilverInfo.in Calculator",
+      },
+    ],
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Weight",
+        text: "Enter the weight of silver in grams, kg, or tola.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Select Purity",
+        text: "Choose silver purity: 999 (pure), 925 (sterling), or 900 (coin silver).",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Add Making Charges",
+        text: "Enter making charges percentage (typically 6-15% for jewelry).",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Total",
+        text: "The calculator shows total cost including 3% GST automatically.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+    ],
+  };
   
   return (
     <>
-      {/* JSON-LD Schema */}
+      {/* JSON-LD Schemas for Rich Results */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -100,11 +197,23 @@ export default async function HomePage() {
       />
       <script
         type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       
       <div className="min-h-screen">
