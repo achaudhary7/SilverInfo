@@ -18,6 +18,9 @@ export interface SilverPrice {
   high24h: number;
   low24h: number;
   source: string;
+  // Additional data for market analysis (WhyPriceChanged component)
+  usdInr?: number;      // USD/INR exchange rate
+  comexUsd?: number;    // COMEX silver price in USD per troy ounce
 }
 
 export interface HistoricalPrice {
@@ -116,6 +119,8 @@ const FALLBACK_PRICE: SilverPrice = {
   high24h: 340,
   low24h: 330,
   source: "fallback",
+  usdInr: 84.50,      // Typical USD/INR rate
+  comexUsd: 30.50,    // Typical COMEX silver price
 };
 
 // ============================================
@@ -259,6 +264,9 @@ async function calculateIndianSilverPrice(): Promise<SilverPrice | null> {
     high24h: Math.round(finalPrice * 1.015 * 100) / 100,
     low24h: Math.round(finalPrice * 0.985 * 100) / 100,
     source: "calculated", // Indicates self-calculated price
+    // Additional data for market analysis
+    usdInr: Math.round(usdInr * 100) / 100,
+    comexUsd: Math.round(silverUsd * 100) / 100,
   };
 }
 
@@ -439,6 +447,8 @@ function getSimulatedPrice(): SilverPrice {
     high24h: Math.round((pricePerGram + 5) * 100) / 100,
     low24h: Math.round((pricePerGram - 5) * 100) / 100,
     source: "simulated",
+    usdInr: 84.50,      // Typical USD/INR rate
+    comexUsd: 30.50,    // Typical COMEX silver price
   };
 }
 
