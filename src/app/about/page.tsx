@@ -20,11 +20,36 @@ export default function AboutPage() {
     { name: "About", url: "https://silverinfo.in/about" },
   ]);
 
+  // AboutPage schema for organization information
+  const aboutPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About SilverInfo.in",
+    description: "Learn about SilverInfo.in - India's trusted source for live silver prices, market analysis, and silver education.",
+    url: "https://silverinfo.in/about",
+    mainEntity: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+      logo: "https://silverinfo.in/icon-512.png",
+      description: "India's dedicated platform for silver price tracking and education. Calculated, Not Copied.",
+      foundingDate: "2026",
+      areaServed: "India",
+      knowsAbout: ["Silver Prices", "Precious Metals", "COMEX", "Silver Investment"],
+      slogan: "Calculated, Not Copied.",
+    },
+    dateModified: LAST_UPDATED,
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }}
       />
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

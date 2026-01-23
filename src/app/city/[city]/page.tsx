@@ -150,11 +150,41 @@ export default async function CityPage({
     ],
   };
 
+  // Product schema for city silver price (Merchant Listing rich result)
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `Silver in ${cityData.city}`,
+    description: `Live silver price in ${cityData.city}, ${cityData.state}. Real-time rates from COMEX with local making charges.`,
+    image: "https://silverinfo.in/og-image.png",
+    category: "Precious Metals",
+    brand: {
+      "@type": "Brand",
+      name: "COMEX Silver",
+    },
+    offers: {
+      "@type": "Offer",
+      price: price.pricePerGram,
+      priceCurrency: "INR",
+      priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      availability: "https://schema.org/InStock",
+      url: `https://silverinfo.in/city/${city}`,
+      seller: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
       <script
         type="application/ld+json"

@@ -64,6 +64,42 @@ export default async function BreakEvenCalculatorPage() {
     { name: "Break-Even Calculator", url: "https://silverinfo.in/break-even-calculator" },
   ]);
 
+  // HowTo schema for break-even calculations
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Break-Even Price for Silver Jewelry",
+    description: "Calculate the minimum selling price needed to recover your silver jewelry investment.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT2M",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Purchase Price",
+        text: "Enter the silver price per gram at the time of purchase.",
+        url: "https://silverinfo.in/break-even-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Enter Making Charges",
+        text: "Enter the making charges percentage you paid (typically 6-15% for jewelry, 0-3% for bullion).",
+        url: "https://silverinfo.in/break-even-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Enter Buyback Discount",
+        text: "Enter the expected jeweller buyback discount (typically 2-10% below market rate).",
+        url: "https://silverinfo.in/break-even-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Break-Even Price",
+        text: "See the minimum market price at which you can sell without loss, and compare with current rates.",
+        url: "https://silverinfo.in/break-even-calculator",
+      },
+    ],
+  };
+
   // SoftwareApplication Schema
   const softwareAppSchema = {
     "@context": "https://schema.org",

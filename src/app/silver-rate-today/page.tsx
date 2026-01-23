@@ -104,6 +104,30 @@ export default async function SilverRateTodayPage() {
     { name: "Silver Rate Today", url: "https://silverinfo.in/silver-rate-today" },
   ]);
 
+  // ItemList schema for city prices (helps with Featured Snippets)
+  const cityListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Silver Prices in Indian Cities Today",
+    description: "Live silver rates across major Indian cities",
+    numberOfItems: cityPrices.slice(0, 10).length,
+    itemListElement: cityPrices.slice(0, 10).map((city, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: `Silver Rate in ${city.city}`,
+      url: `https://silverinfo.in/city/${city.city.toLowerCase()}`,
+      item: {
+        "@type": "Product",
+        name: `Silver in ${city.city}`,
+        offers: {
+          "@type": "Offer",
+          price: city.pricePerGram,
+          priceCurrency: "INR",
+        },
+      },
+    })),
+  };
+
   return (
     <>
       <script
@@ -113,6 +137,10 @@ export default async function SilverRateTodayPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityListSchema) }}
       />
       <script
         type="application/ld+json"

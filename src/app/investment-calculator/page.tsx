@@ -58,6 +58,42 @@ export default async function InvestmentCalculatorPage() {
     { name: "Investment Calculator", url: "https://silverinfo.in/investment-calculator" },
   ]);
 
+  // HowTo schema for investment calculations
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Profit/Loss on Silver Investment",
+    description: "Step-by-step guide to calculate returns on your silver investment in India.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT3M",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Purchase Details",
+        text: "Enter your silver purchase price (per gram) and the date you bought it.",
+        url: "https://silverinfo.in/investment-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Enter Weight",
+        text: "Enter the total weight of silver you purchased in grams.",
+        url: "https://silverinfo.in/investment-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Enter Current or Selling Price",
+        text: "Enter today's silver price or your expected selling price per gram.",
+        url: "https://silverinfo.in/investment-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Returns",
+        text: "See your absolute profit/loss, percentage return, and annualized return (CAGR) if held over 1 year.",
+        url: "https://silverinfo.in/investment-calculator",
+      },
+    ],
+  };
+
   // SoftwareApplication Schema for calculator
   const softwareAppSchema = {
     "@context": "https://schema.org",

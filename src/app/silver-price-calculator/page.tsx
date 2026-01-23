@@ -64,6 +64,47 @@ export default async function SilverCalculatorPage() {
     { name: "Silver Calculator", url: "https://silverinfo.in/silver-price-calculator" },
   ]);
 
+  // HowTo schema for calculator instructions
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Silver Price with Making Charges and GST",
+    description: "Step-by-step guide to calculate the total cost of silver jewelry or bullion in India.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT2M",
+    estimatedCost: {
+      "@type": "MonetaryAmount",
+      currency: "INR",
+      value: "0",
+    },
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Silver Weight",
+        text: "Enter the weight of silver in grams. You can also use kg, tola, or troy ounce - the calculator will convert automatically.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Select Silver Purity",
+        text: "Choose the purity level: 999 (99.9% pure), 925 (sterling silver), 900 (coin silver), or 800.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Add Making Charges (Optional)",
+        text: "For jewelry, add making charges percentage (typically 6-15%). For bullion, keep it at 0%.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Total Price",
+        text: "The calculator displays: Base silver value + Making charges + 3% GST = Total cost.",
+        url: "https://silverinfo.in/silver-price-calculator",
+      },
+    ],
+  };
+
   return (
     <>
       <script
@@ -73,6 +114,10 @@ export default async function SilverCalculatorPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <script
         type="application/ld+json"

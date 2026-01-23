@@ -24,11 +24,83 @@ export default function HowWeCalculatePage() {
     { name: "How We Calculate", url: "https://silverinfo.in/how-we-calculate" },
   ]);
 
+  // Article schema for methodology page (helps with Featured Snippets)
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "How SilverInfo.in Calculates Silver Prices in India",
+    description: "Our transparent methodology for calculating indicative silver prices using COMEX futures and USD/INR exchange rates.",
+    image: "https://silverinfo.in/og-image.png",
+    author: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://silverinfo.in/icon-512.png",
+      },
+    },
+    datePublished: "2026-01-01",
+    dateModified: "2026-01-23",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": "https://silverinfo.in/how-we-calculate",
+    },
+  };
+
+  // HowTo schema for the calculation steps
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Silver Price in INR from COMEX",
+    description: "Step-by-step formula to convert international silver prices to Indian Rupees.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT1M",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Get COMEX Price",
+        text: "Fetch the current COMEX Silver Futures (SI=F) price in USD per troy ounce.",
+        url: "https://silverinfo.in/how-we-calculate#step1",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Convert to Grams",
+        text: "Divide by 31.1035 to convert from troy ounces to grams. Formula: USD per gram = COMEX price ÷ 31.1035",
+        url: "https://silverinfo.in/how-we-calculate#step2",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Apply Exchange Rate",
+        text: "Multiply by current USD/INR rate. Formula: INR per gram = USD per gram × USD/INR rate",
+        url: "https://silverinfo.in/how-we-calculate#step3",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Add Import Duties",
+        text: "Add 7.5% import duty and 3% GST to get the final indicative price. Final Price = Base × 1.1075",
+        url: "https://silverinfo.in/how-we-calculate#step4",
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <div className="min-h-screen bg-gray-50">
         {/* Header */}

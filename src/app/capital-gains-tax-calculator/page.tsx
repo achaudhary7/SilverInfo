@@ -64,6 +64,42 @@ export default async function CapitalGainsTaxCalculatorPage() {
     { name: "Capital Gains Tax Calculator", url: "https://silverinfo.in/capital-gains-tax-calculator" },
   ]);
 
+  // HowTo schema for capital gains tax calculations
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Capital Gains Tax on Silver in India",
+    description: "Step-by-step guide to calculate STCG or LTCG tax on selling silver in India.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT3M",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Purchase Details",
+        text: "Enter your purchase price, date, and select asset type (physical silver, jewelry, or ETF).",
+        url: "https://silverinfo.in/capital-gains-tax-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Enter Sale Details",
+        text: "Enter your selling price and sale date. The calculator determines if it's STCG (<24 months) or LTCG (>24 months).",
+        url: "https://silverinfo.in/capital-gains-tax-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Select Tax Slab (for STCG)",
+        text: "For short-term gains, select your income tax slab (5%, 20%, or 30%). LTCG is flat 12.5%.",
+        url: "https://silverinfo.in/capital-gains-tax-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Tax Calculation",
+        text: "See capital gain amount, tax rate applied, estimated tax (with 4% cess), and net proceeds after tax.",
+        url: "https://silverinfo.in/capital-gains-tax-calculator",
+      },
+    ],
+  };
+
   // SoftwareApplication Schema
   const softwareAppSchema = {
     "@context": "https://schema.org",
@@ -96,6 +132,10 @@ export default async function CapitalGainsTaxCalculatorPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <script
         type="application/ld+json"

@@ -64,6 +64,36 @@ export default async function InflationAdjustedCalculatorPage() {
     { name: "Inflation-Adjusted Returns Calculator", url: "https://silverinfo.in/inflation-adjusted-calculator" },
   ]);
 
+  // HowTo schema for inflation-adjusted calculations
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Calculate Real Returns on Silver After Inflation",
+    description: "Step-by-step guide to calculate your true purchasing power gains from silver investment.",
+    image: "https://silverinfo.in/og-image.png",
+    totalTime: "PT2M",
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Enter Investment Details",
+        text: "Enter your purchase price, current value, and investment period in months.",
+        url: "https://silverinfo.in/inflation-adjusted-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Select Inflation Source",
+        text: "Choose to use official CPI data from MOSPI or enter a custom inflation rate.",
+        url: "https://silverinfo.in/inflation-adjusted-calculator",
+      },
+      {
+        "@type": "HowToStep",
+        name: "View Results",
+        text: "Compare nominal return vs real (inflation-adjusted) return to see your true purchasing power gain.",
+        url: "https://silverinfo.in/inflation-adjusted-calculator",
+      },
+    ],
+  };
+
   // SoftwareApplication Schema
   const softwareAppSchema = {
     "@context": "https://schema.org",
@@ -96,6 +126,10 @@ export default async function InflationAdjustedCalculatorPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <script
         type="application/ld+json"
