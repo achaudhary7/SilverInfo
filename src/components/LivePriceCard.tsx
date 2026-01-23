@@ -340,9 +340,9 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
               </svg>
             </span>
             <span className="text-gray-600">
-              {isRefreshing ? "Verifying..." : (
+              {isRefreshing ? "Verifying from COMEX..." : (
                 <>
-                  <span className="text-green-600 font-medium">Verified</span> {formatTimeAgo(secondsAgo)}
+                  <span className="text-green-600 font-medium">✓ COMEX Verified</span> {formatTimeAgo(secondsAgo)}
                 </>
               )}
             </span>
