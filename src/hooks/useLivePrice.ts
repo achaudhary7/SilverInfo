@@ -77,10 +77,14 @@ export function useLivePrice({
     await fetchPrice();
   }, [fetchPrice]);
 
-  // Poll for new prices every pollInterval
+  // Fetch immediately on mount, then poll every pollInterval
   useEffect(() => {
     if (!enabled) return;
 
+    // Fetch immediately on mount (don't wait for first interval)
+    fetchPrice();
+
+    // Then continue polling at regular intervals
     const interval = setInterval(fetchPrice, pollInterval);
     
     return () => clearInterval(interval);
