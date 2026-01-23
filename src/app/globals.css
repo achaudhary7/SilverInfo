@@ -259,6 +259,32 @@ select {
   max-width: 75ch;
   font-size: 1rem;
   line-height: 1.75;
+  /* CRITICAL: Prevent horizontal overflow on mobile */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* Mobile-specific prose adjustments */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  
+  .prose h1 {
+    font-size: 1.75rem;
+  }
+  
+  .prose h2 {
+    font-size: 1.35rem;
+  }
+  
+  .prose h3 {
+    font-size: 1.15rem;
+  }
 }
 
 .prose h1 {
@@ -375,12 +401,23 @@ select {
   background: #f1f5f9;
   padding: 0.2em 0.4em;
   border-radius: 4px;
+  /* Prevent long inline code from breaking layout */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 640px) {
+  .prose code {
+    font-size: 0.8em;
+    padding: 0.15em 0.3em;
+  }
 }
 
 .prose pre {
   color: #e5e7eb;
   background: #1f2937;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   font-weight: 400;
   font-size: 0.875em;
   line-height: 1.7;
@@ -388,6 +425,18 @@ select {
   margin-bottom: 1.7em;
   border-radius: 8px;
   padding: 1em 1.5em;
+  /* Prevent pre blocks from causing container overflow */
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+@media (max-width: 640px) {
+  .prose pre {
+    font-size: 0.75rem;
+    padding: 0.75em 1em;
+    border-radius: 6px;
+  }
 }
 
 .prose pre code {
@@ -397,21 +446,47 @@ select {
   font-weight: inherit;
   color: inherit;
   font-size: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Tables - Mobile Responsive Wrapper */
+.prose .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 /* Tables */
 .prose table {
   width: 100%;
+  min-width: 100%;
   table-layout: auto;
   text-align: left;
-  margin-top: 2em;
-  margin-bottom: 2em;
   font-size: 0.875em;
   line-height: 1.7;
   border-collapse: collapse;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   overflow: hidden;
+}
+
+/* Mobile table adjustments */
+@media (max-width: 640px) {
+  .prose table {
+    font-size: 0.75rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .prose thead th,
+  .prose tbody td {
+    padding: 0.5em 0.75em;
+  }
 }
 
 .prose thead {
@@ -486,6 +561,24 @@ select {
 /* Make max-w-none override work */
 .prose.max-w-none {
   max-width: none;
+}
+
+/* Article content wrapper - prevents overflow */
+.article-content {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Ensure all prose children respect container width */
+.prose > * {
+  max-width: 100%;
+}
+
+/* Long URLs and text handling */
+.prose a {
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Heading anchors styling */

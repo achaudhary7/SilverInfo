@@ -121,9 +121,9 @@ export default async function LearnArticlePage({
             {/* Left Column - Header + Content */}
             <div className="lg:col-span-3">
               {/* Header Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6 lg:p-8 mb-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 overflow-hidden">
                 {/* Breadcrumb */}
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-wrap">
                   <Link href="/" className="hover:text-[#1e3a5f]">
                     Home
                   </Link>
@@ -136,31 +136,33 @@ export default async function LearnArticlePage({
                 </div>
 
                 {/* Meta */}
-                <div className="flex items-center gap-3 text-sm text-gray-500 mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500 mb-4 flex-wrap">
                   <span>{formatDate(article.date)}</span>
                   <span>•</span>
                   <span>{readingTime} min read</span>
                   <span>•</span>
-                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs sm:text-sm">
                     {article.category}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 break-words">
                   {article.title}
                 </h1>
 
                 {/* Description */}
-                <p className="text-lg text-gray-600">{article.description}</p>
+                <p className="text-base sm:text-lg text-gray-600">{article.description}</p>
               </div>
 
               {/* Article Content */}
-              <article className="card p-6 lg:p-8">
-                <div
-                  className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f]"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
-                />
+              <article className="card p-4 sm:p-6 lg:p-8 overflow-hidden">
+                <div className="article-content">
+                  <div
+                    className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-[#1e3a5f]"
+                    dangerouslySetInnerHTML={{ __html: article.content }}
+                  />
+                </div>
 
                 {article.tags && article.tags.length > 0 && (
                   <div className="mt-8 pt-6 border-t border-gray-200">
@@ -181,21 +183,21 @@ export default async function LearnArticlePage({
                 )}
 
                 {/* Author Bio - E-E-A-T Signal */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1e3a5f] to-[#2c5282] flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-2xl font-bold">SI</span>
+                <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#1e3a5f] to-[#2c5282] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-lg sm:text-2xl font-bold">SI</span>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base">
                         {article.author || "SilverInfo Team"}
                       </h4>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">
                         The SilverInfo Team comprises finance researchers and precious metals 
                         analysts with expertise in Indian commodity markets. Our content is 
                         reviewed for accuracy and updated regularly to reflect current market conditions.
                       </p>
-                      <div className="flex items-center gap-4 mt-3 text-sm">
+                      <div className="flex items-center gap-3 sm:gap-4 mt-2 sm:mt-3 text-xs sm:text-sm">
                         <Link 
                           href="/about" 
                           className="text-[#1e3a5f] hover:underline"
