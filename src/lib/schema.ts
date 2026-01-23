@@ -73,18 +73,30 @@ export function generateProductSchema(product: {
   description: string;
   price: number;
   currency: string;
+  url?: string;
 }): object {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
+    image: "https://silverinfo.in/og-image.png",
+    category: "Precious Metals",
+    brand: {
+      "@type": "Brand",
+      name: "COMEX Silver",
+    },
     offers: {
       "@type": "Offer",
       price: product.price,
       priceCurrency: product.currency,
-      priceValidUntil: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+      priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
       availability: "https://schema.org/InStock",
+      url: product.url || "https://silverinfo.in/silver-rate-today",
+      seller: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
     },
   };
 }
