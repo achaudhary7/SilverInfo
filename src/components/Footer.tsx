@@ -52,8 +52,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Add padding at bottom for mobile nav bar */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 sm:pb-12">
+      {/* Add extra padding at bottom for mobile nav bar (height ~64px + safe area) */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-32 sm:pb-12">
         {/* Mobile: Stacked layout with better touch targets */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Prices */}
