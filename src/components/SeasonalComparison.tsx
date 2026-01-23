@@ -114,7 +114,7 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
               vs Last Week
             </h3>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-              diff > 0 ? "bg-red-50 text-red-700" : diff < 0 ? "bg-green-50 text-green-700" : "bg-gray-50 text-gray-700"
+              diff > 0 ? "bg-green-50 text-green-700" : diff < 0 ? "bg-red-50 text-red-700" : "bg-gray-50 text-gray-700"
             }`}>
               {diff > 0 ? "↑ Higher" : diff < 0 ? "↓ Lower" : "→ Same"}
             </span>
@@ -122,10 +122,10 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
           
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-lg font-bold ${diff > 0 ? "text-red-600" : diff < 0 ? "text-green-600" : "text-gray-600"}`}>
+              <p className={`text-lg font-bold ${diff > 0 ? "text-green-600" : diff < 0 ? "text-red-600" : "text-gray-600"}`}>
                 {diff > 0 ? "+" : ""}₹{Math.abs(diff).toLocaleString("en-IN", { maximumFractionDigits: 0 })}/kg
               </p>
-              <p className={`text-xs ${diff > 0 ? "text-red-500" : diff < 0 ? "text-green-500" : "text-gray-500"}`}>
+              <p className={`text-xs ${diff > 0 ? "text-green-500" : diff < 0 ? "text-red-500" : "text-gray-500"}`}>
                 ({diff > 0 ? "+" : ""}{diffPercent.toFixed(1)}% change)
               </p>
             </div>
