@@ -1,0 +1,11 @@
+# Robots.txt for SilverInfo.in
+# https://silverinfo.in
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://silverinfo.in/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

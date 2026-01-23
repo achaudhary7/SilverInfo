@@ -1,0 +1,18 @@
+{
+  "_metadata": {
+    "description": "Daily silver prices stored for historical reference",
+    "source": "COMEX Silver Futures (SI=F) + USD/INR conversion",
+    "createdAt": "2026-01-22",
+    "format": "YYYY-MM-DD as keys",
+    "lastUpdated": "2026-01-22T16:55:27.481Z"
+  },
+  "2026-01-22": {
+    "date": "2026-01-22",
+    "pricePerGram": 350.33,
+    "pricePerKg": 350334,
+    "comexUsdOz": 0,
+    "usdInrRate": 0,
+    "source": "calculated",
+    "timestamp": "2026-01-22T16:55:27.471Z"
+  }
+}
