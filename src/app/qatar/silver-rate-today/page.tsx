@@ -84,14 +84,24 @@ export default async function QatarSilverRatePage() {
     "@context": "https://schema.org",
     "@type": "Product",
     name: "Silver in Qatar",
-    description: "Live silver price in Qatar in QAR and INR",
+    description: "Live silver price in Qatar in QAR and INR. Real-time rates from COMEX for NRIs.",
+    image: "https://silverinfo.in/og-image.png",
     category: "Precious Metals",
+    brand: {
+      "@type": "Brand",
+      name: "COMEX Silver",
+    },
     offers: qatarPrice ? {
       "@type": "Offer",
       price: qatarPrice.pricePerGram,
       priceCurrency: "QAR",
       availability: "https://schema.org/InStock",
       priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      url: "https://silverinfo.in/qatar/silver-rate-today",
+      seller: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
     } : undefined,
   };
 
