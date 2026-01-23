@@ -8,6 +8,7 @@ import { formatIndianPrice, type SilverPrice } from "@/lib/metalApi";
 interface LivePriceCardProps {
   initialPrice: SilverPrice;
   pollInterval?: number;
+  lastWeekPrice?: number; // Price from 7 days ago for comparison
 }
 
 // Check if MCX market is open (9 AM - 11:30 PM IST, Mon-Fri)
@@ -43,7 +44,7 @@ function getChangeIndicator(change: number) {
   return { icon: "→", direction: "neutral" as const, color: "text-gray-600", bg: "bg-gray-50", border: "border-gray-200" };
 }
 
-export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: LivePriceCardProps) {
+export default function LivePriceCard({ initialPrice, pollInterval = 60000, lastWeekPrice }: LivePriceCardProps) {
   const { price, secondsAgo, isRefreshing, hasNewPrice, refresh } = useLivePrice({
     initialPrice,
     pollInterval,
@@ -51,7 +52,12 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
   });
   
   const [marketStatus, setMarketStatus] = useState({ isOpen: true, label: "MCX Open" });
+  const [showShareToast, setShowShareToast] = useState(false);
   const changeIndicator = getChangeIndicator(price.change24h);
+  
+  // Calculate week-over-week change
+  const weekChange = lastWeekPrice ? price.pricePerGram - lastWeekPrice : null;
+  const weekChangePercent = lastWeekPrice ? ((price.pricePerGram - lastWeekPrice) / lastWeekPrice) * 100 : null;
   
   useEffect(() => {
     setMarketStatus(getMarketStatus());
@@ -60,6 +66,34 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
     }, 60000); // Check every minute
     return () => clearInterval(interval);
   }, []);
+
+  // Share price function
+  const handleShare = async () => {
+    const shareText = `Silver Rate Today: ₹${price.pricePerGram.toFixed(2)}/gram (${price.changePercent24h >= 0 ? "+" : ""}${price.changePercent24h.toFixed(2)}% 24h)\n\nPer 10g: ₹${price.pricePer10Gram.toFixed(2)}\nPer Kg: ₹${price.pricePerKg.toFixed(2)}\n\nLive prices on SilverInfo.in`;
+    const shareUrl = "https://silverinfo.in";
+    
+    // Try native share first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Silver Rate Today - SilverInfo.in",
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        // User cancelled or error, fall through to WhatsApp
+      }
+    }
+    
+    // Fallback to WhatsApp
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
+    window.open(whatsappUrl, "_blank");
+    
+    // Show toast
+    setShowShareToast(true);
+    setTimeout(() => setShowShareToast(false), 2000);
+  };
   
   return (
     <div className="card p-4 sm:p-6 relative overflow-hidden">
@@ -95,13 +129,37 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
         {/* Right Side: 24h Change + Market Status + Calculate */}
         <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:space-y-2">
           {/* 24h Change Badge */}
-          <div 
-            className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border ${changeIndicator.bg} ${changeIndicator.border}`}
-            title={`24h change: ${price.change24h >= 0 ? "+" : ""}₹${price.change24h.toFixed(2)} vs yesterday's close (COMEX)`}
-          >
-            <span className={`text-xs sm:text-sm font-bold ${changeIndicator.color}`}>
-              {changeIndicator.icon} {Math.abs(price.changePercent24h).toFixed(2)}%
-            </span>
+          <div className="relative group">
+            <div 
+              className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border cursor-help ${changeIndicator.bg} ${changeIndicator.border}`}
+            >
+              <span className={`text-xs sm:text-sm font-bold ${changeIndicator.color}`}>
+                {changeIndicator.icon} {Math.abs(price.changePercent24h).toFixed(2)}%
+              </span>
+              <svg className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${changeIndicator.color} opacity-60`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            {/* Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
+              <div className="space-y-1">
+                <p className="font-semibold text-gray-300">24h Price Change</p>
+                <div className="flex justify-between gap-4">
+                  <span className="text-gray-400">Change:</span>
+                  <span className={price.change24h >= 0 ? "text-green-400" : "text-red-400"}>
+                    {price.change24h >= 0 ? "+" : ""}₹{price.change24h.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-gray-400">Percent:</span>
+                  <span className={price.changePercent24h >= 0 ? "text-green-400" : "text-red-400"}>
+                    {price.changePercent24h >= 0 ? "+" : ""}{price.changePercent24h.toFixed(2)}%
+                  </span>
+                </div>
+                <p className="text-[10px] text-gray-500 pt-1 border-t border-gray-700">vs yesterday&apos;s close (COMEX)</p>
+              </div>
+              <span className="absolute bottom-full right-4 border-4 border-transparent border-b-gray-900"></span>
+            </div>
           </div>
           <p className="hidden sm:block text-xs text-gray-400">24h change</p>
           
@@ -180,24 +238,89 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
         </div>
       </div>
       
+      {/* Week Comparison - Only show if lastWeekPrice is available */}
+      {weekChange !== null && weekChangePercent !== null && lastWeekPrice && (
+        <div 
+          className={`mt-4 p-3 rounded-lg border cursor-help relative group ${
+            weekChange > 0 
+              ? "bg-green-50/50 border-green-200" 
+              : weekChange < 0 
+              ? "bg-red-50/50 border-red-200"
+              : "bg-gray-50 border-gray-200"
+          }`}
+          title={`Today: ₹${price.pricePerGram.toFixed(2)} | 7 days ago: ₹${lastWeekPrice.toFixed(2)} | Change: ₹${weekChange.toFixed(2)} (${weekChangePercent.toFixed(2)}%)`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-600 flex items-center gap-1">
+              vs Last Week
+              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <span className={`text-sm font-semibold ${
+              weekChange > 0 ? "text-green-600" : weekChange < 0 ? "text-red-600" : "text-gray-600"
+            }`}>
+              {weekChange > 0 ? "↑" : weekChange < 0 ? "↓" : "→"} ₹{Math.abs(weekChange).toFixed(2)} ({weekChangePercent > 0 ? "+" : ""}{weekChangePercent.toFixed(2)}%)
+            </span>
+          </div>
+          
+          {/* Detailed Tooltip on Hover */}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
+            <div className="space-y-1">
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-400">Today:</span>
+                <span className="font-semibold">₹{price.pricePerGram.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-400">7 days ago:</span>
+                <span>₹{lastWeekPrice.toFixed(2)}</span>
+              </div>
+              <div className="border-t border-gray-700 pt-1 mt-1">
+                <div className="flex justify-between gap-4">
+                  <span className="text-gray-400">Difference:</span>
+                  <span className={weekChange > 0 ? "text-green-400" : weekChange < 0 ? "text-red-400" : ""}>
+                    {weekChange > 0 ? "+" : ""}₹{weekChange.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></span>
+          </div>
+        </div>
+      )}
+
       {/* Live Status Bar - Mobile optimized */}
       <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-        <button
-          onClick={refresh}
-          disabled={isRefreshing}
-          className="flex items-center gap-1.5 text-gray-500 hover:text-[#1e3a5f] transition-colors disabled:opacity-50 py-2 px-3 -ml-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
-        >
-          <span className={`${isRefreshing ? "animate-spin" : ""}`}>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={refresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-[#1e3a5f] transition-colors disabled:opacity-50 py-2 px-3 -ml-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
+          >
+            <span className={`${isRefreshing ? "animate-spin" : ""}`}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </span>
+            <span>{isRefreshing ? "Updating..." : `Updated ${formatTimeAgo(secondsAgo)}`}</span>
+          </button>
+          
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-[#1e3a5f] transition-colors py-2 px-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
+            title="Share price on WhatsApp"
+          >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
-          </span>
-          <span>{isRefreshing ? "Updating..." : `Updated ${formatTimeAgo(secondsAgo)}`}</span>
-        </button>
+            <span className="hidden sm:inline">Share</span>
+          </button>
+        </div>
         
         <Link 
           href="/how-we-calculate" 
-          className="flex items-center gap-1.5 hover:text-[#1e3a5f] transition-colors py-2 px-3 -mr-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
+          className="flex items-center gap-1.5 hover:text-[#1e3a5f] transition-colors py-2 px-3 sm:-mr-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 min-h-[44px]"
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -211,6 +334,13 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000 }: Li
           </span>
         </Link>
       </div>
+      
+      {/* Share Toast */}
+      {showShareToast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm shadow-lg z-50 animate-pulse">
+          Opening WhatsApp...
+        </div>
+      )}
       
       <p className="mt-2 text-center text-[10px] sm:text-xs text-gray-400 leading-relaxed">
         Indicative price from COMEX • Not official MCX rate •{" "}

@@ -55,28 +55,28 @@ export default function Calculator({ currentPrice, compact = false }: Calculator
   
   if (compact) {
     return (
-      <div className="card p-4 sm:p-6">
+      <div className="card p-4 sm:p-5">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Calculator</h3>
         
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-3">
           {/* Weight Input */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Weight
             </label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-5 gap-2">
               <input
                 type="number"
                 inputMode="decimal"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                className="flex-1 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-base min-h-[48px]"
-                placeholder="Enter weight"
+                className="col-span-3 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-sm min-h-[44px]"
+                placeholder="Weight"
               />
               <select
                 value={weightUnit}
                 onChange={(e) => setWeightUnit(e.target.value)}
-                className="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-base min-h-[48px]"
+                className="col-span-2 px-2 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-sm min-h-[44px]"
               >
                 {WEIGHT_UNITS.map((unit) => (
                   <option key={unit.value} value={unit.value}>
@@ -85,17 +85,43 @@ export default function Calculator({ currentPrice, compact = false }: Calculator
                 ))}
               </select>
             </div>
+            {/* Preset Weight Buttons */}
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {[
+                { value: "10", unit: "gram", label: "10g" },
+                { value: "50", unit: "gram", label: "50g" },
+                { value: "100", unit: "gram", label: "100g" },
+                { value: "1", unit: "kg", label: "1kg" },
+                { value: "1", unit: "tola", label: "1 tola" },
+              ].map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => {
+                    setWeight(preset.value);
+                    setWeightUnit(preset.unit);
+                  }}
+                  className={`px-2 py-1 text-[10px] font-medium rounded-md transition-colors ${
+                    weight === preset.value && weightUnit === preset.unit
+                      ? "bg-[#1e3a5f] text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
           </div>
           
           {/* Purity Select */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Purity
             </label>
             <select
               value={purity}
               onChange={(e) => setPurity(Number(e.target.value))}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-base min-h-[48px]"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent text-sm min-h-[44px]"
             >
               {PURITY_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>

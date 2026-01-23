@@ -115,18 +115,18 @@ export default function WhyPriceChangedTeaser() {
   const primaryReason = getPrimaryReason();
 
   return (
-    <div className="bg-gradient-to-r from-[#1e3a5f]/5 via-blue-50/50 to-[#1e3a5f]/5 rounded-xl p-3 sm:p-4 border border-[#1e3a5f]/10">
+    <div className="bg-gradient-to-r from-[#1e3a5f]/5 via-blue-50/50 to-[#1e3a5f]/5 rounded-xl p-4 sm:p-5 border border-[#1e3a5f]/10">
       {/* Title Row - Visible on all devices */}
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-lg">📊</span>
-          <span className="text-sm sm:text-base font-semibold text-gray-800">
+          <span className="text-xl">📊</span>
+          <span className="text-base sm:text-lg font-semibold text-gray-800">
             Why Price Changed Today
           </span>
         </div>
         <Link
           href="#why-price-changed"
-          className="text-xs text-[#1e3a5f] font-medium hover:underline flex items-center gap-1"
+          className="text-xs sm:text-sm text-[#1e3a5f] font-medium hover:underline flex items-center gap-1"
         >
           <span className="hidden sm:inline">Full analysis</span>
           <span>↓</span>
@@ -134,15 +134,15 @@ export default function WhyPriceChangedTeaser() {
       </div>
 
       {/* Primary Reason - Always Visible */}
-      <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${
+      <div className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-4 ${
         change > 0.5 
           ? "bg-green-100/70 border border-green-200" 
           : change < -0.5 
           ? "bg-red-100/70 border border-red-200"
           : "bg-gray-100/70 border border-gray-200"
       }`}>
-        <span className="text-xl">{primaryReason.icon}</span>
-        <span className={`text-xs sm:text-sm font-medium ${
+        <span className="text-2xl">{primaryReason.icon}</span>
+        <span className={`text-sm sm:text-base font-medium ${
           change > 0.5 ? "text-green-800" : change < -0.5 ? "text-red-800" : "text-gray-700"
         }`}>
           {primaryReason.text}
@@ -150,48 +150,48 @@ export default function WhyPriceChangedTeaser() {
       </div>
 
       {/* Market Data Pills */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <div className="flex flex-wrap items-stretch gap-3">
         {/* COMEX Price */}
         <Tooltip text={comexTooltip}>
-          <div className="flex flex-col items-center px-3 py-2 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[80px]">
-            <span className="text-[10px] text-gray-500 mb-0.5">COMEX</span>
-            <span className="text-sm sm:text-base font-bold text-gray-900">${comexUsd.toFixed(2)}</span>
-            <span className="text-[10px] text-gray-400">per oz</span>
+          <div className="flex flex-col items-center px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[90px]">
+            <span className="text-xs text-gray-500 mb-1">COMEX</span>
+            <span className="text-base sm:text-lg font-bold text-gray-900">${comexUsd.toFixed(2)}</span>
+            <span className="text-[11px] text-gray-400">per oz</span>
           </div>
         </Tooltip>
         
         {/* USD/INR */}
         <Tooltip text={usdInrTooltip}>
-          <div className="flex flex-col items-center px-3 py-2 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[80px]">
-            <span className="text-[10px] text-gray-500 mb-0.5">USD/INR</span>
-            <span className="text-sm sm:text-base font-bold text-gray-900">₹{usdInr.toFixed(2)}</span>
-            <span className="text-[10px] text-gray-400">exchange</span>
+          <div className="flex flex-col items-center px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[90px]">
+            <span className="text-xs text-gray-500 mb-1">USD/INR</span>
+            <span className="text-base sm:text-lg font-bold text-gray-900">₹{usdInr.toFixed(2)}</span>
+            <span className="text-[11px] text-gray-400">exchange</span>
           </div>
         </Tooltip>
         
         {/* 24h Change */}
         <Tooltip text={changeTooltip}>
-          <div className={`flex flex-col items-center px-3 py-2 rounded-lg shadow-sm hover:shadow-md transition-shadow min-w-[80px] ${
+          <div className={`flex flex-col items-center px-4 py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow min-w-[90px] ${
             change > 0 
               ? "bg-green-50 border border-green-200" 
               : change < 0 
               ? "bg-red-50 border border-red-200"
               : "bg-gray-50 border border-gray-200"
           }`}>
-            <span className="text-[10px] text-gray-500 mb-0.5">24h Change</span>
-            <span className={`text-sm sm:text-base font-bold ${
+            <span className="text-xs text-gray-500 mb-1">24h Change</span>
+            <span className={`text-base sm:text-lg font-bold ${
               change > 0 ? "text-green-600" : change < 0 ? "text-red-600" : "text-gray-600"
             }`}>
               {change > 0 ? "↑" : change < 0 ? "↓" : "→"} {Math.abs(change).toFixed(2)}%
             </span>
-            <span className="text-[10px] text-gray-400">in INR</span>
+            <span className="text-[11px] text-gray-400">in INR</span>
           </div>
         </Tooltip>
 
         {/* Quick insight - Desktop only */}
-        <div className="hidden lg:flex flex-col px-3 py-2 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[200px]">
-          <span className="text-[10px] text-blue-600 font-medium mb-0.5">💡 Quick Insight</span>
-          <span className="text-xs text-blue-800">
+        <div className="hidden lg:flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[200px]">
+          <span className="text-xs text-blue-600 font-medium mb-1">💡 Quick Insight</span>
+          <span className="text-sm text-blue-800">
             {change > 0.5 
               ? "Consider: Prices elevated, watch for dips"
               : change < -0.5
