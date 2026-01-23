@@ -4,7 +4,8 @@ import { getRecentUpdates } from "@/lib/markdown";
 import LivePriceCard from "@/components/LivePriceCard";
 import { DynamicPriceChart, DynamicMiniChart } from "@/components/DynamicChart";
 import { DynamicCityTable, DynamicCalculator, DynamicFAQ } from "@/components/DynamicComponents";
-import WhyPriceChanged from "@/components/WhyPriceChanged";
+import WhyPriceChangedTeaser from "@/components/WhyPriceChangedTeaser";
+import WhyPriceChangedFull from "@/components/WhyPriceChangedFull";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
@@ -197,6 +198,11 @@ export default async function HomePage() {
                 })()}
               </div>
             </div>
+            
+            {/* Market Pulse Teaser - Links to full section below */}
+            <div className="mt-4 sm:mt-6">
+              <WhyPriceChangedTeaser />
+            </div>
           </div>
         </section>
         
@@ -236,12 +242,19 @@ export default async function HomePage() {
         {/* Main Content */}
         <section className="py-6 sm:py-8 lg:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Full Price Chart - Full Width */}
+            <div className="mb-6 sm:mb-8">
+              <DynamicPriceChart data={historicalPrices} />
+            </div>
+            
+            {/* Why Price Changed - Full Width Section */}
+            <div className="mb-6 sm:mb-8">
+              <WhyPriceChangedFull />
+            </div>
+            
             <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
               {/* Left Column - 2/3 width */}
               <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-                {/* Full Price Chart */}
-                <DynamicPriceChart data={historicalPrices} />
-                
                 {/* City-wise Prices - Lazy Loaded with content-visibility for performance */}
                 <div className="content-auto">
                   <DynamicCityTable cities={cityPrices} limit={10} />
@@ -259,8 +272,6 @@ export default async function HomePage() {
               
               {/* Right Column - 1/3 width */}
               <div className="space-y-6 sm:space-y-8">
-                {/* Why Price Changed Today - Key Differentiator */}
-                <WhyPriceChanged />
                 
                 {/* Quick Calculator - Lazy Loaded */}
                 <DynamicCalculator currentPrice={price.pricePerGram} compact />
