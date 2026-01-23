@@ -29,9 +29,9 @@ const faqItems: FAQItem[] = [
       "999 silver (also called fine silver or pure silver) contains 99.9% pure silver. 925 silver (sterling silver) contains 92.5% silver mixed with 7.5% other metals (usually copper) for added durability. 999 is preferred for coins and bars, while 925 is popular for jewelry due to its strength.",
   },
   {
-    question: "When is the best time to buy silver in India?",
+    question: "What factors affect silver prices in India?",
     answer:
-      "Silver prices tend to be lower during periods of economic stability and higher during uncertainty. Many investors buy during price dips. Traditionally, purchases during festivals like Dhanteras and Akshaya Tritiya are considered auspicious. Monitor our price charts to identify favorable buying opportunities.",
+      "Silver prices in India are primarily influenced by: (1) International COMEX prices, (2) USD/INR exchange rate, (3) Import duties and GST, (4) Local demand patterns. Prices tend to fluctuate daily based on global market conditions. Use our historical charts to understand price trends over time.",
   },
   {
     question: "What are making charges for silver jewelry?",

@@ -150,19 +150,19 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
   const isMuchHigher = comparison.diffPercent > 5;
   const isMuchLower = comparison.diffPercent < -5;
 
-  // Get buying recommendation
-  const getRecommendation = () => {
+  // Get price status indicator (neutral, factual language only)
+  const getPriceStatus = () => {
     if (isMuchLower) {
-      return { icon: "🟢", text: "Good time to buy!", color: "text-green-700", bg: "bg-green-50" };
+      return { icon: "↓", text: "Below average", color: "text-green-700", bg: "bg-green-50" };
     } else if (isMuchHigher) {
-      return { icon: "🔴", text: "Consider waiting", color: "text-red-700", bg: "bg-red-50" };
+      return { icon: "↑", text: "Above average", color: "text-red-700", bg: "bg-red-50" };
     } else if (isHigher) {
-      return { icon: "🟡", text: "Fair price", color: "text-yellow-700", bg: "bg-yellow-50" };
+      return { icon: "→", text: "Near average", color: "text-yellow-700", bg: "bg-yellow-50" };
     }
-    return { icon: "🟢", text: "Below festival price", color: "text-green-700", bg: "bg-green-50" };
+    return { icon: "↓", text: "Below average", color: "text-green-700", bg: "bg-green-50" };
   };
 
-  const recommendation = getRecommendation();
+  const priceStatus = getPriceStatus();
 
   return (
     <div className="card p-4 border border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/30">
@@ -171,8 +171,8 @@ export default function SeasonalComparison({ currentPrice, historicalPrices }: S
           <span>🪔</span>
           vs {comparison.event}
         </h3>
-        <span className={`text-xs px-2 py-0.5 rounded-full ${recommendation.bg} ${recommendation.color} font-medium`}>
-          {recommendation.icon} {recommendation.text}
+        <span className={`text-xs px-2 py-0.5 rounded-full ${priceStatus.bg} ${priceStatus.color} font-medium`}>
+          {priceStatus.icon} {priceStatus.text}
         </span>
       </div>
       

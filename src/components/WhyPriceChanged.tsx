@@ -312,7 +312,7 @@ function generateRealDrivers(data: MarketData): PriceDriver[] {
       impact: change > 0 ? "positive" : "negative",
       description: change > 0
         ? `Silver surged ${Math.abs(change).toFixed(2)}% today. Strong buying interest from investors.`
-        : `Silver dropped ${Math.abs(change).toFixed(2)}% today. Consider this a potential buying opportunity.`,
+        : `Silver dropped ${Math.abs(change).toFixed(2)}% today due to profit booking in markets.`,
       icon: change > 0 ? "📈" : "📉",
       value: `${change > 0 ? "+" : ""}${change.toFixed(2)}%`,
     });

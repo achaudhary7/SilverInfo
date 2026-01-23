@@ -188,15 +188,15 @@ export default function WhyPriceChangedTeaser() {
           </div>
         </Tooltip>
 
-        {/* Quick insight - Desktop only */}
+        {/* Market Status - Desktop only */}
         <div className="hidden lg:flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[200px]">
-          <span className="text-xs text-blue-600 font-medium mb-1">💡 Quick Insight</span>
+          <span className="text-xs text-blue-600 font-medium mb-1">📈 Market Status</span>
           <span className="text-sm text-blue-800">
             {change > 0.5 
-              ? "Consider: Prices elevated, watch for dips"
+              ? "Prices trending higher than yesterday"
               : change < -0.5
-              ? "Consider: Potential buying opportunity"
-              : "Consider: Good time for planned purchases"
+              ? "Prices trending lower than yesterday"
+              : "Prices stable compared to yesterday"
             }
           </span>
         </div>
