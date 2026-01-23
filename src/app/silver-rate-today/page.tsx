@@ -98,8 +98,9 @@ export default async function SilverRateTodayPage() {
 
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <section className="bg-white border-b border-gray-200 py-8">
+        <section className="bg-gradient-to-br from-gray-50 to-gray-100 border-b border-gray-200 py-6 sm:py-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
               <a href="/" className="hover:text-[#1e3a5f]">
                 Home
@@ -107,20 +108,35 @@ export default async function SilverRateTodayPage() {
               <span>/</span>
               <span>Silver Rate Today</span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            
+            {/* Badges - Matching Homepage */}
+            <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
+              <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-800">
+                <span className="relative flex h-1.5 w-1.5 mr-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                </span>
+                Live • 30s Refresh
+              </span>
+              <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-800">
+                COMEX + Forex
+              </span>
+            </div>
+            
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
               Silver Rate Today in India
             </h1>
-            <p className="text-[#1e3a5f] font-semibold mb-1">
+            <p className="text-sm sm:text-lg text-[#1e3a5f] font-semibold mb-1 sm:mb-2">
               Calculated, Not Copied.
             </p>
-            <p className="text-gray-600 mb-2">
+            <p className="text-xs sm:text-base text-gray-600 max-w-3xl mb-2 sm:mb-3">
               Live silver price per gram, per kg with historical charts and city-wise prices. 
               Prices derived from COMEX futures + USD/INR exchange rates.{" "}
               <a href="/how-we-calculate" className="text-[#1e3a5f] font-medium hover:underline">
                 See Our Formula →
               </a>
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-[10px] sm:text-xs text-gray-400">
               Content last reviewed: {new Date(LAST_UPDATED).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
