@@ -1,0 +1,51 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:0.9" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.9" />
+    </linearGradient>
+    <linearGradient id="silver3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0c0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c0c0c0;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="fabric" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#dc2626" opacity="0.3"/>
+      <circle cx="20" cy="20" r="2" fill="#f59e0b" opacity="0.2"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background with fabric texture -->
+  <rect width="1200" height="630" fill="url(#bg3)"/>
+  <rect width="1200" height="630" fill="url(#fabric)"/>
+  
+  <!-- Marigold flowers (simplified) -->
+  <circle cx="150" cy="150" r="40" fill="#f59e0b" opacity="0.6"/>
+  <circle cx="1050" cy="100" r="35" fill="#f59e0b" opacity="0.5"/>
+  <circle cx="1100" cy="500" r="45" fill="#f59e0b" opacity="0.6"/>
+  
+  <!-- Silver anklets -->
+  <ellipse cx="400" cy="300" rx="120" ry="30" fill="url(#silver3)" opacity="0.95"/>
+  <ellipse cx="400" cy="350" rx="100" ry="25" fill="url(#silver3)" opacity="0.9"/>
+  
+  <!-- Silver toe rings -->
+  <circle cx="600" cy="400" r="15" fill="url(#silver3)" opacity="0.9" stroke="#1e3a5f" stroke-width="2"/>
+  <circle cx="620" cy="410" r="12" fill="url(#silver3)" opacity="0.8" stroke="#1e3a5f" stroke-width="2"/>
+  
+  <!-- Silver coins -->
+  <circle cx="800" cy="250" r="50" fill="url(#silver3)" opacity="0.9"/>
+  <circle cx="850" cy="280" r="45" fill="url(#silver3)" opacity="0.8"/>
+  <circle cx="900" cy="300" r="40" fill="url(#silver3)" opacity="0.7"/>
+  
+  <!-- Decorative pattern -->
+  <path d="M 200 200 Q 250 150 300 200 T 400 200" stroke="#f59e0b" stroke-width="3" fill="none" opacity="0.4"/>
+  <path d="M 1000 400 Q 1050 350 1100 400 T 1200 400" stroke="#f59e0b" stroke-width="3" fill="none" opacity="0.4"/>
+  
+  <!-- Title area -->
+  <rect x="0" y="450" width="1200" height="180" fill="rgba(0,0,0,0.5)"/>
+  
+  <!-- Title text -->
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="44" font-weight="bold" fill="#ffffff" text-anchor="middle">Wedding Season 2026</text>
+  <text x="600" y="570" font-family="Arial, sans-serif" font-size="30" fill="#fbbf24" text-anchor="middle">Silver Demand Surge Expected</text>
+</svg>
