@@ -117,42 +117,6 @@ export default async function InvestmentCalculatorPage() {
     ]
   };
 
-  // HowTo Schema for calculator instructions
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "How to Calculate Silver Investment Returns",
-    "description": "Step-by-step guide to calculate your silver investment profit or loss using our free calculator.",
-    "totalTime": "PT2M",
-    "tool": {
-      "@type": "HowToTool",
-      "name": "Silver Investment Calculator"
-    },
-    "step": [
-      {
-        "@type": "HowToStep",
-        "position": 1,
-        "name": "Enter Purchase Details",
-        "text": "Input your purchase price per gram and total weight in grams",
-        "url": "https://silverinfo.in/investment-calculator#step1"
-      },
-      {
-        "@type": "HowToStep",
-        "position": 2,
-        "name": "See Current Value",
-        "text": "Calculator fetches live market price and shows current value of your silver",
-        "url": "https://silverinfo.in/investment-calculator#step2"
-      },
-      {
-        "@type": "HowToStep",
-        "position": 3,
-        "name": "View Profit/Loss",
-        "text": "Instantly see your absolute gain/loss and percentage return",
-        "url": "https://silverinfo.in/investment-calculator#step3"
-      }
-    ]
-  };
-
   return (
     <>
       <script

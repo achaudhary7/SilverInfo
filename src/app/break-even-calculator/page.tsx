@@ -123,41 +123,6 @@ export default async function BreakEvenCalculatorPage() {
     ]
   };
 
-  // HowTo Schema
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "How to Calculate Silver Break-Even Price",
-    "description": "Step-by-step guide to calculate the break-even selling price for your silver purchase.",
-    "totalTime": "PT2M",
-    "step": [
-      {
-        "@type": "HowToStep",
-        "position": 1,
-        "name": "Enter Purchase Details",
-        "text": "Input the weight in grams and purchase price per gram"
-      },
-      {
-        "@type": "HowToStep",
-        "position": 2,
-        "name": "Add Making Charges",
-        "text": "Enter making charges as percentage (6-15% typical) or flat rate per gram"
-      },
-      {
-        "@type": "HowToStep",
-        "position": 3,
-        "name": "Select Buyback Scenario",
-        "text": "Choose between market rate or jeweller buyback (with discount)"
-      },
-      {
-        "@type": "HowToStep",
-        "position": 4,
-        "name": "View Break-Even Analysis",
-        "text": "See your break-even price compared to current market price"
-      }
-    ]
-  };
-
   return (
     <>
       <script
