@@ -177,6 +177,27 @@ export default function RootLayout({
             `,
           }}
         />
+        
+        {/* Google Reader Revenue Manager - Subscribe with Google Basic */}
+        {/* For Google News Publisher Center integration */}
+        <script
+          async
+          src="https://news.google.com/swg/js/v1/swg-basic.js"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
+                basicSubscriptions.init({
+                  type: "NewsArticle",
+                  isPartOfType: ["Product"],
+                  isPartOfProductId: "CAowwo_EDA:openaccess",
+                  clientOptions: { theme: "light", lang: "en" },
+                });
+              });
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
         {/* Skip to content link for accessibility */}
