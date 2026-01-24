@@ -24,11 +24,12 @@ const footerLinks = {
   ],
   company: [
     { name: "About Us", href: "/about" },
+    { name: "Our Team", href: "/about/team" },
+    { name: "Editorial Policy", href: "/editorial-policy" },
     { name: "Contact", href: "/contact" },
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms of Service", href: "/terms" },
     { name: "Disclaimer", href: "/disclaimer" },
-    { name: "Updates", href: "/updates" },
   ],
 };
 

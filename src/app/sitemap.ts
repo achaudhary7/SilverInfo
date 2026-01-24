@@ -4,8 +4,8 @@ import { getAllUpdateSlugs, getAllLearnSlugs, getAllUpdates, getAllLearnArticles
 
 // Page last modified dates - update these when making significant content changes
 const PAGE_DATES: Record<string, string> = {
-  "/": "2026-01-23",
-  "/silver-rate-today": "2026-01-23",
+  "/": "2026-01-24",
+  "/silver-rate-today": "2026-01-24",
   "/qatar/silver-rate-today": "2026-01-24",
   "/silver-price-calculator": "2026-01-23",
   "/investment-calculator": "2026-01-23",
@@ -13,13 +13,15 @@ const PAGE_DATES: Record<string, string> = {
   "/inflation-adjusted-calculator": "2026-01-23",
   "/break-even-calculator": "2026-01-23",
   "/learn": "2026-01-23",
-  "/updates": "2026-01-23",
-  "/about": "2026-01-23",
+  "/updates": "2026-01-24",
+  "/about": "2026-01-24",
+  "/about/team": "2026-01-24",
   "/contact": "2026-01-20",
   "/privacy-policy": "2026-01-15",
   "/terms": "2026-01-15",
   "/disclaimer": "2026-01-15",
   "/how-we-calculate": "2026-01-20",
+  "/editorial-policy": "2026-01-24",
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -123,6 +125,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: PAGE_DATES["/how-we-calculate"] || currentDate,
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/editorial-policy`,
+      lastModified: PAGE_DATES["/editorial-policy"] || currentDate,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/about/team`,
+      lastModified: PAGE_DATES["/about/team"] || currentDate,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 

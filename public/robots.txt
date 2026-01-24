@@ -4,8 +4,9 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# Sitemaps
 Sitemap: https://silverinfo.in/sitemap.xml
+Sitemap: https://silverinfo.in/news-sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1

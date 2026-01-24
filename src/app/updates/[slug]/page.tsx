@@ -73,33 +73,53 @@ export default async function UpdatePostPage({
   const recentPosts = getRecentUpdates(5).filter((p) => p.slug !== slug);
   const readingTime = getReadingTime(post.content);
 
-  // Article Schema - Enhanced for Google 2026
+  // NewsArticle Schema - Optimized for Google Discover & News 2026
+  // Using NewsArticle type for timely updates (better for News/Discover)
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "NewsArticle",
     headline: post.title,
     description: post.description,
-    image: post.image ? `https://silverinfo.in${post.image}` : "https://silverinfo.in/og-image.png",
+    image: {
+      "@type": "ImageObject",
+      url: post.image ? `https://silverinfo.in${post.image}` : "https://silverinfo.in/og-image.png",
+      width: 1200,
+      height: 630,
+    },
     author: {
       "@type": "Person",
       name: post.author,
-      url: "https://silverinfo.in/about",
+      url: "https://silverinfo.in/about/team",
+      jobTitle: "Silver Market Analyst",
+      worksFor: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
     },
     datePublished: post.date,
-    dateModified: post.date, // Content is current as of publish date
+    dateModified: post.lastModified || post.date,
     publisher: {
       "@type": "Organization",
       name: "SilverInfo.in",
+      url: "https://silverinfo.in",
       logo: {
         "@type": "ImageObject",
-        url: "https://silverinfo.in/logo.png",
+        url: "https://silverinfo.in/logo-60h.png",
+        width: 200,
+        height: 60,
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://silverinfo.in/updates/${slug}`,
     },
+    articleSection: post.category,
     keywords: post.tags?.join(", "),
+    isAccessibleForFree: true,
+    copyrightHolder: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+    },
   };
 
   // Breadcrumb Schema

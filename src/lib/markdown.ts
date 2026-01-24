@@ -17,6 +17,7 @@ export interface PostMeta {
   title: string;
   description: string;
   date: string;
+  lastModified?: string; // For Google News - when content was last updated
   author: string;
   category: string;
   tags: string[];
@@ -60,6 +61,7 @@ function getPostsFromDirectory(directory: string): PostMeta[] {
       title: data.title || slug,
       description: data.description || "",
       date: data.date || new Date().toISOString(),
+      lastModified: data.lastModified || data.date, // Default to date if not specified
       author: data.author || "SilverInfo Team",
       category: data.category || "General",
       tags: data.tags || [],
@@ -101,6 +103,7 @@ async function getPostBySlug(directory: string, slug: string): Promise<Post | nu
     title: data.title || slug,
     description: data.description || "",
     date: data.date || new Date().toISOString(),
+    lastModified: data.lastModified || data.date,
     author: data.author || "SilverInfo Team",
     category: data.category || "General",
     tags: data.tags || [],
