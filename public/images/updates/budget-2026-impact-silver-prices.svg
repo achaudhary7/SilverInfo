@@ -19,7 +19,7 @@
   <rect x="200" y="200" width="300" height="200" fill="#ffffff" opacity="0.2" rx="10"/>
   <rect x="220" y="220" width="260" height="160" fill="#ffffff" opacity="0.3" rx="5"/>
   <line x1="250" y1="280" x2="450" y2="280" stroke="#ffffff" stroke-width="3" opacity="0.5"/>
-  <line x1="250" y2="320" x2="450" y2="320" stroke="#ffffff" stroke-width="3" opacity="0.5"/>
+  <line x1="250" y1="320" x2="450" y2="320" stroke="#ffffff" stroke-width="3" opacity="0.5"/>
   <line x1="250" y1="360" x2="450" y2="360" stroke="#ffffff" stroke-width="3" opacity="0.5"/>
   
   <!-- Silver coins -->
