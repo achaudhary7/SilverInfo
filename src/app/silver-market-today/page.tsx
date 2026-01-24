@@ -127,9 +127,9 @@ export default async function SilverMarketTodayPage() {
       url: "https://silverinfo.in",
       logo: {
         "@type": "ImageObject",
-        url: "https://silverinfo.in/logo-60h.png",
-        width: 200,
-        height: 60,
+        url: "https://silverinfo.in/icon-192.png",
+        width: 192,
+        height: 192,
       },
     },
     datePublished: isoDate,
