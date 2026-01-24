@@ -22,6 +22,7 @@ const PAGE_DATES: Record<string, string> = {
   "/disclaimer": "2026-01-15",
   "/how-we-calculate": "2026-01-20",
   "/editorial-policy": "2026-01-24",
+  "/silver-market-today": "2026-01-24",
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -137,6 +138,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: PAGE_DATES["/about/team"] || currentDate,
       changeFrequency: "monthly",
       priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/silver-market-today`,
+      lastModified: currentDate, // Always current - updated frequently
+      changeFrequency: "hourly",
+      priority: 0.9, // High priority - Discover-optimized page
     },
   ];
 

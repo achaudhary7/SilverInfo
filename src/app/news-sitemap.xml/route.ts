@@ -12,6 +12,7 @@ import { getAllUpdates } from "@/lib/markdown";
 export async function GET() {
   const baseUrl = "https://silverinfo.in";
   const updates = getAllUpdates();
+  const today = new Date();
   
   // Google News only indexes articles from the last 2 days
   // But we include articles from the last 30 days for better coverage
@@ -22,6 +23,25 @@ export async function GET() {
     const updateDate = new Date(update.date);
     return updateDate >= thirtyDaysAgo;
   });
+
+  // Add the daily market analysis page (updated every 5 minutes)
+  const marketAnalysisItem = `
+    <url>
+      <loc>${baseUrl}/silver-market-today</loc>
+      <news:news>
+        <news:publication>
+          <news:name>SilverInfo.in</news:name>
+          <news:language>en</news:language>
+        </news:publication>
+        <news:publication_date>${today.toISOString()}</news:publication_date>
+        <news:title>Silver Market Analysis - ${today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</news:title>
+        <news:keywords>silver market today, silver price analysis, silver rate india, COMEX silver</news:keywords>
+      </news:news>
+      <image:image>
+        <image:loc>${baseUrl}/og-image.png</image:loc>
+        <image:title>Silver Market Analysis Today</image:title>
+      </image:image>
+    </url>`;
   
   const newsItems = recentUpdates.map((update) => {
     const pubDate = new Date(update.date);
@@ -49,6 +69,7 @@ export async function GET() {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${marketAnalysisItem}
 ${newsItems.join("")}
 </urlset>`;
 
