@@ -125,11 +125,11 @@ export default function WhyPriceChangedTeaser() {
           </span>
         </div>
         <Link
-          href="#why-price-changed"
-          className="text-xs sm:text-sm text-[#1e3a5f] font-medium hover:underline flex items-center gap-1"
+          href="#market-factors"
+          className="flex items-center gap-1.5 px-3 py-2 bg-[#1e3a5f]/10 hover:bg-[#1e3a5f]/20 rounded-lg transition-colors active:scale-95 min-h-[44px]"
         >
-          <span className="hidden sm:inline">Full analysis</span>
-          <span>↓</span>
+          <span className="text-xs sm:text-sm text-[#1e3a5f] font-medium">See details</span>
+          <span className="text-[#1e3a5f]">↓</span>
         </Link>
       </div>
 
@@ -149,57 +149,57 @@ export default function WhyPriceChangedTeaser() {
         </span>
       </div>
 
-      {/* Market Data Pills */}
-      <div className="flex flex-wrap items-stretch gap-3">
+      {/* Market Data Pills - 3 columns centered */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
         {/* COMEX Price */}
         <Tooltip text={comexTooltip}>
-          <div className="flex flex-col items-center px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[90px]">
-            <span className="text-xs text-gray-500 mb-1">COMEX</span>
-            <span className="text-base sm:text-lg font-bold text-gray-900">${comexUsd.toFixed(2)}</span>
-            <span className="text-[11px] text-gray-400">per oz</span>
+          <div className="flex flex-col items-center px-2 sm:px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow text-center">
+            <span className="text-[10px] sm:text-xs text-gray-500 mb-1">COMEX</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-900">${comexUsd.toFixed(2)}</span>
+            <span className="text-[10px] sm:text-[11px] text-gray-400">per oz</span>
           </div>
         </Tooltip>
         
         {/* USD/INR */}
         <Tooltip text={usdInrTooltip}>
-          <div className="flex flex-col items-center px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow min-w-[90px]">
-            <span className="text-xs text-gray-500 mb-1">USD/INR</span>
-            <span className="text-base sm:text-lg font-bold text-gray-900">₹{usdInr.toFixed(2)}</span>
-            <span className="text-[11px] text-gray-400">exchange</span>
+          <div className="flex flex-col items-center px-2 sm:px-4 py-3 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow text-center">
+            <span className="text-[10px] sm:text-xs text-gray-500 mb-1">USD/INR</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-900">₹{usdInr.toFixed(2)}</span>
+            <span className="text-[10px] sm:text-[11px] text-gray-400">exchange</span>
           </div>
         </Tooltip>
         
         {/* 24h Change */}
         <Tooltip text={changeTooltip}>
-          <div className={`flex flex-col items-center px-4 py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow min-w-[90px] ${
+          <div className={`flex flex-col items-center px-2 sm:px-4 py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center ${
             change > 0 
               ? "bg-green-50 border border-green-200" 
               : change < 0 
               ? "bg-red-50 border border-red-200"
               : "bg-gray-50 border border-gray-200"
           }`}>
-            <span className="text-xs text-gray-500 mb-1">24h Change</span>
-            <span className={`text-base sm:text-lg font-bold ${
+            <span className="text-[10px] sm:text-xs text-gray-500 mb-1">24h Change</span>
+            <span className={`text-sm sm:text-lg font-bold ${
               change > 0 ? "text-green-600" : change < 0 ? "text-red-600" : "text-gray-600"
             }`}>
               {change > 0 ? "↑" : change < 0 ? "↓" : "→"} {Math.abs(change).toFixed(2)}%
             </span>
-            <span className="text-[11px] text-gray-400">in INR</span>
+            <span className="text-[10px] sm:text-[11px] text-gray-400">in INR</span>
           </div>
         </Tooltip>
+      </div>
 
-        {/* Market Status - Shows on all screens */}
-        <div className="flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 flex-1 min-w-[120px] sm:min-w-[200px]">
-          <span className="text-xs text-blue-600 font-medium mb-1">📈 Market Status</span>
-          <span className="text-xs sm:text-sm text-blue-800">
-            {change > 0.5 
-              ? "Prices trending higher than yesterday"
-              : change < -0.5
-              ? "Prices trending lower than yesterday"
-              : "Prices stable compared to yesterday"
-            }
-          </span>
-        </div>
+      {/* Market Status - Full Width */}
+      <div className="flex flex-col px-4 py-3 rounded-lg bg-blue-50 border border-blue-200">
+        <span className="text-xs text-blue-600 font-medium mb-1">📈 Market Status</span>
+        <span className="text-xs sm:text-sm text-blue-800">
+          {change > 0.5 
+            ? "Prices trending higher than yesterday"
+            : change < -0.5
+            ? "Prices trending lower than yesterday"
+            : "Prices stable compared to yesterday"
+          }
+        </span>
       </div>
     </div>
   );
