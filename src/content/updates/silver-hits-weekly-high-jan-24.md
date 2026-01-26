@@ -1,8 +1,8 @@
 ---
 title: "Silver Hits Weekly High on January 24, 2026 – What's Driving the Surge?"
-description: "Silver prices in India reached a weekly high on January 24, 2026. Analysis of the key factors behind today's price rally including global demand, rupee movement, and market sentiment."
+description: "Silver prices reached weekly high on Jan 24 at ₹380/gram. Update: Now at ₹397/gram (Jan 26). Analysis of factors driving the rally. Updated January 26, 2026."
 date: "2026-01-24"
-lastModified: "2026-01-24"
+lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Market Analysis"
 tags: ["silver price today", "silver rally", "silver weekly high", "silver news january 2026", "silver market analysis"]
@@ -12,10 +12,12 @@ featured: true
 
 ## Key Takeaways
 
-- Silver touched ₹380+ per gram, hitting a weekly high
+- **January 24**: Silver touched ₹380+ per gram, hitting a weekly high
+- **January 26 Update**: Silver now at **₹397.73/gram** – rally continues!
 - Global COMEX prices surged past $103/oz mark
 - Rupee weakness against USD amplified gains
 - Strong buying interest from industrial and retail sectors
+- **Total rally since Jan 23: +4.65%** in just 3 days
 
 ---
 
@@ -176,4 +178,4 @@ Today's silver price surge to weekly highs is driven by a combination of strong 
 
 ---
 
-*Last updated: January 24, 2026. Prices are indicative and may vary. This is not financial advice.*
+*Originally published: January 24, 2026. Last updated: January 26, 2026. Silver has since rallied to ₹397.73/gram. See our [Republic Day analysis](/updates/silver-price-republic-day-2026-analysis) for the latest.*

@@ -1,8 +1,8 @@
 ---
 title: "Wedding Season 2026: Silver Demand Surge Expected – Price Outlook & Buying Tips"
-description: "Indian wedding season is driving silver demand higher. Analysis of price trends, best time to buy silver jewelry, and smart shopping strategies for wedding purchases in 2026."
+description: "Indian wedding season driving silver demand. Current price ₹397/gram. Best time to buy silver jewelry and smart shopping strategies. Updated January 26, 2026."
 date: "2026-01-24"
-lastModified: "2026-01-24"
+lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Market Analysis"
 tags: ["silver wedding season", "silver jewelry prices", "best time to buy silver", "wedding silver demand", "silver shopping tips"]
@@ -12,11 +12,13 @@ featured: true
 
 ## Key Takeaways
 
+- **Current silver price: ₹397.73/gram** (January 26, 2026)
 - Wedding season peak: **February - March 2026** and **November - December 2026**
 - Expected demand surge: **25-30%** increase in silver purchases
 - Price premium during peak: **3-5%** higher than off-season
-- Best buying window: **January end** or **April-May** (off-peak)
+- Best buying window: **Right now (January end)** or **April-May** (off-peak)
 - Average wedding silver spend: **₹50,000 - ₹2,00,000**
+- Silver has rallied **+4.65%** this week – wedding demand already visible
 
 ---
 
@@ -75,7 +77,7 @@ A typical Indian wedding silver purchase includes:
 | Puja thali set | 200-400g | ₹80,000-1,60,000 |
 | Utensils (basic set) | 500g-1kg | ₹2,00,000-4,00,000 |
 
-*Prices at ~₹380/gram + making charges + GST. Check [live rates](/silver-rate-today) for current prices.
+*Prices at ~₹397/gram (as of Jan 26, 2026) + making charges + GST. Check [live rates](/silver-rate-today) for current prices.
 
 **Calculate exact costs:** [Silver Calculator →](/silver-price-calculator)
 

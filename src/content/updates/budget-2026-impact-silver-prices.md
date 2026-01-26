@@ -1,8 +1,8 @@
 ---
 title: "Union Budget 2026: How Will It Impact Silver Prices in India?"
-description: "Complete analysis of Union Budget 2026's potential impact on silver prices. Learn about expected import duty changes, GST modifications, and what it means for silver investors and jewelry buyers."
+description: "Complete analysis of Union Budget 2026's potential impact on silver prices at ₹397/gram. Expected import duty changes, GST modifications, and what it means for silver investors. Updated January 26, 2026."
 date: "2026-01-24"
-lastModified: "2026-01-24"
+lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Market Analysis"
 tags: ["union budget 2026", "silver import duty", "silver GST", "budget impact silver", "silver prices india"]
@@ -12,11 +12,13 @@ featured: true
 
 ## Key Takeaways
 
-- Budget 2026 to be presented on **February 1, 2026**
+- Budget 2026 to be presented on **February 1, 2026** – just 6 days away!
+- **Current silver price: ₹397.73/gram** (as of January 26, 2026)
 - Silver import duty currently at **7.5%** – changes expected
 - GST on silver currently **3%** – likely to remain unchanged
 - Solar energy push could boost industrial silver demand
 - Market expects ₹10,000-15,000/kg price swing post-budget
+- Silver has rallied **+4.65%** in the past 3 days ahead of budget
 
 ---
 
@@ -142,12 +144,15 @@ Looking at past budgets helps understand potential price movements:
 
 ## Pre-Budget Trading Strategy
 
-### Week Before Budget (Jan 25-31)
+### This Week (Jan 26-31) – Final Countdown
 
-1. **Avoid large purchases**: Volatility increases
-2. **Don't panic sell**: Wait for clarity
+**Current Price: ₹397.73/gram** | Silver has already moved +4.65% this week!
+
+1. **Avoid large purchases**: Volatility is already increasing
+2. **Don't panic sell**: Wait for budget clarity
 3. **Keep cash ready**: For post-budget opportunities
 4. **Monitor live prices**: [Check dashboard →](/silver-rate-today)
+5. **Republic Day trading**: Markets closed today (Jan 26)
 
 ### Budget Day (Feb 1)
 

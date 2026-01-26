@@ -1,10 +1,11 @@
 ---
 title: "Silver Market Analysis 2026: Key Factors Affecting Indian Prices"
-description: "Understanding the factors that influence silver prices in India in 2026. Analysis of industrial demand, currency movements, and market trends."
+description: "Silver at ₹397/gram (Jan 26). Understanding factors influencing silver prices in India in 2026. Industrial demand, currency movements, budget outlook, and market trends."
 date: "2026-01-21"
+lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Market Analysis"
-tags: ["silver market", "silver analysis", "market trends 2026", "silver demand"]
+tags: ["silver market", "silver analysis", "market trends 2026", "silver demand", "silver ₹397"]
 image: "/images/updates/silver-price-forecast-2026.png"
 featured: true
 ---
@@ -15,9 +16,16 @@ Silver prices are influenced by multiple factors ranging from industrial demand 
 
 > **Important**: This content is for educational purposes only. We do not provide investment advice, price predictions, or trading recommendations. Always consult a qualified financial advisor before making any investment decisions.
 
-## Current Market Reference
+## Current Market Reference (January 26, 2026)
 
 > **For live prices**, check our [real-time price tracker](/) which auto-refreshes every 30 seconds using COMEX + RBI exchange rates.
+
+| Metric | Current Value |
+|--------|---------------|
+| **Silver Price** | ₹397.73/gram |
+| **COMEX** | ~$103.50/oz |
+| **USD/INR** | ~₹91.90 |
+| **3-Day Change** | +4.65% |
 
 - **Live Price**: Available on our [homepage](/)
 - **Price Calculation**: Based on COMEX futures + USD/INR + import duties

@@ -1,10 +1,11 @@
 ---
 title: "Complete Silver Buying Guide for India: Purity, Hallmarks & Pricing"
-description: "Educational guide to buying silver in India. Learn about purity standards, BIS hallmarks, making charges, and how to verify authenticity."
+description: "Educational guide to buying silver in India at ₹397/gram (Jan 2026). Learn about purity standards, BIS hallmarks, making charges, and how to verify authenticity."
 date: "2026-01-20"
+lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Guide"
-tags: ["silver buying guide", "how to buy silver", "silver purity", "bis hallmark"]
+tags: ["silver buying guide", "how to buy silver", "silver purity", "bis hallmark", "silver january 2026"]
 image: "/images/updates/silver-buying-guide-india.png"
 featured: true
 ---
