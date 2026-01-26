@@ -171,7 +171,8 @@ export default async function GoldPage() {
     "@context": "https://schema.org",
     "@type": "Product",
     name: "24K Gold (999 Purity)",
-    description: "Live 24 Karat pure gold price in India per gram",
+    description: "Live 24 Karat pure gold price in India per gram. Real-time gold rate in India calculated from international COMEX prices with import duty and GST.",
+    image: "https://silverinfo.in/og-image.png",
     brand: {
       "@type": "Brand",
       name: "COMEX Gold",
@@ -182,9 +183,11 @@ export default async function GoldPage() {
       priceCurrency: "INR",
       priceValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       availability: "https://schema.org/InStock",
+      url: "https://silverinfo.in/gold",
       seller: {
         "@type": "Organization",
         name: "SilverInfo",
+        url: "https://silverinfo.in",
       },
     },
   };
