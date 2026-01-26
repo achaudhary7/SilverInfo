@@ -158,7 +158,7 @@ function calculateShanghaiPremium(): number {
 
 /**
  * Fetch COMEX silver price from Yahoo Finance
- * Silver futures (SI=F) should be around $25-45/oz
+ * Silver futures (SI=F) - Jan 2026 prices are elevated (~$100+/oz)
  */
 async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number } | null> {
   try {
@@ -178,9 +178,9 @@ async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number
     const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
     const previousClose = data.chart?.result?.[0]?.meta?.previousClose || price;
     
-    // Sanity check: Silver should be between $20-60/oz
-    // If outside this range, API might be returning wrong data
-    if (price && typeof price === 'number' && price > 20 && price < 60) {
+    // Sanity check: Silver should be between $15-150/oz
+    // Expanded range to accommodate current market rally (Jan 2026: ~$105-110/oz)
+    if (price && typeof price === 'number' && price > 15 && price < 150) {
       const change24h = previousClose ? ((price - previousClose) / previousClose) * 100 : 0;
       return { price, change24h };
     }
@@ -194,8 +194,8 @@ async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number
   }
 }
 
-// Fallback COMEX price based on recent market data (Jan 2026)
-const FALLBACK_COMEX_USD = 32.50; // Approximate silver price
+// Fallback COMEX price based on current market data (Jan 2026 - silver rally)
+const FALLBACK_COMEX_USD = 105.00; // Current approx. silver price Jan 2026
 
 /**
  * Fetch USD/CNY exchange rate
@@ -425,20 +425,20 @@ export async function getShanghaiHistoricalPrices(days: number = 30): Promise<Sh
 function generateFallbackHistory(days: number): ShanghaiHistoricalPrice[] {
   const prices: ShanghaiHistoricalPrice[] = [];
   const today = new Date();
-  const basePrice = 7800; // ~CNY 7800/kg
+  const basePrice = 25000; // ~CNY 25,000/kg (Jan 2026 elevated prices)
   
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     
     // Simulate price movement
-    const variation = Math.sin(i * 0.3) * 200 + (Math.random() - 0.5) * 100;
-    const price = basePrice + variation + (days - i) * 5;
+    const variation = Math.sin(i * 0.3) * 500 + (Math.random() - 0.5) * 200;
+    const price = basePrice + variation + (days - i) * 10;
     
     prices.push({
       date: date.toISOString().split("T")[0],
       pricePerKgCny: Math.round(price),
-      pricePerOzUsd: Math.round(price / 7.25 / KG_TO_OZ * 100) / 100,
+      pricePerOzUsd: Math.round(price / 7.0 / KG_TO_OZ * 100) / 100,
       premiumPercent: 3.5,
     });
   }
