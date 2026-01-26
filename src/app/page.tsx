@@ -617,6 +617,12 @@ export default async function HomePage() {
                       <span>🥇</span> Gold Rate Today
                     </Link>
                     <Link
+                      href="/shanghai-silver-price"
+                      className="flex items-center gap-2 text-xs text-red-600 hover:text-red-700 py-1.5 rounded hover:bg-red-50 font-medium"
+                    >
+                      <span>🇨🇳</span> Shanghai Silver Price
+                    </Link>
+                    <Link
                       href="/silver-rate-today"
                       className="flex items-center gap-2 text-xs text-gray-600 hover:text-[#1e3a5f] py-1.5 rounded hover:bg-gray-50"
                     >
@@ -647,6 +653,59 @@ export default async function HomePage() {
             {/* Why Price Changed - Full Width Section */}
             <div id="market-factors" className="mb-6 sm:mb-8 scroll-mt-20">
               <WhyPriceChangedFull />
+            </div>
+            
+            {/* Global Silver Comparison - New Section for SEO */}
+            <div className="mb-6 sm:mb-8">
+              <div className="card p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">🌏 Global Silver Price Comparison</h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Compare silver prices across major markets. India typically trades at a premium over international prices.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* India */}
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">🇮🇳</span>
+                      <span className="font-semibold text-gray-800">India</span>
+                    </div>
+                    <p className="text-2xl font-bold text-orange-700">₹{price.pricePerGram.toFixed(0)}/g</p>
+                    <p className="text-xs text-gray-600 mt-1">+24% over COMEX (duty+GST)</p>
+                    <Link href="/silver-rate-today" className="text-xs text-orange-600 hover:underline mt-2 block">
+                      View Details →
+                    </Link>
+                  </div>
+                  
+                  {/* Shanghai/China */}
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">🇨🇳</span>
+                      <span className="font-semibold text-gray-800">Shanghai</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-700">¥27/g</p>
+                    <p className="text-xs text-gray-600 mt-1">+11% premium (SGE)</p>
+                    <Link href="/shanghai-silver-price" className="text-xs text-red-600 hover:underline mt-2 block">
+                      View Live SGE Rate →
+                    </Link>
+                  </div>
+                  
+                  {/* COMEX International */}
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">🌍</span>
+                      <span className="font-semibold text-gray-800">COMEX</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-700">$109/oz</p>
+                    <p className="text-xs text-gray-600 mt-1">Global benchmark (NY)</p>
+                    <Link href="/how-we-calculate" className="text-xs text-blue-600 hover:underline mt-2 block">
+                      How We Calculate →
+                    </Link>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-4 text-center">
+                  Prices vary due to import duties, local demand, and exchange rates. India: 10% duty + 3% GST. China: 3-8% duty + 13% VAT.
+                </p>
+              </div>
             </div>
             
             {/* City Table + FAQ - 2 Column Layout */}

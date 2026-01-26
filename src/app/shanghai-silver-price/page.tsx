@@ -41,21 +41,35 @@ export const metadata: Metadata = {
   title: "Shanghai Silver Price Today | Live SGE Rate in USD & CNY - SilverInfo",
   description: "Live Shanghai Silver Price today (SGE) in CNY, USD & INR. Compare Shanghai vs COMEX premium, unit conversions, and India market rates updated in real time. ¥27,000/kg | $121/oz | +11% premium.",
   keywords: [
+    // Primary keywords
     "shanghai silver price",
     "shanghai silver price today",
     "shanghai silver price live",
-    "shanghai silver price in usd",
-    "shanghai exchange silver price",
-    "silver price shanghai exchange",
-    "sge silver price",
     "china silver price",
-    "shanghai silver premium",
-    "comex silver price",
-    "shanghai metal exchange silver price",
+    "china silver rate",
+    "china silver price today",
+    // Exchange keywords
+    "sge silver price",
+    "shanghai gold exchange silver",
+    "shfe silver price",
+    "shanghai futures exchange silver",
+    // Currency keywords
+    "shanghai silver price in usd",
     "shanghai silver price in dollars",
+    "silver price in yuan",
+    "silver price cny",
+    // Comparison keywords
+    "shanghai vs comex silver",
+    "shanghai silver premium",
+    "china silver vs india silver",
+    // Long-tail keywords
     "shanghai spot silver price",
     "shanghai silver price right now",
     "silver rate shanghai",
+    "china silver import",
+    "chinese silver market",
+    "silver price china today",
+    "live sge silver rate",
   ],
   openGraph: {
     title: "Shanghai Silver Price Today | Live SGE Silver Rate",
@@ -151,6 +165,59 @@ const faqItems: FAQItem[] = [
   {
     question: "What is SGE (Shanghai Gold Exchange)?",
     answer: "SGE (Shanghai Gold Exchange) is China's largest precious metals exchange, established in 2002. It trades gold, silver, platinum in CNY. SGE silver contract (Ag(T+D)) is the benchmark for Chinese silver prices. It handles majority of China's physical silver trading."
+  },
+  // Additional FAQs for keyword coverage
+  {
+    question: "What is the China silver price today in yuan?",
+    answer: "The China silver price today is approximately ¥27,000 CNY per kilogram or ¥27 per gram. In yuan terms, silver has risen significantly due to global demand and the Shanghai premium. Check our live prices for real-time CNY rates updated every 30 seconds."
+  },
+  {
+    question: "What is SHFE silver price?",
+    answer: "SHFE (Shanghai Futures Exchange) silver futures trade alongside SGE. SHFE silver contract code is AG, trading in CNY/kg. SHFE is for futures/derivatives while SGE handles spot trading. Both exchanges reflect China's silver market pricing with slight variations."
+  },
+  {
+    question: "How much silver does China import annually?",
+    answer: "China imports approximately 4,000-5,000 tonnes of silver annually, making it the world's largest silver importer. China produces only ~3,500 tonnes domestically but consumes ~8,000+ tonnes, creating a ~50% import dependency. This import gap drives the Shanghai premium."
+  },
+  {
+    question: "Why is China the largest silver consumer?",
+    answer: "China consumes ~30% of global silver due to: (1) Solar panel manufacturing - world's largest producer (150+ GW annually), (2) Electronics manufacturing hub, (3) EV battery production (silver in electrical contacts), (4) Growing jewelry/investment demand. Solar alone uses 100+ million oz/year."
+  },
+  {
+    question: "What is silver purity standard in China?",
+    answer: "China uses 999 (99.9% pure) and 9999 (99.99% pure) silver standards. SGE trades 999 and 9999 purity silver bars. Sterling silver (925) is common for jewelry. Chinese hallmarks include purity stamps and manufacturer codes regulated by the state."
+  },
+  {
+    question: "Shanghai silver price vs London silver price - what's the difference?",
+    answer: "London (LBMA) sets the global silver benchmark in USD/oz, while Shanghai (SGE) trades in CNY/kg with a premium. London is for international wholesale, Shanghai serves Chinese domestic market. The Shanghai premium (currently 10-14%) reflects Chinese demand dynamics."
+  },
+  {
+    question: "Can foreigners buy silver on Shanghai Gold Exchange?",
+    answer: "Foreign institutional investors can access SGE through the Shanghai-Hong Kong Stock Connect or SGE International Board (launched 2014). Retail foreigners cannot directly trade SGE. Most international investors use COMEX or London markets instead."
+  },
+  {
+    question: "What is silver price forecast for China 2026?",
+    answer: "Silver price forecasts for China 2026 suggest continued strength due to: (1) Record solar panel installations (300+ GW target), (2) EV adoption acceleration, (3) Industrial demand growth 5-8%. Analysts expect Shanghai premiums to remain elevated at 8-15% over COMEX."
+  },
+  {
+    question: "How does CNY/USD exchange rate affect silver price?",
+    answer: "A weaker yuan (higher USD/CNY) makes imported silver more expensive in China, increasing CNY-denominated prices. Current USD/CNY ~7.0 means $1 = ¥7. If yuan weakens to 7.5, Chinese silver prices rise even if USD prices stay flat. Exchange rate is key for arbitrage."
+  },
+  {
+    question: "What is China silver import duty and VAT?",
+    answer: "China imposes 3-8% import duty on silver (varies by type) plus 13% VAT. Total import costs add 16-21% to international prices. This tax structure, combined with logistics and demand, creates the persistent Shanghai premium over COMEX/London prices."
+  },
+  {
+    question: "Is silver a good investment in China?",
+    answer: "Silver investment in China is popular through: (1) SGE physical silver bars, (2) Silver ETFs (e.g., Bosera Silver ETF), (3) SHFE futures, (4) Bank silver accounts. Benefits include inflation hedge and industrial demand. Risks include price volatility and currency fluctuations."
+  },
+  {
+    question: "What are SGE silver trading fees?",
+    answer: "SGE silver trading fees include: (1) Transaction fee: 0.02-0.04% of trade value, (2) Settlement fee: ~¥1-2 per kg, (3) Storage fee: varies by vault. Total costs are lower than physical retail purchases. SGE members get preferential rates."
+  },
+  {
+    question: "How to check live Shanghai silver price?",
+    answer: "Check live Shanghai silver price on: (1) Our website silverinfo.in/shanghai-silver-price (updates every 30 seconds), (2) SGE official website sge.com.cn, (3) Bloomberg/Reuters terminals, (4) Chinese financial apps like Sina Finance. We provide free real-time CNY, USD, and INR conversions."
   },
 ];
 
@@ -430,6 +497,107 @@ export default async function ShanghaiSilverPricePage() {
               </div>
               <p className="text-xs mt-3 text-center text-gray-500">
                 All times in Beijing Time (UTC+8) • Markets closed on weekends & Chinese holidays
+              </p>
+            </div>
+          </section>
+
+          {/* China Silver Market Overview - SEO Content Section */}
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              🇨🇳 China Silver Market Overview
+            </h2>
+            <div className="rounded-xl p-4 sm:p-6 bg-white border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600 mb-4">
+                China is the world&apos;s largest silver consumer and a key driver of global silver prices. 
+                Understanding the Chinese silver market is essential for tracking the Shanghai premium.
+              </p>
+              
+              {/* Key Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <div className="text-center p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-2xl font-bold text-red-700">30%</p>
+                  <p className="text-xs text-gray-600">Global Silver Consumption</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-2xl font-bold text-blue-700">4,500+</p>
+                  <p className="text-xs text-gray-600">Tonnes Imported/Year</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-green-50 border border-green-200">
+                  <p className="text-2xl font-bold text-green-700">70%</p>
+                  <p className="text-xs text-gray-600">Import Dependency</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-2xl font-bold text-amber-700">#1</p>
+                  <p className="text-xs text-gray-600">Solar Panel Producer</p>
+                </div>
+              </div>
+              
+              {/* Demand Breakdown */}
+              <h3 className="font-semibold text-gray-700 mb-3">🏭 China Silver Demand Breakdown (2025-2026)</h3>
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-yellow-500 h-full rounded-full" style={{ width: '45%' }}></div>
+                  </div>
+                  <span className="text-xs text-gray-600 w-32">Solar/PV: 45%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-blue-500 h-full rounded-full" style={{ width: '25%' }}></div>
+                  </div>
+                  <span className="text-xs text-gray-600 w-32">Electronics: 25%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-purple-500 h-full rounded-full" style={{ width: '15%' }}></div>
+                  </div>
+                  <span className="text-xs text-gray-600 w-32">Jewelry: 15%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-green-500 h-full rounded-full" style={{ width: '10%' }}></div>
+                  </div>
+                  <span className="text-xs text-gray-600 w-32">Investment: 10%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-gray-500 h-full rounded-full" style={{ width: '5%' }}></div>
+                  </div>
+                  <span className="text-xs text-gray-600 w-32">Other: 5%</span>
+                </div>
+              </div>
+              
+              {/* Key Facts */}
+              <h3 className="font-semibold text-gray-700 mb-3">📊 Key Facts About China Silver Market</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">🏛️ Primary Exchange</p>
+                  <p className="text-gray-600">Shanghai Gold Exchange (SGE) - established 2002</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">📈 Futures Exchange</p>
+                  <p className="text-gray-600">Shanghai Futures Exchange (SHFE) - AG contract</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">🔋 Solar Demand</p>
+                  <p className="text-gray-600">150+ GW installed annually (100M+ oz silver)</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">🚗 EV Growth</p>
+                  <p className="text-gray-600">10M+ EVs/year (silver in electrical systems)</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">💰 Import Tax</p>
+                  <p className="text-gray-600">3-8% duty + 13% VAT = 16-21% total</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="font-medium text-gray-800">📍 Top Producers</p>
+                  <p className="text-gray-600">Henan, Yunnan, Inner Mongolia provinces</p>
+                </div>
+              </div>
+              
+              <p className="text-xs text-gray-400 mt-4 text-center">
+                Source: China Gold Association, SGE, World Silver Survey 2025
               </p>
             </div>
           </section>
