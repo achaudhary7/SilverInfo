@@ -8,6 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 const navigation = [
   { name: "Home", href: "/", prefetch: true, icon: "🏠" },
   { name: "Silver Rate", href: "/silver-rate-today", prefetch: true, icon: "📊" },
+  { name: "Gold Rate", href: "/gold", prefetch: true, icon: "🥇" },
   { name: "Qatar", href: "/qatar/silver-rate-today", prefetch: false, icon: "🇶🇦" },
   { name: "Learn", href: "/learn", prefetch: false, icon: "📚" },
   { name: "How We Calculate", href: "/how-we-calculate", prefetch: false, icon: "🔍" },
