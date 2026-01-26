@@ -232,7 +232,7 @@ export default async function ShanghaiSilverPricePage() {
       <main 
         className="min-h-screen"
         style={{ 
-          background: "linear-gradient(180deg, #1a0505 0%, #2a0a0a 50%, #1a0505 100%)"
+          background: "linear-gradient(180deg, #1f1418 0%, #2d1a20 50%, #1f1418 100%)"
         }}
       >
         <div className="max-w-4xl mx-auto px-4 py-8">
@@ -278,7 +278,7 @@ export default async function ShanghaiSilverPricePage() {
             <div 
               className="rounded-xl overflow-hidden"
               style={{ 
-                background: "rgba(139, 0, 0, 0.3)",
+                background: "rgba(114, 47, 55, 0.4)",
                 border: "1px solid rgba(255, 215, 0, 0.2)"
               }}
             >
@@ -323,7 +323,7 @@ export default async function ShanghaiSilverPricePage() {
             <div 
               className="rounded-xl p-4 sm:p-6"
               style={{ 
-                background: "rgba(139, 0, 0, 0.3)",
+                background: "rgba(114, 47, 55, 0.4)",
                 border: "1px solid rgba(255, 215, 0, 0.2)"
               }}
             >
@@ -370,7 +370,7 @@ export default async function ShanghaiSilverPricePage() {
             <div 
               className="rounded-xl p-4 sm:p-6"
               style={{ 
-                background: "rgba(139, 0, 0, 0.3)",
+                background: "rgba(114, 47, 55, 0.4)",
                 border: "1px solid rgba(255, 215, 0, 0.2)"
               }}
             >
@@ -447,7 +447,7 @@ export default async function ShanghaiSilverPricePage() {
                   key={idx}
                   className="group rounded-lg overflow-hidden"
                   style={{ 
-                    background: "rgba(139, 0, 0, 0.3)",
+                    background: "rgba(114, 47, 55, 0.4)",
                     border: "1px solid rgba(255, 215, 0, 0.2)"
                   }}
                 >

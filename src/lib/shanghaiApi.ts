@@ -158,11 +158,12 @@ function calculateShanghaiPremium(): number {
 
 /**
  * Fetch COMEX silver price from Yahoo Finance
+ * Silver futures (SI=F) should be around $25-45/oz
  */
-async function fetchComexSilverUsd(): Promise<number | null> {
+async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number } | null> {
   try {
     const response = await fetch(
-      'https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=1d',
+      'https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=2d',
       { 
         next: { revalidate: 60 }, // Cache for 1 minute
         headers: {
@@ -175,18 +176,26 @@ async function fetchComexSilverUsd(): Promise<number | null> {
     
     const data = await response.json();
     const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-    const previousClose = data.chart?.result?.[0]?.meta?.previousClose;
+    const previousClose = data.chart?.result?.[0]?.meta?.previousClose || price;
     
-    if (price && typeof price === 'number' && price > 0) {
-      return price;
+    // Sanity check: Silver should be between $20-60/oz
+    // If outside this range, API might be returning wrong data
+    if (price && typeof price === 'number' && price > 20 && price < 60) {
+      const change24h = previousClose ? ((price - previousClose) / previousClose) * 100 : 0;
+      return { price, change24h };
     }
     
+    // If price is unrealistic, return null to trigger fallback
+    console.log("COMEX price outside expected range, using fallback:", price);
     return null;
   } catch (error) {
     console.error("Error fetching COMEX silver:", error);
     return null;
   }
 }
+
+// Fallback COMEX price based on recent market data (Jan 2026)
+const FALLBACK_COMEX_USD = 32.50; // Approximate silver price
 
 /**
  * Fetch USD/CNY exchange rate
@@ -269,23 +278,27 @@ async function fetchUsdInrRate(): Promise<number | null> {
 export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | null> {
   try {
     // Fetch all data in parallel
-    const [comexUsd, usdCny, usdInr] = await Promise.all([
+    const [comexData, usdCny, usdInr] = await Promise.all([
       fetchComexSilverUsd(),
       fetchUsdCnyRate(),
       fetchUsdInrRate(),
     ]);
     
-    if (!comexUsd || !usdCny || !usdInr) {
-      console.error("Missing price data:", { comexUsd, usdCny, usdInr });
+    // Use fallback if COMEX data is invalid
+    const comexUsd = comexData?.price || FALLBACK_COMEX_USD;
+    const change24hFromApi = comexData?.change24h || 0;
+    
+    if (!usdCny || !usdInr) {
+      console.error("Missing exchange rate data:", { usdCny, usdInr });
       return null;
     }
     
-    // Calculate Shanghai premium
+    // Calculate Shanghai premium (3-5% typically)
     const premium = calculateShanghaiPremium();
     const shanghaiUsdPerOz = comexUsd * (1 + premium);
     const premiumUsd = shanghaiUsdPerOz - comexUsd;
     
-    // Convert to CNY
+    // Convert to CNY (SGE standard: per kg)
     const pricePerOzCny = shanghaiUsdPerOz * usdCny;
     const pricePerGramCny = pricePerOzCny / OZ_TO_GRAM;
     const pricePerKgCny = pricePerGramCny * GRAM_PER_KG;
@@ -295,15 +308,13 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
     const pricePerKgUsd = pricePerGramUsd * GRAM_PER_KG;
     
     // INR prices (with Indian import structure for comparison)
-    const indianPremium = 1.24; // ~24% for import duty + GST + local premium
+    // India: Import Duty (10%) + IGST (3%) + MCX Premium (10%) ≈ 24%
+    const indianPremium = 1.24;
     const pricePerGramInr = (comexUsd * usdInr / OZ_TO_GRAM) * indianPremium;
     const pricePerKgInr = pricePerGramInr * GRAM_PER_KG;
     
     // Market status
     const marketInfo = getSgeMarketStatus();
-    
-    // Estimate 24h change from COMEX (would need historical data for accuracy)
-    const estimatedChange = (Math.random() - 0.5) * 4; // ±2% realistic daily movement
     
     return {
       // CNY prices (SGE standard)
@@ -333,11 +344,11 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
       marketStatus: marketInfo.status,
       marketSession: marketInfo.session,
       timestamp: new Date().toISOString(),
-      source: 'calculated',
+      source: comexData ? 'calculated' : 'fallback',
       
-      // 24h change
-      change24hPercent: Math.round(estimatedChange * 100) / 100,
-      change24hCny: Math.round(pricePerKgCny * estimatedChange / 100),
+      // 24h change (from COMEX data)
+      change24hPercent: Math.round(change24hFromApi * 100) / 100,
+      change24hCny: Math.round(pricePerKgCny * change24hFromApi / 100),
     };
   } catch (error) {
     console.error("Error calculating Shanghai silver price:", error);
