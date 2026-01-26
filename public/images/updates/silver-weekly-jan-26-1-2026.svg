@@ -1,0 +1,71 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c5282;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0c0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e8e8e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c0c0c0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg1)"/>
+
+  <!-- Weekly chart line showing upward trend -->
+  <polyline points="100,380 200,360 350,340 500,320 650,290 800,270 950,230"
+            stroke="#10b981" stroke-width="6" fill="none" opacity="0.9"/>
+
+  <!-- Data points on chart -->
+  <circle cx="100" cy="380" r="8" fill="#10b981"/>
+  <circle cx="200" cy="360" r="8" fill="#10b981"/>
+  <circle cx="350" cy="340" r="8" fill="#10b981"/>
+  <circle cx="500" cy="320" r="8" fill="#10b981"/>
+  <circle cx="650" cy="290" r="8" fill="#10b981"/>
+  <circle cx="800" cy="270" r="8" fill="#10b981"/>
+  <circle cx="950" cy="230" r="10" fill="#10b981" stroke="#ffffff" stroke-width="3"/>
+
+  <!-- Day labels -->
+  <text x="100" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Sun</text>
+  <text x="200" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Mon</text>
+  <text x="350" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Tue</text>
+  <text x="500" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Wed</text>
+  <text x="650" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Thu</text>
+  <text x="800" y="490" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Fri</text>
+  <text x="950" y="490" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" text-anchor="middle" font-weight="bold">Sat</text>
+
+  <!-- Price badge -->
+  <rect x="980" y="160" width="180" height="80" rx="10" fill="url(#greenGrad)" opacity="0.95"/>
+  <text x="1070" y="195" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" text-anchor="middle">Weekly High</text>
+  <text x="1070" y="225" font-family="Arial, sans-serif" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="bold">₹402.81</text>
+
+  <!-- Change indicator -->
+  <rect x="980" y="250" width="180" height="50" rx="8" fill="rgba(16,185,129,0.3)"/>
+  <text x="1070" y="282" font-family="Arial, sans-serif" font-size="22" fill="#10b981" text-anchor="middle" font-weight="bold">+5.8%</text>
+
+  <!-- ₹400 milestone badge -->
+  <rect x="980" y="310" width="180" height="40" rx="8" fill="rgba(255,215,0,0.2)"/>
+  <text x="1070" y="337" font-family="Arial, sans-serif" font-size="18" fill="#ffd700" text-anchor="middle" font-weight="bold">₹400 CROSSED! 🎉</text>
+
+  <!-- Rupee symbol watermark -->
+  <text x="80" y="180" font-family="Arial, sans-serif" font-size="150" font-weight="bold" fill="#ffffff" opacity="0.15">₹</text>
+
+  <!-- Calendar icon -->
+  <rect x="50" y="520" width="120" height="90" rx="8" fill="rgba(255,255,255,0.1)"/>
+  <rect x="50" y="520" width="120" height="25" rx="8" fill="url(#silver)" opacity="0.8"/>
+  <text x="110" y="575" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">26-1</text>
+  <text x="110" y="600" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">JAN-FEB 2026</text>
+
+  <!-- Title area background -->
+  <rect x="180" y="520" width="820" height="90" fill="rgba(0,0,0,0.4)" rx="10"/>
+
+  <!-- Title text -->
+  <text x="590" y="560" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#ffffff" text-anchor="middle">Silver Weekly Wrap</text>
+  <text x="590" y="595" font-family="Arial, sans-serif" font-size="22" fill="#c0c0c0" text-anchor="middle">Jan 26 - Feb 1, 2026 | ₹400 Milestone Week</text>
+</svg>

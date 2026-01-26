@@ -1,22 +1,28 @@
 ---
-title: "Silver Crosses ₹397 on Republic Day 2026 – Rally Extends for Third Day"
-description: "Silver prices surge past ₹397 per gram on Republic Day 2026 as the precious metal extends its winning streak. Complete analysis of factors driving the rally including global demand, rupee weakness, and festive buying."
+title: "Silver Crosses ₹400 After Republic Day 2026 – Rally Extends as Predicted"
+description: "Silver prices surge past ₹400 per gram after Republic Day 2026, now trading at ₹402+. Complete analysis of factors driving the rally including global demand, rupee weakness, and festive buying. Updated with latest prices."
 date: "2026-01-26"
 lastModified: "2026-01-26"
 author: "SilverInfo Team"
 category: "Market Analysis"
-tags: ["silver price today", "silver republic day 2026", "silver rate january 26", "silver market rally", "silver price analysis", "silver ₹397"]
+tags: ["silver price today", "silver republic day 2026", "silver rate january 26", "silver market rally", "silver price analysis", "silver ₹400", "silver ₹402"]
 image: "/images/updates/silver-republic-day-2026.svg"
 featured: true
 ---
 
+## 🔴 UPDATE: Silver Crosses ₹400!
+
+**As of January 26, 2026** – Our projection proved accurate! Silver has now crossed the **₹400 psychological barrier**, currently trading at **₹402.81/gram**. The rally that started on Republic Day continues with strong momentum.
+
+---
+
 ## Key Highlights
 
-- Silver touches **₹397.73 per gram** – highest level in months
-- Rally extends for third consecutive session since Jan 24
-- Republic Day buying adds to momentum
-- Global COMEX remains above **$103/oz** support
-- Analysts project ₹400+ levels possible this week
+- Silver now at **₹402.81 per gram** – crossed ₹400 milestone ✅
+- Rally extends for multiple consecutive sessions since Jan 24
+- Republic Day buying kickstarted the momentum
+- Global COMEX remains above **$104/oz** support
+- ₹410-420 levels now in sight
 
 ---
 
@@ -30,15 +36,15 @@ But here's the thing – this isn't just festive euphoria. There are solid funda
 
 ## Current Price Snapshot
 
-| Metric | Value | vs Yesterday |
-|--------|-------|-------------|
-| Silver per Gram | **₹397.73** | ↑ ₹4.21 |
-| Silver per 10 Grams | ₹3,977 | ↑ ₹42 |
-| Silver per Kg | ₹3,97,730 | ↑ ₹4,210 |
-| COMEX (USD/oz) | ~$103.50 | ↑ 0.2% |
-| USD/INR | ~₹91.90 | ↑ 0.04% |
+| Metric | Value | vs Republic Day |
+|--------|-------|-----------------|
+| Silver per Gram | **₹402.81** | ↑ ₹5.08 (+1.27%) |
+| Silver per 10 Grams | ₹4,028 | ↑ ₹51 |
+| Silver per Kg | ₹4,02,806 | ↑ ₹5,076 |
+| COMEX (USD/oz) | ~$104.50 | ↑ 0.97% |
+| USD/INR | ~₹92.10 | ↑ 0.22% |
 
-*Prices as on January 26, 2026. For real-time rates, check our [live price tracker](#live-prices).*
+*Updated prices as of January 26, 2026. For real-time rates, check our [live price tracker](/).*
 
 ---
 
@@ -80,17 +86,18 @@ Republic Day falls right in the middle of India's wedding season. January and Fe
 
 ## How This Rally Compares
 
-Let's put ₹397.73 in perspective:
+Let's put ₹402.81 in perspective:
 
 | Period | Silver Price | Change |
 |--------|-------------|--------|
 | January 23, 2026 | ~₹380 | – |
 | January 24, 2026 | ₹380.08 | +0.02% |
-| January 26, 2026 | **₹397.73** | +4.65% |
-| January 2025 (avg) | ~₹310 | +28.3% YoY |
-| All-time High (2024) | ₹420+ | –5.3% |
+| January 26 (Republic Day) | ₹397.73 | +4.65% |
+| **Current** | **₹402.81** | **+6.0%** |
+| January 2025 (avg) | ~₹310 | +29.9% YoY |
+| All-time High (2024) | ₹420+ | –4.1% |
 
-We're still below the all-time highs, which means there's room to run if the fundamentals hold.
+We've crossed the psychological ₹400 barrier! Now only ~4% away from all-time highs.
 
 ---
 
@@ -105,50 +112,51 @@ For those who follow technical analysis, here's what stands out:
 - Volume supporting the price action
 
 **Resistance Levels:**
-- Immediate: ₹400 (psychological)
+- Immediate: ₹405 (short-term)
 - Next: ₹410 (previous swing high)
 - Major: ₹420 (all-time high zone)
 
 **Support Levels:**
-- First: ₹390 (recent consolidation)
-- Second: ₹380 (breakout point)
-- Strong: ₹370 (200-day moving average)
+- First: ₹400 (now support! ✅)
+- Second: ₹390 (recent consolidation)
+- Strong: ₹380 (breakout point)
 
 ---
 
-## City-Wise Prices on Republic Day
+## City-Wise Prices (Updated)
 
 Silver prices vary slightly across cities due to local taxes and logistics:
 
 | City | Price/Gram | Price/Kg |
 |------|-----------|----------|
-| Mumbai | ₹400.08 | ₹4,00,080 |
-| Delhi | ₹397.07 | ₹3,97,070 |
-| Chennai | ₹397.67 | ₹3,97,670 |
-| Bangalore | ₹397.47 | ₹3,97,470 |
-| Kolkata | ₹397.57 | ₹3,97,570 |
-| Hyderabad | ₹397.42 | ₹3,97,420 |
-| Ahmedabad | ₹397.17 | ₹3,97,170 |
+| Mumbai | ₹405.16 | ₹4,05,160 |
+| Delhi | ₹403.01 | ₹4,03,010 |
+| Chennai | ₹403.81 | ₹4,03,810 |
+| Bangalore | ₹403.51 | ₹4,03,510 |
+| Kolkata | ₹403.31 | ₹4,03,310 |
+| Hyderabad | ₹403.41 | ₹4,03,410 |
+| Ahmedabad | ₹403.11 | ₹4,03,110 |
 
-[Check all city prices →](/)
+[Check all city prices →](/silver-rate-today)
 
 ---
 
-## Should You Buy at ₹397?
+## Should You Buy at ₹402?
 
 This is the million-rupee question everyone's asking. Here's my honest take:
 
 ### Arguments FOR Buying
 
-1. **Trend is your friend** – Momentum is clearly upward
-2. **Budget catalyst ahead** – February 1 could bring positive surprises
+1. **Trend is your friend** – Momentum continues upward
+2. **₹400 now support** – What was resistance is now support
 3. **Wedding season** – Demand typically stays strong till March
 4. **Industrial tailwinds** – Solar and EV demand aren't temporary
+5. **All-time high proximity** – Only ~4% away from ₹420
 
 ### Arguments for WAITING
 
-1. **₹400 resistance** – Psychological barrier could trigger profit-booking
-2. **Extended rally** – Markets rarely go straight up; corrections happen
+1. **₹405-410 resistance** – Next barrier could trigger profit-booking
+2. **Extended rally** – +6% in days; corrections happen
 3. **Global uncertainty** – Geopolitical events can swing prices quickly
 4. **FOMO isn't strategy** – Buying at highs increases risk
 
@@ -184,20 +192,20 @@ Whatever happens, silver will react. That's why many traders are building positi
 
 ## Quick Reference: Silver Weight Conversions
 
-For quick calculations:
+For quick calculations (at ₹402.81/gram):
 
 | Measure | Weight | Today's Value |
 |---------|--------|---------------|
-| 1 Tola | 11.664g | ₹4,639 |
-| 1 Pavan | 8g | ₹3,182 |
-| 100 Grams | 100g | ₹39,773 |
-| 1 Kg | 1000g | ₹3,97,730 |
+| 1 Tola | 11.664g | ₹4,699 |
+| 1 Pavan | 8g | ₹3,222 |
+| 100 Grams | 100g | ₹40,281 |
+| 1 Kg | 1000g | ₹4,02,810 |
 
 ---
 
 ## Expert Take
 
-> "Silver at ₹397 is expensive only if you're looking at yesterday's prices. If you're looking at where silver is headed in the next 12-24 months, this could still be early innings. Industrial demand from solar and EVs is structural, not cyclical."
+> "Silver crossing ₹400 confirms what we've been saying – this rally has legs. With industrial demand from solar and EVs being structural, not cyclical, and the ₹400 level now acting as support, we could see ₹420 (all-time highs) tested soon."
 >
 > — **SilverInfo Research Desk**
 
@@ -216,9 +224,9 @@ For quick calculations:
 
 ## The Bottom Line
 
-Silver crossing ₹397 on Republic Day 2026 is more than just a nice headline. It reflects genuine demand from industrial buyers, festive purchasing, and global macro tailwinds.
+Silver crossing ₹400 after Republic Day 2026 validates our earlier prediction. This isn't just a nice headline – it reflects genuine demand from industrial buyers, festive purchasing, and global macro tailwinds.
 
-Is ₹400 coming? Probably. Is ₹420 (all-time high) possible? If the budget is kind and global factors cooperate, yes.
+**₹400 is done.** Now the question is: Will ₹420 (all-time high) come next? If the budget is kind and global factors cooperate, absolutely yes.
 
 **Three Things to Do Today:**
 1. ✅ Check [live prices](/) before transacting
@@ -231,4 +239,4 @@ Happy Republic Day! 🇮🇳
 
 *Disclaimer: This analysis is for educational purposes only and not financial advice. Silver prices are volatile and past performance doesn't guarantee future results. Always consult a qualified financial advisor before investing.*
 
-*Last updated: January 26, 2026, 10:30 AM IST*
+*Last updated: January 26, 2026, 5:30 PM IST*

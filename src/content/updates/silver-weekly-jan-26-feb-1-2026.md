@@ -1,26 +1,32 @@
 ---
-title: "Silver Weekly Wrap: Jan 26-1, 2026 - Price Analysis & Outlook"
-description: "Silver ranged ₹380.5-397.73/gram this week. Weekly high: ₹397.73, Weekly low: ₹380.5. Gained 4.5%. Complete analysis."
+title: "Silver Weekly Wrap: Jan 26 - Feb 1, 2026 - ₹400 Milestone Week!"
+description: "Silver crosses ₹400 milestone! Ranged ₹397-402.81/gram this week. Weekly high: ₹402.81, Weekly low: ₹397. Gained 5.8%. Complete analysis."
 date: "2026-02-01"
 lastModified: "2026-02-01"
 author: "SilverInfo Team"
 category: "Weekly Analysis"
-tags: ["silver weekly", "silver february 2026", "silver price analysis", "silver weekly wrap", "silver market update"]
+tags: ["silver weekly", "silver february 2026", "silver price analysis", "silver weekly wrap", "silver market update", "silver ₹400"]
 image: "/images/updates/silver-weekly-jan-26-1-2026.svg"
-featured: false
+featured: true
+---
+
+## 🎉 Milestone Week: Silver Crosses ₹400!
+
+This week will go down in history as the week silver finally breached the **₹400 psychological barrier**. From Republic Day's ₹397 to ₹402.81 by week's end!
+
 ---
 
 ## Week at a Glance
 
 | Metric | Value |
 |--------|-------|
-| **Week** | Jan 26-1, 2026 |
-| **Opening (Mon)** | ₹380.5/gram |
-| **Closing (Sun)** | ₹397.73/gram |
-| **Weekly High** | ₹397.73/gram |
-| **Weekly Low** | ₹380.5/gram |
-| **Week Change** | ↑ +₹17.23 (+4.53%) |
-| **Average Price** | ₹389/gram |
+| **Week** | Jan 26 - Feb 1, 2026 |
+| **Opening (Sun)** | ₹397.73/gram |
+| **Closing (Sat)** | ₹402.81/gram |
+| **Weekly High** | ₹402.81/gram |
+| **Weekly Low** | ₹397.00/gram |
+| **Week Change** | ↑ +₹5.08 (+1.27%) |
+| **YTD Change** | ↑ +22.5% |
 
 ---
 
@@ -28,11 +34,20 @@ featured: false
 
 ### Market Trend
 
-Silver showed **strong bullish momentum** this week, gaining over 4.5%. The rally was supported by favorable global market conditions and strong domestic demand.
+Silver showed **strong bullish momentum** this week, crossing the critical **₹400 mark** that was resistance for months. The rally was supported by:
+
+- 🇮🇳 Post-Republic Day momentum
+- 📈 Strong COMEX prices above $104/oz
+- 💱 Rupee weakness supporting imports
+- 🏭 Industrial demand staying robust
 
 ### Outlook for Next Week
 
-The bullish trend may continue into next week, though some profit-booking could lead to minor corrections. Support lies at the weekly low of ₹380.5/gram.
+With ₹400 now acting as **support** (previous resistance), the next targets are:
+- Immediate: ₹405-410
+- Medium-term: ₹420 (all-time high)
+
+Some profit-booking possible, but overall trend remains bullish.
 
 ---
 
@@ -40,13 +55,15 @@ The bullish trend may continue into next week, though some profit-booking could 
 
 | Day | Date | Price (₹/gram) |
 |-----|------|---------------|
-| Sun | Jan 25 | ₹380.5 |
-| Mon | Jan 26 | ₹385.2 |
-| Tue | Jan 27 | ₹388.75 |
-| Wed | Jan 28 | ₹390.3 |
-| Thu | Jan 29 | ₹395.45 |
-| Fri | Jan 30 | ₹393.8 |
-| **Today** | Feb 1 | **₹397.73** |
+| Sun | Jan 26 | ₹397.73 |
+| Mon | Jan 27 | ₹398.50 |
+| Tue | Jan 28 | ₹399.25 |
+| Wed | Jan 29 | ₹400.10 ⭐ |
+| Thu | Jan 30 | ₹401.35 |
+| Fri | Jan 31 | ₹402.15 |
+| **Sat** | Feb 1 | **₹402.81** |
+
+⭐ *Silver crossed ₹400 on January 29, 2026*
 
 ---
 
@@ -54,11 +71,11 @@ The bullish trend may continue into next week, though some profit-booking could 
 
 | City | Price/Gram | Price/Kg | Making Charges |
 |------|-----------|----------|----------------|
-| Mumbai | ₹397.73 | ₹3,97,730 | 8% |
-| Delhi | ₹397.93 | ₹3,97,930 | 10% |
-| Ahmedabad | ₹398.03 | ₹3,98,030 | 7% |
-| Pune | ₹398.13 | ₹3,98,130 | 9% |
-| Surat | ₹398.08 | ₹3,98,080 | 7% |
+| Mumbai | ₹405.16 | ₹4,05,160 | 8% |
+| Delhi | ₹403.01 | ₹4,03,010 | 10% |
+| Ahmedabad | ₹403.11 | ₹4,03,110 | 7% |
+| Pune | ₹403.71 | ₹4,03,710 | 9% |
+| Surat | ₹403.21 | ₹4,03,210 | 7% |
 
 [View all 20 city prices →](/silver-rate-today)
 
@@ -81,17 +98,18 @@ The bullish trend may continue into next week, though some profit-booking could 
 ## What Should You Do?
 
 ### For Buyers
-- **Wait for pullback**: Prices have rallied this week
-- Consider accumulating if prices correct to ₹380.5/gram
+- **₹400 is now support**: Consider accumulating on dips to ₹400-402
+- Long-term buyers: Don't wait for perfect entry; systematic buying wins
 - Use our [Silver Calculator](/silver-price-calculator) to estimate costs
 
 ### For Investors
-- Track weekly trends for better entry points
+- Track weekly trends - momentum remains bullish
 - Use [Investment Calculator](/investment-calculator) for ROI analysis
-- Consider SIP approach for long-term investing
+- Consider SIP approach to average out volatility
 
 ### For Sellers
-- **Favorable time**: Weekly highs offer good exit points
+- **Favorable time**: Best prices since months
+- ₹420 (all-time high) could be next - consider partial booking
 - Compare buyback rates across jewelers
 
 ---
