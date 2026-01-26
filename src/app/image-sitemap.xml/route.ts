@@ -45,7 +45,7 @@ export async function GET() {
       { 
         url: `${baseUrl}${update.image}`, 
         title: update.title,
-        caption: update.excerpt || update.title 
+        caption: update.description || update.title 
       }
     ] : []
   })).filter(item => item.images.length > 0);
@@ -58,7 +58,7 @@ export async function GET() {
       { 
         url: `${baseUrl}${article.image}`, 
         title: article.title,
-        caption: article.excerpt || article.title 
+        caption: article.description || article.title 
       }
     ] : []
   })).filter(item => item.images.length > 0);
