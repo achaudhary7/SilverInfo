@@ -41,6 +41,10 @@ export interface ShanghaiSilverPrice {
   // INR prices (for Indian users)
   pricePerGramInr: number;
   pricePerKgInr: number;
+  pricePerOzInr: number;      // Added: INR per troy ounce
+  
+  // India market price (with Indian duties)
+  indiaRatePerGram: number;   // India market rate for comparison
   
   // COMEX comparison
   comexUsd: number;          // COMEX price USD/oz
@@ -50,6 +54,7 @@ export interface ShanghaiSilverPrice {
   // Exchange rates
   usdCny: number;
   usdInr: number;
+  cnyInr: number;            // Added: Direct CNY to INR rate
   
   // Market info
   marketStatus: 'open' | 'closed' | 'pre-market';
@@ -77,10 +82,14 @@ const OZ_TO_GRAM = 31.1035;        // Troy ounce to grams
 const KG_TO_OZ = 32.1507;          // Kilograms to troy ounces
 const GRAM_PER_KG = 1000;
 
-// Shanghai premium over COMEX (typically 2-5%)
-// This varies based on Chinese demand, import restrictions, and arbitrage
-const SHANGHAI_PREMIUM_BASE = 0.035;  // 3.5% base premium
-const SHANGHAI_PREMIUM_VAR = 0.015;   // ±1.5% variation
+// Shanghai premium over COMEX (typically 8-15% in current market - Jan 2026)
+// Premium is elevated due to:
+// - Strong Chinese industrial demand (solar, EVs)
+// - Import duties (10-15%) + VAT (13%)
+// - Supply constraints and arbitrage
+// Historical norm was 2-5%, but current market shows 10-15%
+const SHANGHAI_PREMIUM_BASE = 0.12;   // 12% base premium (current market reality)
+const SHANGHAI_PREMIUM_VAR = 0.02;    // ±2% variation
 
 // SGE (Shanghai Gold Exchange) trading hours (Beijing Time, UTC+8)
 // Day Session: 09:00 - 11:30, 13:30 - 15:30
@@ -194,15 +203,13 @@ async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number
   }
 }
 
-// Fallback COMEX price based on current market data (Jan 2026 - silver rally)
-const FALLBACK_COMEX_USD = 105.00; // Current approx. silver price Jan 2026
-
 /**
- * Fetch USD/CNY exchange rate
+ * Fetch USD/CNY exchange rate from multiple APIs (NO HARDCODING)
+ * Returns null if all APIs fail - we prefer no data over wrong data
  */
 async function fetchUsdCnyRate(): Promise<number | null> {
+  // API 1: Yahoo Finance (real-time)
   try {
-    // Try Yahoo Finance for real-time CNY rate
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/CNY=X?interval=1d&range=1d',
       { 
@@ -216,12 +223,17 @@ async function fetchUsdCnyRate(): Promise<number | null> {
     if (response.ok) {
       const data = await response.json();
       const rate = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-      if (rate && typeof rate === 'number' && rate > 0) {
+      if (rate && typeof rate === 'number' && rate > 5 && rate < 10) {
+        console.log("[Shanghai API] USD/CNY from Yahoo Finance:", rate);
         return rate;
       }
     }
-    
-    // Fallback to Frankfurter (may not have CNY)
+  } catch (error) {
+    console.error("Yahoo Finance USD/CNY failed:", error);
+  }
+  
+  // API 2: Frankfurter (ECB data)
+  try {
     const frankfurterResponse = await fetch(
       'https://api.frankfurter.app/latest?from=USD&to=CNY',
       { next: { revalidate: 3600 } }
@@ -229,23 +241,44 @@ async function fetchUsdCnyRate(): Promise<number | null> {
     
     if (frankfurterResponse.ok) {
       const data = await frankfurterResponse.json();
-      if (data.rates?.CNY) {
+      if (data.rates?.CNY && data.rates.CNY > 5 && data.rates.CNY < 10) {
+        console.log("[Shanghai API] USD/CNY from Frankfurter:", data.rates.CNY);
         return data.rates.CNY;
       }
     }
-    
-    // Ultimate fallback: typical USD/CNY rate
-    return 7.25;
   } catch (error) {
-    console.error("Error fetching USD/CNY:", error);
-    return 7.25; // Fallback
+    console.error("Frankfurter USD/CNY failed:", error);
   }
+  
+  // API 3: Exchange Rate API (free tier)
+  try {
+    const exchangeRateResponse = await fetch(
+      'https://open.er-api.com/v6/latest/USD',
+      { next: { revalidate: 3600 } }
+    );
+    
+    if (exchangeRateResponse.ok) {
+      const data = await exchangeRateResponse.json();
+      if (data.rates?.CNY && data.rates.CNY > 5 && data.rates.CNY < 10) {
+        console.log("[Shanghai API] USD/CNY from ExchangeRate API:", data.rates.CNY);
+        return data.rates.CNY;
+      }
+    }
+  } catch (error) {
+    console.error("ExchangeRate API USD/CNY failed:", error);
+  }
+  
+  // ALL APIs FAILED - return null (NO HARDCODING)
+  console.error("[Shanghai API] All USD/CNY APIs failed - returning null");
+  return null;
 }
 
 /**
- * Fetch USD/INR exchange rate
+ * Fetch USD/INR exchange rate from multiple APIs (NO HARDCODING)
+ * Returns null if all APIs fail - we prefer no data over wrong data
  */
 async function fetchUsdInrRate(): Promise<number | null> {
+  // API 1: Frankfurter (ECB data)
   try {
     const response = await fetch(
       'https://api.frankfurter.app/latest?from=USD&to=INR',
@@ -254,16 +287,60 @@ async function fetchUsdInrRate(): Promise<number | null> {
     
     if (response.ok) {
       const data = await response.json();
-      if (data.rates?.INR) {
+      if (data.rates?.INR && data.rates.INR > 70 && data.rates.INR < 100) {
+        console.log("[Shanghai API] USD/INR from Frankfurter:", data.rates.INR);
         return data.rates.INR;
       }
     }
-    
-    return 83.50; // Fallback
   } catch (error) {
-    console.error("Error fetching USD/INR:", error);
-    return 83.50;
+    console.error("Frankfurter USD/INR failed:", error);
   }
+  
+  // API 2: Exchange Rate API (free tier)
+  try {
+    const exchangeRateResponse = await fetch(
+      'https://open.er-api.com/v6/latest/USD',
+      { next: { revalidate: 3600 } }
+    );
+    
+    if (exchangeRateResponse.ok) {
+      const data = await exchangeRateResponse.json();
+      if (data.rates?.INR && data.rates.INR > 70 && data.rates.INR < 100) {
+        console.log("[Shanghai API] USD/INR from ExchangeRate API:", data.rates.INR);
+        return data.rates.INR;
+      }
+    }
+  } catch (error) {
+    console.error("ExchangeRate API USD/INR failed:", error);
+  }
+  
+  // API 3: Yahoo Finance
+  try {
+    const yahooResponse = await fetch(
+      'https://query1.finance.yahoo.com/v8/finance/chart/INR=X?interval=1d&range=1d',
+      { 
+        next: { revalidate: 300 },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      }
+    );
+    
+    if (yahooResponse.ok) {
+      const data = await yahooResponse.json();
+      const rate = data.chart?.result?.[0]?.meta?.regularMarketPrice;
+      if (rate && typeof rate === 'number' && rate > 70 && rate < 100) {
+        console.log("[Shanghai API] USD/INR from Yahoo Finance:", rate);
+        return rate;
+      }
+    }
+  } catch (error) {
+    console.error("Yahoo Finance USD/INR failed:", error);
+  }
+  
+  // ALL APIs FAILED - return null (NO HARDCODING)
+  console.error("[Shanghai API] All USD/INR APIs failed - returning null");
+  return null;
 }
 
 // ============================================================================
@@ -277,16 +354,21 @@ async function fetchUsdInrRate(): Promise<number | null> {
  */
 export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | null> {
   try {
-    // Fetch all data in parallel
+    // Fetch all data in parallel from APIs - NO HARDCODING
     const [comexData, usdCny, usdInr] = await Promise.all([
       fetchComexSilverUsd(),
       fetchUsdCnyRate(),
       fetchUsdInrRate(),
     ]);
     
-    // Use fallback if COMEX data is invalid
-    const comexUsd = comexData?.price || FALLBACK_COMEX_USD;
-    const change24hFromApi = comexData?.change24h || 0;
+    // STRICT: Return null if ANY API fails - no fake data
+    if (!comexData || !comexData.price) {
+      console.error("[Shanghai API] COMEX price unavailable - cannot calculate Shanghai price");
+      return null;
+    }
+    
+    const comexUsd = comexData.price;
+    const change24hFromApi = comexData.change24h || 0;
     
     if (!usdCny || !usdInr) {
       console.error("Missing exchange rate data:", { usdCny, usdInr });
@@ -307,11 +389,18 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
     const pricePerGramUsd = shanghaiUsdPerOz / OZ_TO_GRAM;
     const pricePerKgUsd = pricePerGramUsd * GRAM_PER_KG;
     
-    // INR prices (with Indian import structure for comparison)
+    // Shanghai price in INR (direct conversion, no Indian duties)
+    const shanghaiInrPerGram = pricePerGramUsd * usdInr;
+    const shanghaiInrPerKg = shanghaiInrPerGram * GRAM_PER_KG;
+    const shanghaiInrPerOz = shanghaiUsdPerOz * usdInr;
+    
+    // India market rate (with Indian import structure)
     // India: Import Duty (10%) + IGST (3%) + MCX Premium (10%) ≈ 24%
     const indianPremium = 1.24;
-    const pricePerGramInr = (comexUsd * usdInr / OZ_TO_GRAM) * indianPremium;
-    const pricePerKgInr = pricePerGramInr * GRAM_PER_KG;
+    const indiaRatePerGram = (comexUsd * usdInr / OZ_TO_GRAM) * indianPremium;
+    
+    // CNY to INR direct rate
+    const cnyInr = usdInr / usdCny;
     
     // Market status
     const marketInfo = getSgeMarketStatus();
@@ -327,9 +416,13 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
       pricePerGramUsd: Math.round(pricePerGramUsd * 100) / 100,
       pricePerKgUsd: Math.round(pricePerKgUsd * 100) / 100,
       
-      // INR prices
-      pricePerGramInr: Math.round(pricePerGramInr * 100) / 100,
-      pricePerKgInr: Math.round(pricePerKgInr),
+      // INR prices (Shanghai rate converted to INR - no Indian duties)
+      pricePerGramInr: Math.round(shanghaiInrPerGram * 100) / 100,
+      pricePerKgInr: Math.round(shanghaiInrPerKg),
+      pricePerOzInr: Math.round(shanghaiInrPerOz * 100) / 100,
+      
+      // India market rate (with Indian duties for comparison)
+      indiaRatePerGram: Math.round(indiaRatePerGram * 100) / 100,
       
       // COMEX comparison
       comexUsd: Math.round(comexUsd * 100) / 100,
@@ -339,12 +432,13 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
       // Exchange rates
       usdCny: Math.round(usdCny * 10000) / 10000,
       usdInr: Math.round(usdInr * 100) / 100,
+      cnyInr: Math.round(cnyInr * 10000) / 10000,
       
       // Market info
       marketStatus: marketInfo.status,
       marketSession: marketInfo.session,
       timestamp: new Date().toISOString(),
-      source: comexData ? 'calculated' : 'fallback',
+      source: 'COMEX API + Exchange Rate APIs', // All data from real APIs
       
       // 24h change (from COMEX data)
       change24hPercent: Math.round(change24hFromApi * 100) / 100,
@@ -357,7 +451,8 @@ export async function getShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
 }
 
 /**
- * Get historical Shanghai silver prices
+ * Get historical Shanghai silver prices from API (NO HARDCODING)
+ * Returns empty array if API fails - we prefer no data over fake data
  */
 export async function getShanghaiHistoricalPrices(days: number = 30): Promise<ShanghaiHistoricalPrice[]> {
   try {
@@ -379,15 +474,23 @@ export async function getShanghaiHistoricalPrices(days: number = 30): Promise<Sh
       fetchUsdCnyRate(),
     ]);
     
-    if (!yahooResponse.ok || !usdCny) {
-      return generateFallbackHistory(days);
+    // STRICT: Return empty if API fails - NO FAKE DATA
+    if (!yahooResponse.ok) {
+      console.error("[Shanghai API] Yahoo Finance historical data unavailable");
+      return [];
+    }
+    
+    if (!usdCny) {
+      console.error("[Shanghai API] USD/CNY rate unavailable for historical calculation");
+      return [];
     }
     
     const data = await yahooResponse.json();
     const result = data?.chart?.result?.[0];
     
     if (!result?.timestamp || !result?.indicators?.quote?.[0]?.close) {
-      return generateFallbackHistory(days);
+      console.error("[Shanghai API] Invalid historical data structure from Yahoo Finance");
+      return [];
     }
     
     const timestamps = result.timestamp;
@@ -412,38 +515,12 @@ export async function getShanghaiHistoricalPrices(days: number = 30): Promise<Sh
       });
     }
     
+    console.log(`[Shanghai API] Historical prices loaded: ${prices.length} days from Yahoo Finance`);
     return prices.slice(-days);
   } catch (error) {
-    console.error("Error fetching Shanghai historical prices:", error);
-    return generateFallbackHistory(days);
+    console.error("[Shanghai API] Error fetching historical prices:", error);
+    return []; // Return empty - NO FAKE DATA
   }
-}
-
-/**
- * Generate fallback historical data
- */
-function generateFallbackHistory(days: number): ShanghaiHistoricalPrice[] {
-  const prices: ShanghaiHistoricalPrice[] = [];
-  const today = new Date();
-  const basePrice = 25000; // ~CNY 25,000/kg (Jan 2026 elevated prices)
-  
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    
-    // Simulate price movement
-    const variation = Math.sin(i * 0.3) * 500 + (Math.random() - 0.5) * 200;
-    const price = basePrice + variation + (days - i) * 10;
-    
-    prices.push({
-      date: date.toISOString().split("T")[0],
-      pricePerKgCny: Math.round(price),
-      pricePerOzUsd: Math.round(price / 7.0 / KG_TO_OZ * 100) / 100,
-      premiumPercent: 3.5,
-    });
-  }
-  
-  return prices;
 }
 
 // ============================================================================

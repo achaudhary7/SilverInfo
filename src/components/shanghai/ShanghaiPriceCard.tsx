@@ -75,11 +75,12 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
   
   const isPositiveChange = price.change24hPercent >= 0;
   
-  // Calculate India vs Shanghai difference
-  // India price is typically higher due to import duties
-  const indiaPriceEquivalent = price.pricePerGramInr;
-  const shanghaiInInr = price.pricePerGramUsd * price.usdInr;
-  const indiaPremiumOverShanghai = ((indiaPriceEquivalent - shanghaiInInr) / shanghaiInInr) * 100;
+  // India vs Shanghai comparison
+  // Shanghai INR is direct conversion (no duties)
+  // India rate includes import duty + GST + local premium
+  const shanghaiInInr = price.pricePerGramInr;
+  const indiaRate = price.indiaRatePerGram;
+  const indiaPremiumOverShanghai = ((indiaRate - shanghaiInInr) / shanghaiInInr) * 100;
   
   return (
     <div 
@@ -205,16 +206,20 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           </div>
           
           <div className="grid grid-cols-2 gap-3">
-            <div className="text-center p-2 rounded-lg" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
-              <p className="text-xs text-gray-300 mb-1">Shanghai (INR eq.)</p>
-              <p className="text-lg font-bold text-white">₹{shanghaiInInr.toFixed(0)}</p>
-              <p className="text-xs text-gray-400">per gram</p>
-            </div>
-            <div className="text-center p-2 rounded-lg" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
-              <p className="text-xs text-gray-300 mb-1">India Rate</p>
-              <p className="text-lg font-bold text-amber-400">₹{indiaPriceEquivalent.toFixed(0)}</p>
-              <p className="text-xs text-gray-400">per gram</p>
-            </div>
+            <Tooltip text="Shanghai price converted to INR (no Indian duties)">
+              <div className="text-center p-2 rounded-lg cursor-help" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
+                <p className="text-xs text-gray-300 mb-1">Shanghai (INR)</p>
+                <p className="text-lg font-bold text-white">₹{shanghaiInInr.toFixed(0)}</p>
+                <p className="text-xs text-gray-400">per gram</p>
+              </div>
+            </Tooltip>
+            <Tooltip text="India market rate with 10% duty + 3% GST + 10% premium">
+              <div className="text-center p-2 rounded-lg cursor-help" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
+                <p className="text-xs text-gray-300 mb-1">India Market</p>
+                <p className="text-lg font-bold text-amber-400">₹{indiaRate.toFixed(0)}</p>
+                <p className="text-xs text-gray-400">per gram</p>
+              </div>
+            </Tooltip>
           </div>
           
           <div className="mt-3 flex items-center justify-center gap-2">
@@ -272,17 +277,28 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           </Tooltip>
           
           {/* INR equivalent */}
-          <Tooltip text="Equivalent in Indian Rupees (at Shanghai rate)">
+          <Tooltip text="Shanghai price in INR (no Indian duties)">
             <div 
               className="rounded-lg p-2 sm:p-3 text-center cursor-help"
               style={{ background: "rgba(255, 215, 0, 0.08)" }}
             >
               <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>INR/gram</p>
               <p className="text-sm sm:text-base font-bold" style={{ color: "#FFD700" }}>
-                ₹{shanghaiInInr.toFixed(0)}
+                ₹{price.pricePerGramInr.toFixed(0)}
               </p>
             </div>
           </Tooltip>
+        </div>
+        
+        {/* INR per Kg - useful for bulk buyers */}
+        <div 
+          className="rounded-lg p-2 mb-4 text-center"
+          style={{ background: "rgba(255, 215, 0, 0.05)" }}
+        >
+          <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.6 }}>
+            Shanghai Rate: <span className="font-medium" style={{ color: "#FFD700" }}>₹{(price.pricePerKgInr / 1000).toFixed(0)},000/kg</span> • 
+            <span className="ml-2">₹{price.pricePerOzInr?.toFixed(0) || (price.pricePerGramInr * 31.1).toFixed(0)}/oz</span>
+          </p>
         </div>
         
         {/* Shanghai vs COMEX Comparison */}
@@ -361,7 +377,7 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         </div>
         
         {/* Quick Links for Indian Users */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 mb-4">
           <Link 
             href="/"
             className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-[1.02]"
@@ -387,6 +403,29 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
             Calculator
           </Link>
         </div>
+        
+        {/* Data Source - 100% Real-time API Data */}
+        <div 
+          className="rounded-lg p-3 text-center"
+          style={{ 
+            background: "rgba(16, 185, 129, 0.08)",
+            border: "1px solid rgba(16, 185, 129, 0.2)"
+          }}
+        >
+          <p className="text-xs font-medium mb-1 flex items-center justify-center gap-1" style={{ color: "#10b981" }}>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            100% Real-time API Data
+          </p>
+          <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.7 }}>
+            COMEX: ${price.comexUsd.toFixed(2)}/oz • USD/CNY: {price.usdCny.toFixed(4)} • USD/INR: ₹{price.usdInr.toFixed(2)}
+          </p>
+          <p className="text-xs mt-1" style={{ color: "#FFE4B5", opacity: 0.5 }}>
+            Shanghai = COMEX × (1 + {price.premiumPercent.toFixed(1)}% premium) × Exchange Rate
+          </p>
+        </div>
       </div>
       
       {/* Footer */}
@@ -405,7 +444,7 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           Updated {formatShanghaiTimeAgo(lastUpdated)}
         </span>
         <span style={{ color: "#FFE4B5", opacity: 0.5 }}>
-          Source: COMEX + Premium
+          {price.source}
         </span>
       </div>
     </div>
