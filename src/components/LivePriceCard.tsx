@@ -265,7 +265,6 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
       {/* Today's High/Low Section - Compact Display */}
       {(() => {
         // Determine which high/low values to use
-        // Priority: tracked todayHigh/todayLow if different, else fall back to estimated high24h/low24h
         const hasRealTracking = price.todayHigh && price.todayLow && price.todayHigh > price.todayLow;
         const displayHigh = hasRealTracking ? price.todayHigh : price.high24h;
         const displayLow = hasRealTracking ? price.todayLow : price.low24h;
@@ -278,76 +277,89 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
           return null;
         }
         
+        // Calculate additional metrics
+        const range = displayHigh - displayLow;
+        const rangePercent = ((range / displayLow) * 100).toFixed(2);
+        const positionPercent = Math.round(((price.pricePerGram - displayLow) / range) * 100);
+        const fromHigh = (price.pricePerGram - displayHigh).toFixed(2);
+        const fromLow = (price.pricePerGram - displayLow).toFixed(2);
+        
         return (
           <div className="mt-4 pt-4 border-t border-gray-100">
+            {/* High/Low Cards */}
             <div className="grid grid-cols-2 gap-2">
-              {/* Today's High - Compact */}
-              <div className="bg-green-50 rounded-lg p-2 sm:p-3 border border-green-200">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] sm:text-xs font-medium text-green-700 flex items-center gap-1">
-                    <span className="hidden sm:inline">📈</span> High
-                    {isEstimated && <span className="text-[8px] text-green-500">~</span>}
+              {/* Today's High */}
+              <div className="bg-green-50 rounded-lg p-2 border border-green-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] sm:text-[10px] font-medium text-green-700">
+                    Today&apos;s High {isEstimated && <span className="text-green-500">~</span>}
                   </span>
-                  {/* Only show NOW badge for real tracking data */}
                   {!isEstimated && price.pricePerGram >= displayHigh * 0.999 && (
-                    <span className="text-[8px] sm:text-[10px] font-bold text-green-800 bg-green-200 px-1 py-0.5 rounded">
-                      🔥
-                    </span>
+                    <span className="text-[8px] font-bold text-green-800 bg-green-200 px-1 rounded">🔥</span>
                   )}
                 </div>
-                <p className="text-base sm:text-lg font-bold text-green-700">
-                  {formatIndianPrice(displayHigh)}
-                </p>
-                {highTime ? (
-                  <p className="text-[9px] sm:text-[10px] text-green-600/70">
-                    {formatHighLowTime(highTime)}
+                <div className="flex items-baseline justify-between">
+                  <p className="text-sm sm:text-base font-bold text-green-700">
+                    {formatIndianPrice(displayHigh)}
                   </p>
-                ) : isEstimated && (
-                  <p className="text-[9px] text-green-500/60">est. range</p>
-                )}
+                  {highTime && (
+                    <span className="text-[8px] text-green-600/60">{formatHighLowTime(highTime)}</span>
+                  )}
+                </div>
+                {/* Distance from high */}
+                <p className="text-[8px] text-green-600/70 mt-0.5">
+                  {Number(fromHigh) <= 0 ? `${fromHigh}` : `+${fromHigh}`} from current
+                </p>
               </div>
               
-              {/* Today's Low - Compact */}
-              <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] sm:text-xs font-medium text-red-700 flex items-center gap-1">
-                    <span className="hidden sm:inline">📉</span> Low
-                    {isEstimated && <span className="text-[8px] text-red-500">~</span>}
+              {/* Today's Low */}
+              <div className="bg-red-50 rounded-lg p-2 border border-red-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] sm:text-[10px] font-medium text-red-700">
+                    Today&apos;s Low {isEstimated && <span className="text-red-500">~</span>}
                   </span>
-                  {/* Only show NOW badge for real tracking data */}
                   {!isEstimated && price.pricePerGram <= displayLow * 1.001 && (
-                    <span className="text-[8px] sm:text-[10px] font-bold text-red-800 bg-red-200 px-1 py-0.5 rounded">
-                      ⚠️
-                    </span>
+                    <span className="text-[8px] font-bold text-red-800 bg-red-200 px-1 rounded">⚠️</span>
                   )}
                 </div>
-                <p className="text-base sm:text-lg font-bold text-red-700">
-                  {formatIndianPrice(displayLow)}
-                </p>
-                {lowTime ? (
-                  <p className="text-[9px] sm:text-[10px] text-red-600/70">
-                    {formatHighLowTime(lowTime)}
+                <div className="flex items-baseline justify-between">
+                  <p className="text-sm sm:text-base font-bold text-red-700">
+                    {formatIndianPrice(displayLow)}
                   </p>
-                ) : isEstimated && (
-                  <p className="text-[9px] text-red-500/60">est. range</p>
-                )}
+                  {lowTime && (
+                    <span className="text-[8px] text-red-600/60">{formatHighLowTime(lowTime)}</span>
+                  )}
+                </div>
+                {/* Distance from low */}
+                <p className="text-[8px] text-red-600/70 mt-0.5">
+                  {Number(fromLow) >= 0 ? `+${fromLow}` : fromLow} from current
+                </p>
               </div>
             </div>
             
-            {/* Day Range Bar - More Compact */}
-            <div className="mt-2 px-1">
-              <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            {/* Range Bar with Stats */}
+            <div className="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-gray-500">Day Range</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-medium text-gray-700">₹{range.toFixed(2)} ({rangePercent}%)</span>
+                  <span className="text-[8px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-medium">
+                    {positionPercent}% up
+                  </span>
+                </div>
+              </div>
+              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-sm border-2 border-white z-10"
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-sm border-2 border-white z-10"
                   style={{
-                    left: `${Math.max(5, Math.min(95, ((price.pricePerGram - displayLow) / (displayHigh - displayLow)) * 100))}%`,
+                    left: `${Math.max(5, Math.min(95, positionPercent))}%`,
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-200 to-green-300 opacity-70" />
               </div>
-              <div className="flex justify-between text-[9px] text-gray-400 mt-0.5">
-                <span>₹{displayLow.toFixed(0)}</span>
-                <span>₹{displayHigh.toFixed(0)}</span>
+              <div className="flex justify-between text-[8px] text-gray-400 mt-0.5">
+                <span>Low ₹{displayLow.toFixed(0)}</span>
+                <span>High ₹{displayHigh.toFixed(0)}</span>
               </div>
             </div>
           </div>
