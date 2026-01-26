@@ -6,52 +6,145 @@ import { DynamicPriceChart, DynamicMiniChart } from "@/components/DynamicChart";
 import { DynamicCityTable, DynamicCalculator, DynamicFAQ } from "@/components/DynamicComponents";
 import WhyPriceChangedTeaser from "@/components/WhyPriceChangedTeaser";
 import WhyPriceChangedFull from "@/components/WhyPriceChangedFull";
+import PriceDifferenceExplainer from "@/components/PriceDifferenceExplainer";
+import SilverPurityGuide from "@/components/SilverPurityGuide";
+import MarketFactorsDetailed from "@/components/MarketFactorsDetailed";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
 export const revalidate = 600;
 
 // FAQ Data - Optimized for Google Featured Snippets (<300 chars per answer)
+// Includes Hindi/vernacular keywords for voice search optimization
 const faqItems: FAQItem[] = [
+  // === PRICE QUERIES (English + Hindi) ===
   {
     question: "What is the current silver rate in India today?",
     answer:
       "Silver rates are derived from COMEX prices + USD/INR exchange rate, refreshed every 30 seconds. Retail prices vary 2-5% due to local taxes. Check our live price card above for the current rate.",
   },
   {
+    question: "Aaj ka chandi ka bhav kya hai? (आज का चांदी का भाव)",
+    answer:
+      "Aaj ka chandi rate COMEX international price aur USD/INR exchange rate se calculate hota hai. Humare live price card mein current rate dekh sakte hain. Rate har 30 second mein update hota hai.",
+  },
+  {
     question: "How is silver price per gram calculated in India?",
     answer:
-      "Formula: (COMEX USD price ÷ 31.1035 grams) × USD/INR rate + Import duty (7.5%) + GST (3%). See our methodology page for the complete calculation breakdown.",
+      "Formula: (COMEX USD price ÷ 31.1035 grams) × USD/INR rate × (1 + 10% import duty) × (1 + 3% GST). See our methodology page for the complete calculation breakdown.",
+  },
+  // === PRICE DIFFERENCE ===
+  {
+    question: "Why is online silver price different from local jeweler?",
+    answer:
+      "Online shows spot price (raw silver). Jewelers add: making charges (8-15%), wastage (2-5%), hallmark premium, shop overhead, and GST on total. Jewelry costs 15-25% more than spot rate.",
+  },
+  {
+    question: "Why is silver cheaper at bullion dealers than jewelers?",
+    answer:
+      "Bullion dealers sell bars/coins with minimal making charges (0-3%). Jewelers charge 8-15% making + 2-5% wastage for craftsmanship. For investment, buy bullion. For jewelry, compare jewelers.",
+  },
+  // === PURITY QUERIES ===
+  {
+    question: "What is 999 silver price today per gram?",
+    answer:
+      "999 silver (99.9% pure/Fine Silver) is priced at the full spot rate shown above. It's the purest commercially available silver, ideal for investment bars and coins. No purity deduction applies.",
+  },
+  {
+    question: "What is 925 sterling silver price per gram?",
+    answer:
+      "925 sterling silver = 92.5% pure. Price = Spot rate × 0.925. If spot is ₹95/gram, 925 silver = ~₹88/gram. Sterling is preferred for jewelry due to better durability than pure silver.",
   },
   {
     question: "What is the difference between 999 and 925 silver?",
     answer:
-      "999 silver = 99.9% pure, ideal for coins/bars. 925 sterling = 92.5% silver + 7.5% copper for durability, preferred for jewelry. Price difference is about 7.5%.",
+      "999 silver = 99.9% pure, soft, ideal for coins/bars. 925 sterling = 92.5% silver + 7.5% copper for durability, preferred for jewelry. Price difference is about 7.5%.",
   },
+  {
+    question: "Chandi ki shudhta kaise check karein? (चांदी की शुद्धता)",
+    answer:
+      "BIS Hallmark dekhein - 999, 925, ya 900 number hona chahiye. Magnet test karein (silver magnet se attract nahi hoti). Ice test - silver par ice tezi se pighalti hai. Jeweler se certificate lein.",
+  },
+  // === MARKET FACTORS ===
   {
     question: "What factors affect silver prices in India?",
     answer:
-      "Four key factors: (1) COMEX international prices, (2) USD/INR rate, (3) Import duty & GST, (4) Seasonal demand (peaks during Dhanteras/weddings). See our charts for trends.",
+      "Four key factors: (1) COMEX international prices, (2) USD/INR rate, (3) Import duty (10%) & GST (3%), (4) Seasonal demand (peaks during Dhanteras/weddings). See our market factors section.",
   },
   {
-    question: "What are making charges for silver jewelry?",
+    question: "What is MCX silver and how does it affect prices?",
     answer:
-      "Making charges range 6-15% of silver value. Machine-made: ~6-8%, Handcrafted: ~12-15%. Our calculator includes making charges in the total cost estimate.",
+      "MCX (Multi Commodity Exchange) is India's commodity exchange where silver futures trade. MCX price = COMEX + 8-12% local premium. MCX sets the benchmark for domestic silver rates.",
   },
+  {
+    question: "How does USD-INR exchange rate affect silver price?",
+    answer:
+      "Silver is priced in USD globally. When rupee weakens (USD/INR rises), silver becomes costlier in INR. 1% rupee fall ≈ 1% silver price increase. Check our market factors for live USD/INR.",
+  },
+  {
+    question: "What is the import duty on silver in India?",
+    answer:
+      "Total import duty = 10% (7.5% Basic Customs Duty + 2.5% AIDC). Plus 3% IGST. Effective landed cost is ~13-14% above international price. Duty changes in Union Budget affect prices.",
+  },
+  // === GST & TAXES ===
   {
     question: "Is GST applicable on silver purchases in India?",
     answer:
-      "Yes, 3% GST applies to all silver purchases (bars, coins, jewelry). Calculated on: Silver value + Making charges. Our calculator includes GST automatically.",
+      "Yes, 3% GST applies to silver metal value (bars, coins, jewelry). Making charges attract 5% GST separately. Our calculator includes both GST rates automatically.",
   },
+  {
+    question: "Chandi par GST kitna lagta hai? (चांदी पर GST)",
+    answer:
+      "Chandi par 3% GST lagta hai metal value par. Making charges par alag se 5% GST lagta hai. Total bill = Silver value + Making + 3% GST on silver + 5% GST on making.",
+  },
+  {
+    question: "Can I buy silver without GST in India?",
+    answer:
+      "No, GST is mandatory on all silver purchases. However, old silver exchange (with proper documentation) may have reduced GST. Always get proper invoice for future selling.",
+  },
+  // === BUYING & INVESTMENT ===
+  {
+    question: "What are making charges for silver jewelry?",
+    answer:
+      "Making charges range 6-15% of silver value. Machine-made: ~6-8%, Handcrafted: ~12-15%. Temple jewelry/antique designs: up to 20%. Our calculator includes making charges.",
+  },
+  {
+    question: "Is silver a good investment in 2026?",
+    answer:
+      "Silver has dual demand: investment + industrial (solar panels, EVs). It's more volatile than gold but offers higher growth potential. Consider 5-10% portfolio allocation. Consult a financial advisor.",
+  },
+  {
+    question: "What is the best way to buy silver in India?",
+    answer:
+      "For investment: Buy 999 purity bars/coins from banks or trusted dealers. For jewelry: Buy BIS hallmarked 925 from reputed jewelers. Digital silver (SGBs) offers storage-free option.",
+  },
+  // === CITY & REGIONAL ===
   {
     question: "How do silver rates vary across different cities in India?",
     answer:
-      "Silver varies ₹50-200 per 10g across cities due to local taxes and dealer margins. Metro cities typically have competitive rates. Check our city-wise table above.",
+      "Silver varies ₹50-200 per 10g across cities due to local taxes, transportation, and dealer margins. Mumbai/Delhi have competitive rates. South India typically 1-2% higher.",
   },
+  // === MEASUREMENT ===
   {
     question: "What is a tola in silver measurement?",
     answer:
-      "Tola = traditional Indian weight unit. 1 tola = 11.6638 grams. Commonly used for jewelry in India. Our calculator converts between grams, tola, and kg instantly.",
+      "Tola = traditional Indian weight unit. 1 tola = 11.6638 grams. Commonly used for jewelry in North India. Our calculator converts between grams, tola, and kg instantly.",
+  },
+  {
+    question: "How many grams in 1 kg silver?",
+    answer:
+      "1 kg = 1000 grams of silver. Silver is typically quoted per gram or per kg in India. 1 kg also equals ~85.7 tolas. Use our calculator for quick conversions.",
+  },
+  // === SEASONAL ===
+  {
+    question: "When is the best time to buy silver in India?",
+    answer:
+      "Prices typically dip in Jan-Feb (post-wedding) and July-Aug (monsoon). Peaks during Oct-Nov (Dhanteras/Diwali) and Feb-May (wedding season). Buy on dips, avoid festival rush.",
+  },
+  {
+    question: "Why does silver price increase during Dhanteras?",
+    answer:
+      "Dhanteras = auspicious day for buying precious metals. High demand + limited supply = price surge of 2-5%. Jewelers stock up early, creating pre-festival price rise. Buy 2-3 weeks before.",
   },
 ];
 
@@ -401,6 +494,12 @@ export default async function HomePage() {
               <a href="#city-prices" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
                 City Prices
               </a>
+              <a href="#price-difference" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Price Difference
+              </a>
+              <a href="#purity-guide" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
+                Purity Guide
+              </a>
               <a href="#faq" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-200 hover:border-[#1e3a5f] transition-colors">
                 FAQ
               </a>
@@ -599,36 +698,79 @@ export default async function HomePage() {
           </div>
         </section>
         
-        {/* SEO Content Section - Collapsible on mobile */}
+        {/* Educational Content Sections */}
         <section className="py-6 sm:py-12 bg-gray-50">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="prose prose-gray max-w-none">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                Silver Rate Today in India - Live Price Updates
-              </h2>
-              <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                Welcome to SilverInfo.in, India&apos;s trusted source for indicative silver prices.
-                Our platform provides silver rate estimates calculated from international spot prices 
-                (COMEX) and USD/INR exchange rates, with live updates every 30 seconds.
-              </p>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-3">
-                Understanding Silver Prices in India
-              </h3>
-              <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                Silver prices in India are influenced by multiple factors including international
-                spot prices, USD/INR exchange rates, import duties, and local demand. The price
-                typically varies by ₹50-200 across different cities.
-              </p>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-3">
-                How to Use Our Silver Calculator
-              </h3>
-              <p className="text-xs sm:text-base text-gray-600 leading-relaxed">
-                Our silver price calculator helps you determine the exact cost of silver based
-                on weight, purity, and making charges. Simply enter the weight in grams, select
-                the purity, and add making charges. The calculator includes 3% GST automatically.
-              </p>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+
+            {/* Price Difference Section */}
+            <div id="price-difference" className="scroll-mt-20">
+              <PriceDifferenceExplainer />
+            </div>
+
+            {/* Purity Guide Section */}
+            <div id="purity-guide" className="scroll-mt-20">
+              <SilverPurityGuide />
+            </div>
+
+            {/* Market Factors Detailed Section */}
+            <div id="market-factors-detailed" className="scroll-mt-20">
+              <MarketFactorsDetailed />
+            </div>
+
+            {/* SEO Text Content */}
+            <div className="card p-4 sm:p-6 lg:p-8">
+              <div className="prose prose-gray max-w-none">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+                  Silver Rate Today in India - Live Price Updates
+                </h2>
+                <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                  Welcome to SilverInfo.in, India&apos;s trusted source for indicative silver prices
+                  (<span className="font-medium">chandi ka bhav</span>). Our platform provides silver rate estimates
+                  calculated from international spot prices (COMEX) and USD/INR exchange rates, with live updates
+                  every 30 seconds. Whether you&apos;re searching for &quot;aaj ka chandi rate&quot; or &quot;silver price today&quot;,
+                  we&apos;ve got you covered.
+                </p>
+
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-3">
+                  Understanding Silver Prices in India (चांदी की कीमत)
+                </h3>
+                <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                  Silver prices in India are influenced by multiple factors: international COMEX prices,
+                  USD/INR exchange rates, import duties (10%), GST (3%), and seasonal demand. The price
+                  typically varies by ₹50-200 across different cities due to local taxes and transportation costs.
+                  MCX (Multi Commodity Exchange) serves as the primary price discovery mechanism for domestic silver.
+                </p>
+
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-3">
+                  Silver Purity: 999 vs 925 vs 900
+                </h3>
+                <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
+                  <strong>999 Fine Silver</strong> (99.9% pure) is ideal for investment bars and coins.
+                  <strong> 925 Sterling Silver</strong> (92.5% pure) is preferred for jewelry due to better durability.
+                  <strong> 900 Coin Silver</strong> (90% pure) is common in collectible coins. Always look for
+                  BIS Hallmark to verify purity before purchase.
+                </p>
+
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6 mb-2 sm:mb-3">
+                  How to Use Our Silver Calculator
+                </h3>
+                <p className="text-xs sm:text-base text-gray-600 leading-relaxed">
+                  Our silver price calculator helps you determine the exact cost of silver based
+                  on weight, purity, and making charges. Simply enter the weight in grams, select
+                  the purity (999, 925, or 900), and add making charges (6-15%). The calculator
+                  includes 3% GST on silver value and 5% GST on making charges automatically.
+                </p>
+              </div>
+
+              {/* Hindi Keywords Section - Hidden but indexed */}
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <p className="text-xs text-gray-400">
+                  <strong>Also searched:</strong> chandi rate today, aaj ka chandi ka bhav,
+                  silver ka rate aaj, चांदी का भाव, चांदी की कीमत, 999 silver price,
+                  925 sterling silver rate, chandi ki keemat, silver rate in Delhi Mumbai Chennai Bangalore,
+                  MCX silver rate, import duty on silver, GST on chandi
+                </p>
+              </div>
             </div>
           </div>
         </section>
