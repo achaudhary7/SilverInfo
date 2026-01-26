@@ -441,10 +441,18 @@ export default async function HomePage() {
                     </div>
                     {(() => {
                       const last7Days = historicalPrices.slice(-7).map((p) => p.price);
-                      const weekLow = Math.min(...last7Days);
-                      const weekHigh = Math.max(...last7Days);
+                      // Include current live price AND today's tracked high in calculation
+                      // This ensures today's intraday extremes are reflected
+                      const currentPrice = price.pricePerGram;
+                      const todayHigh = price.todayHigh || currentPrice;
+                      const todayLow = price.todayLow || currentPrice;
+                      const allPricesForHigh = [...last7Days, todayHigh];
+                      const allPricesForLow = [...last7Days, todayLow];
+                      const weekLow = Math.min(...allPricesForLow);
+                      const weekHigh = Math.max(...allPricesForHigh);
                       const weekAvg = last7Days.reduce((a, b) => a + b, 0) / last7Days.length;
-                      const isNewHigh = price.pricePerGram > weekHigh;
+                      // Check if today's high is the week high
+                      const isAtHigh = todayHigh >= weekHigh;
                       return (
                         <div className="grid grid-cols-3 gap-2 mt-3 pt-2 border-t border-gray-100">
                           <div className="text-center">
@@ -459,7 +467,7 @@ export default async function HomePage() {
                             <p className="text-[10px] text-gray-500">High</p>
                             <p className="text-xs font-semibold text-green-600">
                               ₹{weekHigh.toFixed(0)}
-                              {isNewHigh && <span className="ml-0.5">🔥</span>}
+                              {isAtHigh && <span className="ml-0.5">🔥</span>}
                             </p>
                           </div>
                         </div>

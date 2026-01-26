@@ -710,11 +710,30 @@ async function generateFallbackHistoricalPrices(days: number): Promise<Historica
 export async function getSilverPriceWithChange(): Promise<SilverPrice> {
   const price = await getSilverPrice();
   
+  // Result to be populated
+  let result: SilverPrice = { ...price };
+  
   // Only try local storage on server side
   if (typeof window === "undefined") {
     try {
-      // Try to get yesterday's price from local storage first
-      const { getYesterdayPrice } = await import("./priceStorage");
+      // Try to get yesterday's price and today's extremes from local storage
+      const { getYesterdayPrice, updateDailyExtremes } = await import("./priceStorage");
+      
+      // Update and get daily extremes (tracks actual high/low for today)
+      try {
+        const extremes = await updateDailyExtremes(price.pricePerGram);
+        if (extremes) {
+          result.todayHigh = extremes.high;
+          result.todayHighTime = extremes.highTime;
+          result.todayLow = extremes.low;
+          result.todayLowTime = extremes.lowTime;
+          result.todayOpen = extremes.openPrice;
+        }
+      } catch (extremesError) {
+        console.log("Could not update daily extremes:", extremesError);
+      }
+      
+      // Get yesterday's price for 24h change
       const storedYesterday = await getYesterdayPrice();
       
       if (storedYesterday) {
@@ -726,18 +745,17 @@ export async function getSilverPriceWithChange(): Promise<SilverPrice> {
         
         console.log(`24h change from stored data: ₹${change24h.toFixed(2)} (${changePercent24h.toFixed(2)}%)`);
         
-        return {
-          ...price,
-          change24h: Math.round(change24h * 100) / 100,
-          changePercent24h: Math.round(changePercent24h * 100) / 100,
-        };
+        result.change24h = Math.round(change24h * 100) / 100;
+        result.changePercent24h = Math.round(changePercent24h * 100) / 100;
+        
+        return result;
       }
     } catch (error) {
       console.log("Local storage not available, falling back to API historical data");
     }
   }
   
-  // Fallback: Use historical API data
+  // Fallback: Use historical API data for 24h change
   try {
     const historicalPrices = await getHistoricalPrices(7);
     
@@ -748,17 +766,16 @@ export async function getSilverPriceWithChange(): Promise<SilverPrice> {
       const change24h = todayPrice - yesterdayPrice;
       const changePercent24h = (change24h / yesterdayPrice) * 100;
       
-      return {
-        ...price,
-        change24h: Math.round(change24h * 100) / 100,
-        changePercent24h: Math.round(changePercent24h * 100) / 100,
-      };
+      result.change24h = Math.round(change24h * 100) / 100;
+      result.changePercent24h = Math.round(changePercent24h * 100) / 100;
+      
+      return result;
     }
   } catch (error) {
     console.error("Error getting historical prices for 24h change:", error);
   }
   
-  return price;
+  return result;
 }
 
 /**
