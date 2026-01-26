@@ -7,6 +7,7 @@ const PAGE_DATES: Record<string, string> = {
   "/": "2026-01-26",
   "/silver-rate-today": "2026-01-26",
   "/gold": "2026-01-26",
+  "/shanghai-silver-price": "2026-01-26",
   "/qatar/silver-rate-today": "2026-01-26",
   "/silver-price-calculator": "2026-01-26",
   "/investment-calculator": "2026-01-26",
@@ -47,6 +48,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/gold`,
       lastModified: PAGE_DATES["/gold"] || currentDate,
+      changeFrequency: "hourly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/shanghai-silver-price`,
+      lastModified: PAGE_DATES["/shanghai-silver-price"] || currentDate,
       changeFrequency: "hourly",
       priority: 0.9,
     },
