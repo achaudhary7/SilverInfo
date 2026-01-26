@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
-// Page content last reviewed date
-const LAST_UPDATED = "2026-01-23";
+// Page content last reviewed date - now dynamic
+const LAST_UPDATED = new Date().toISOString().split('T')[0];
 
 export const metadata: Metadata = {
   title: "About Us - SilverInfo.in",

@@ -263,7 +263,7 @@ export default async function HomePage() {
                 </Link>
               </p>
               <p className="text-[10px] sm:text-xs text-gray-400">
-                Content last reviewed: 23 January 2026
+                Content last reviewed: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
             

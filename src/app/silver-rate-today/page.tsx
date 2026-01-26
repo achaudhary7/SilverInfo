@@ -13,8 +13,8 @@ import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib
 
 export const revalidate = 600;
 
-// Page content last reviewed date
-const LAST_UPDATED = "2026-01-23";
+// Page content last reviewed date - now dynamic
+const LAST_UPDATED = new Date().toISOString().split('T')[0];
 
 export const metadata: Metadata = {
   title: "Silver Rate Today - Live Silver Price per Gram in India",
