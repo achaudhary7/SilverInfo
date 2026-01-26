@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI/IDE tools
+.claude/
+.cursor/
+
+# Windows artifacts
+nul
+
+# Project planning
+plan.txt
