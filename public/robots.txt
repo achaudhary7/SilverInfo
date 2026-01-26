@@ -4,9 +4,10 @@
 User-agent: *
 Allow: /
 
-# Sitemaps
+# Sitemaps (including image sitemap for Google Discover)
 Sitemap: https://silverinfo.in/sitemap.xml
 Sitemap: https://silverinfo.in/news-sitemap.xml
+Sitemap: https://silverinfo.in/image-sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1
