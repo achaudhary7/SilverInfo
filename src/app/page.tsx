@@ -146,6 +146,61 @@ const faqItems: FAQItem[] = [
     answer:
       "Dhanteras = auspicious day for buying precious metals. High demand + limited supply = price surge of 2-5%. Jewelers stock up early, creating pre-festival price rise. Buy 2-3 weeks before.",
   },
+  // === RESALE & SELLING (High-impression keyword!) ===
+  {
+    question: "What is 925 silver resale value in India per gram?",
+    answer:
+      "925 sterling silver resale = Spot rate × 0.925 × 0.85-0.90. Jewelers pay 85-90% of spot for buyback. At ₹95/gram spot, 925 resale ≈ ₹74-79/gram. Hallmarked pieces get better rates.",
+  },
+  {
+    question: "How to sell old silver jewelry in India?",
+    answer:
+      "Options: (1) Local jewelers - immediate payment, 85-90% of spot. (2) Banks - some buy hallmarked silver. (3) Online platforms - Augmont, MMTC-PAMP. Always get multiple quotes.",
+  },
+  // === PURE SILVER / TODAY'S RATE ===
+  {
+    question: "What is today's pure silver rate in India?",
+    answer:
+      "Pure silver (999 fineness) rate is shown live above. Currently calculated from COMEX × USD/INR × import duties. 999 pure silver is used for bars, coins, and investment purposes.",
+  },
+  {
+    question: "What is the current pure silver price per gram?",
+    answer:
+      "Current 999 pure silver price is displayed in our live price card. The rate updates every 30 seconds based on international COMEX prices and RBI exchange rates.",
+  },
+  // === WEIGHT-SPECIFIC CALCULATIONS ===
+  {
+    question: "How much is 100 grams of silver worth in India?",
+    answer:
+      "100g silver value = Current rate × 100 + 3% GST. At ₹95/gram: 100g = ₹9,500 + ₹285 GST = ₹9,785. For jewelry, add 8-15% making charges. Use our calculator for exact values.",
+  },
+  {
+    question: "How much is 500 grams of silver worth?",
+    answer:
+      "500g silver = Current rate × 500 + 3% GST. At ₹95/gram: 500g = ₹47,500 + ₹1,425 GST = ₹48,925. Bulk purchases (1kg+) may get 1-2% dealer discount.",
+  },
+  {
+    question: "What is the value of 1 kg silver in India today?",
+    answer:
+      "1 kg silver = Current rate × 1000 + 3% GST. Check our live price card for per-kg rate. Bulk silver bars (1kg) have lower premiums than small coins.",
+  },
+  // === MCX SPECIFIC ===
+  {
+    question: "How is MCX silver price calculated from COMEX?",
+    answer:
+      "MCX Silver = (COMEX USD/oz × USD/INR ÷ 31.1035) × 1000 × (1 + 10% import duty) + local premium (8-12%). MCX quotes per kg, COMEX quotes per troy ounce.",
+  },
+  // === JEWELRY CALCULATOR ===
+  {
+    question: "How to calculate silver ring price in India?",
+    answer:
+      "Silver ring price = (Weight in grams × Silver rate × Purity) + Making charges (8-15%) + 3% GST on silver + 5% GST on making. Avg ring: 5-15g. Use our calculator.",
+  },
+  {
+    question: "What is silver chain price for 50 grams?",
+    answer:
+      "50g silver chain = (50 × Rate × Purity) + Making (10-12%) + GST. At ₹95/gram for 925 silver: ₹4,394 + ₹527 making + ₹148 GST = ~₹5,069. Hallmark adds ₹50-100.",
+  },
 ];
 
 export default async function HomePage() {
@@ -685,6 +740,39 @@ export default async function HomePage() {
                       <span className="text-xs font-medium text-gray-700">Break-Even</span>
                     </Link>
                   </div>
+                </div>
+                
+                {/* Quick Weight Reference - SEO for weight-specific searches */}
+                <div className="card p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">⚖️ Quick Weight Reference</h3>
+                  <p className="text-[10px] text-gray-500 mb-3">Based on current rate of ₹{price.pricePerGram.toFixed(0)}/gram</p>
+                  <div className="space-y-2">
+                    {[
+                      { weight: 10, label: "10g (Ring)" },
+                      { weight: 50, label: "50g (Chain)" },
+                      { weight: 100, label: "100g" },
+                      { weight: 500, label: "500g" },
+                      { weight: 1000, label: "1 Kg" },
+                    ].map(({ weight, label }) => {
+                      const value = price.pricePerGram * weight;
+                      const withGst = value * 1.03;
+                      return (
+                        <div key={weight} className="flex justify-between items-center py-1.5 border-b border-gray-100 last:border-0">
+                          <span className="text-xs text-gray-600">{label}</span>
+                          <div className="text-right">
+                            <span className="text-sm font-semibold text-gray-900">₹{value.toLocaleString("en-IN", { maximumFractionDigits: 0 })}</span>
+                            <span className="text-[10px] text-gray-400 ml-1">(+GST: ₹{withGst.toLocaleString("en-IN", { maximumFractionDigits: 0 })})</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <Link
+                    href="/silver-price-calculator"
+                    className="block text-center text-xs font-medium text-[#1e3a5f] hover:underline mt-3 py-2 bg-gray-50 rounded-lg"
+                  >
+                    Calculate Custom Weight →
+                  </Link>
                 </div>
                 
                 {/* Ad Placeholder - Hidden on mobile */}
