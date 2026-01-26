@@ -173,21 +173,18 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
           </p>
         </div>
         
-        {/* Right Side: 24h Change + Market Status + Calculate */}
-        <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:space-y-2">
-          {/* 24h Change Badge */}
+        {/* Right Side: Compact badges row */}
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
+          {/* 24h Change Badge with Tooltip */}
           <div className="relative group">
             <div 
-              className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border cursor-help ${changeIndicator.bg} ${changeIndicator.border}`}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full border cursor-help ${changeIndicator.bg} ${changeIndicator.border}`}
             >
-              <span className={`text-xs sm:text-sm font-bold ${changeIndicator.color}`}>
+              <span className={`text-xs font-bold ${changeIndicator.color}`}>
                 {changeIndicator.icon} {Math.abs(price.changePercent24h).toFixed(2)}%
               </span>
-              <svg className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${changeIndicator.color} opacity-60`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
             </div>
-            {/* Tooltip */}
+            {/* 24h Change Tooltip */}
             <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
               <div className="space-y-1">
                 <p className="font-semibold text-gray-300">24h Price Change</p>
@@ -208,33 +205,55 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
               <span className="absolute bottom-full right-4 border-4 border-transparent border-b-gray-900"></span>
             </div>
           </div>
-          <p className="hidden sm:block text-xs text-gray-400">24h change</p>
           
-          {/* Market Status + Calculate Row */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Market Status */}
+          {/* Market Status with Tooltip */}
+          <div className="relative group">
             <div 
-              className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs ${
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full cursor-help ${
                 marketStatus.isOpen 
-                  ? "bg-green-50 text-green-700" 
-                  : "bg-gray-100 text-gray-600"
+                  ? "bg-green-50 text-green-700 border border-green-200" 
+                  : "bg-gray-100 text-gray-600 border border-gray-200"
               }`}
             >
-              <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${
+              <span className={`w-1.5 h-1.5 rounded-full ${
                 marketStatus.isOpen ? "bg-green-500 animate-pulse" : "bg-gray-400"
               }`} />
-              <span className="font-medium hidden sm:inline">{marketStatus.label}</span>
-              <span className="font-medium sm:hidden">{marketStatus.isOpen ? "Open" : "Closed"}</span>
+              <span className="text-[10px] sm:text-xs font-medium">
+                {marketStatus.isOpen ? "MCX" : "Closed"}
+              </span>
             </div>
-            
-            {/* Quick Action Button */}
+            {/* Market Status Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
+              <div className="space-y-1">
+                <p className="font-semibold text-gray-300">Market Status</p>
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-400">MCX:</span>
+                  <span className={marketStatus.isOpen ? "text-green-400" : "text-gray-400"}>
+                    {marketStatus.label}
+                  </span>
+                </div>
+                <p className="text-[10px] text-gray-500 pt-1 border-t border-gray-700">
+                  MCX: Mon-Fri, 9AM-11:30PM IST
+                </p>
+              </div>
+              <span className="absolute bottom-full right-4 border-4 border-transparent border-b-gray-900"></span>
+            </div>
+          </div>
+          
+          {/* Calculator Button with Tooltip */}
+          <div className="relative group">
             <Link
               href="/silver-price-calculator"
-              className="inline-flex items-center gap-1 px-2 py-1 bg-[#1e3a5f] text-white rounded-full text-xs font-medium hover:bg-[#2c5282] transition-colors min-h-[32px] sm:min-h-0"
+              className="inline-flex items-center justify-center w-8 h-8 bg-[#1e3a5f] text-white rounded-full text-sm hover:bg-[#2c5282] transition-colors"
             >
-              <span>🧮</span>
-              <span>→</span>
+              🧮
             </Link>
+            {/* Calculator Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
+              <p className="font-semibold">Silver Calculator</p>
+              <p className="text-[10px] text-gray-400">Calculate price with GST & making charges</p>
+              <span className="absolute bottom-full right-4 border-4 border-transparent border-b-gray-900"></span>
+            </div>
           </div>
         </div>
       </div>
