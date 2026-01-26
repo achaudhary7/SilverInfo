@@ -389,6 +389,9 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           <p className="text-xs mt-1 text-gray-500">
             Shanghai = COMEX × (1 + {price.premiumPercent.toFixed(1)}% premium) × Exchange Rate
           </p>
+          <p className="text-xs mt-2 text-gray-400 italic">
+            Prices are near-real-time indicators and may vary slightly from live exchange quotes.
+          </p>
         </div>
       </div>
       

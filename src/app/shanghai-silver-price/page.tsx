@@ -443,12 +443,19 @@ export default async function ShanghaiSilverPricePage() {
           </section>
 
           {/* Footer Note */}
-          <footer className="text-center">
+          <footer className="text-center bg-white/50 rounded-lg p-4 border border-gray-200">
+            <p className="text-xs text-gray-500 mb-2">
+              <strong>Data Sources:</strong> COMEX via Yahoo Finance • Exchange rates via Frankfurter/ExchangeRate APIs
+            </p>
             <p className="text-xs text-gray-400">
-              Shanghai silver prices are calculated from COMEX futures + estimated Shanghai premium.
+              Prices shown are near-real-time indicators calculated from COMEX + estimated Shanghai premium.
               <br />
-              Actual SGE prices may vary slightly. For official SGE rates, visit sge.com.cn
-              <br />
+              Actual SGE benchmark may vary ±5%. For official rates, visit{" "}
+              <a href="https://www.sge.com.cn" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                sge.com.cn
+              </a>
+            </p>
+            <p className="text-xs text-gray-300 mt-2">
               Last updated: {new Date().toLocaleDateString("en-US", { 
                 day: "numeric", 
                 month: "long", 
