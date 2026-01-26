@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Gradient backgrounds -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a192f"/>
+      <stop offset="50%" style="stop-color:#112240"/>
+      <stop offset="100%" style="stop-color:#1a365d"/>
+    </linearGradient>
+    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e8f0"/>
+      <stop offset="50%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="chartGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#059669;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:0.4"/>
+    </linearGradient>
+    <linearGradient id="saffron" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF9933"/>
+      <stop offset="100%" style="stop-color:#ffb366"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#138808"/>
+      <stop offset="100%" style="stop-color:#1ca01c"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="100" x2="1200" y2="100" stroke="#64748b" stroke-width="1"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="#64748b" stroke-width="1"/>
+    <line x1="0" y1="300" x2="1200" y2="300" stroke="#64748b" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="#64748b" stroke-width="1"/>
+    <line x1="0" y1="500" x2="1200" y2="500" stroke="#64748b" stroke-width="1"/>
+  </g>
+  
+  <!-- Indian Flag Stripes at top -->
+  <rect x="0" y="0" width="1200" height="8" fill="url(#saffron)"/>
+  <rect x="0" y="8" width="1200" height="8" fill="#ffffff"/>
+  <rect x="0" y="16" width="1200" height="8" fill="url(#green)"/>
+  
+  <!-- Ashoka Chakra -->
+  <circle cx="600" cy="12" r="6" fill="none" stroke="#000080" stroke-width="1"/>
+  
+  <!-- Rally Chart Background -->
+  <path d="M100,450 L200,440 L300,420 L400,380 L500,360 L600,340 L700,310 L800,280 L900,250 L1000,220 L1100,200 L1100,530 L100,530 Z" 
+        fill="url(#chartGrad)" opacity="0.6"/>
+  
+  <!-- Rally Chart Line -->
+  <path d="M100,450 L200,440 L300,420 L400,380 L500,360 L600,340 L700,310 L800,280 L900,250 L1000,220 L1100,200" 
+        fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  
+  <!-- Chart points -->
+  <circle cx="400" cy="380" r="8" fill="#10b981" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="700" cy="310" r="8" fill="#10b981" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="1100" cy="200" r="12" fill="#10b981" stroke="#ffffff" stroke-width="3" filter="url(#glow)"/>
+  
+  <!-- Price labels on chart -->
+  <text x="400" y="365" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Jan 23</text>
+  <text x="700" y="295" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Jan 24</text>
+  <text x="1100" y="175" font-family="Arial, sans-serif" font-size="18" fill="#10b981" text-anchor="middle" font-weight="bold">Jan 26</text>
+  
+  <!-- Main Title -->
+  <text x="100" y="100" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#f8fafc">
+    Silver Crosses ₹397
+  </text>
+  
+  <!-- Subtitle with Republic Day -->
+  <text x="100" y="155" font-family="Arial, sans-serif" font-size="32" fill="#94a3b8">
+    Republic Day Rally • 3-Day Winning Streak
+  </text>
+  
+  <!-- Price Box -->
+  <rect x="100" y="185" width="320" height="120" rx="12" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <text x="120" y="225" font-family="Arial, sans-serif" font-size="18" fill="#94a3b8">Today's Price</text>
+  <text x="120" y="275" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="url(#silverGrad)">₹397.73</text>
+  <text x="340" y="275" font-family="Arial, sans-serif" font-size="20" fill="#94a3b8">/gram</text>
+  
+  <!-- Change Badge -->
+  <rect x="450" y="205" width="140" height="50" rx="25" fill="#059669"/>
+  <text x="520" y="238" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#ffffff" text-anchor="middle">↑ +4.65%</text>
+  
+  <!-- Stats boxes -->
+  <rect x="100" y="520" width="180" height="70" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="190" y="548" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">COMEX</text>
+  <text x="190" y="575" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#f8fafc" text-anchor="middle">$103.50/oz</text>
+  
+  <rect x="300" y="520" width="180" height="70" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="390" y="548" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">USD/INR</text>
+  <text x="390" y="575" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#f8fafc" text-anchor="middle">₹91.90</text>
+  
+  <rect x="500" y="520" width="180" height="70" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="590" y="548" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Weekly Gain</text>
+  <text x="590" y="575" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#10b981" text-anchor="middle">+4.65%</text>
+  
+  <!-- SilverInfo Logo/Brand -->
+  <text x="1080" y="600" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#64748b" text-anchor="end">SilverInfo.in</text>
+  
+  <!-- Republic Day Badge -->
+  <circle cx="1050" cy="100" r="50" fill="#FF9933" opacity="0.2"/>
+  <circle cx="1050" cy="100" r="35" fill="#ffffff" opacity="0.9"/>
+  <text x="1050" y="95" font-family="Arial, sans-serif" font-size="12" fill="#0a192f" text-anchor="middle" font-weight="bold">REPUBLIC</text>
+  <text x="1050" y="110" font-family="Arial, sans-serif" font-size="12" fill="#0a192f" text-anchor="middle" font-weight="bold">DAY 2026</text>
+  
+  <!-- Silver bar illustration -->
+  <rect x="750" y="400" width="120" height="60" rx="4" fill="url(#silverGrad)" stroke="#94a3b8" stroke-width="1"/>
+  <text x="810" y="440" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#475569" text-anchor="middle">999</text>
+  <rect x="755" y="405" width="25" height="50" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="785" y="405" width="25" height="50" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="815" y="405" width="25" height="50" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="845" y="405" width="20" height="50" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+</svg>
