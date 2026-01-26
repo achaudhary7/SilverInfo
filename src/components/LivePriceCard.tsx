@@ -259,92 +259,96 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
       </div>
       
       {/* Today's High/Low Section - Compact Display */}
-      {price.todayHigh && price.todayLow && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          {/* Only show if we have meaningful data (high != low) */}
-          {price.todayHigh > price.todayLow ? (
-            <>
-              <div className="grid grid-cols-2 gap-2">
-                {/* Today's High - Compact */}
-                <div className="bg-green-50 rounded-lg p-2 sm:p-3 border border-green-200">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] sm:text-xs font-medium text-green-700 flex items-center gap-1">
-                      <span className="hidden sm:inline">📈</span> High
+      {(() => {
+        // Determine which high/low values to use
+        // Priority: tracked todayHigh/todayLow if different, else fall back to estimated high24h/low24h
+        const hasRealTracking = price.todayHigh && price.todayLow && price.todayHigh > price.todayLow;
+        const displayHigh = hasRealTracking ? price.todayHigh : price.high24h;
+        const displayLow = hasRealTracking ? price.todayLow : price.low24h;
+        const highTime = hasRealTracking ? price.todayHighTime : undefined;
+        const lowTime = hasRealTracking ? price.todayLowTime : undefined;
+        const isEstimated = !hasRealTracking;
+        
+        // Only show if we have valid high/low (different values)
+        if (!displayHigh || !displayLow || displayHigh <= displayLow) {
+          return null;
+        }
+        
+        return (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-2 gap-2">
+              {/* Today's High - Compact */}
+              <div className="bg-green-50 rounded-lg p-2 sm:p-3 border border-green-200">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] sm:text-xs font-medium text-green-700 flex items-center gap-1">
+                    <span className="hidden sm:inline">📈</span> High
+                    {isEstimated && <span className="text-[8px] text-green-500">~</span>}
+                  </span>
+                  {/* Only show NOW badge for real tracking data */}
+                  {!isEstimated && price.pricePerGram >= displayHigh * 0.999 && (
+                    <span className="text-[8px] sm:text-[10px] font-bold text-green-800 bg-green-200 px-1 py-0.5 rounded">
+                      🔥
                     </span>
-                    {/* Only show AT HIGH if not also at low */}
-                    {price.pricePerGram >= price.todayHigh * 0.999 && (
-                      <span className="text-[8px] sm:text-[10px] font-bold text-green-800 bg-green-200 px-1 py-0.5 rounded">
-                        🔥 NOW
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-base sm:text-lg font-bold text-green-700">
-                    {formatIndianPrice(price.todayHigh)}
-                  </p>
-                  {price.todayHighTime && (
-                    <p className="text-[9px] sm:text-[10px] text-green-600/70">
-                      {formatHighLowTime(price.todayHighTime)}
-                    </p>
                   )}
                 </div>
-                
-                {/* Today's Low - Compact */}
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] sm:text-xs font-medium text-red-700 flex items-center gap-1">
-                      <span className="hidden sm:inline">📉</span> Low
-                    </span>
-                    {/* Only show AT LOW if not also at high */}
-                    {price.pricePerGram <= price.todayLow * 1.001 && (
-                      <span className="text-[8px] sm:text-[10px] font-bold text-red-800 bg-red-200 px-1 py-0.5 rounded">
-                        ⚠️ NOW
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-base sm:text-lg font-bold text-red-700">
-                    {formatIndianPrice(price.todayLow)}
+                <p className="text-base sm:text-lg font-bold text-green-700">
+                  {formatIndianPrice(displayHigh)}
+                </p>
+                {highTime ? (
+                  <p className="text-[9px] sm:text-[10px] text-green-600/70">
+                    {formatHighLowTime(highTime)}
                   </p>
-                  {price.todayLowTime && (
-                    <p className="text-[9px] sm:text-[10px] text-red-600/70">
-                      {formatHighLowTime(price.todayLowTime)}
-                    </p>
-                  )}
-                </div>
+                ) : isEstimated && (
+                  <p className="text-[9px] text-green-500/60">est. range</p>
+                )}
               </div>
               
-              {/* Day Range Bar - More Compact */}
-              <div className="mt-2 px-1">
-                <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-sm border-2 border-white z-10"
-                    style={{
-                      left: `${Math.max(5, Math.min(95, ((price.pricePerGram - price.todayLow) / (price.todayHigh - price.todayLow)) * 100))}%`,
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-200 to-green-300 opacity-70" />
+              {/* Today's Low - Compact */}
+              <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] sm:text-xs font-medium text-red-700 flex items-center gap-1">
+                    <span className="hidden sm:inline">📉</span> Low
+                    {isEstimated && <span className="text-[8px] text-red-500">~</span>}
+                  </span>
+                  {/* Only show NOW badge for real tracking data */}
+                  {!isEstimated && price.pricePerGram <= displayLow * 1.001 && (
+                    <span className="text-[8px] sm:text-[10px] font-bold text-red-800 bg-red-200 px-1 py-0.5 rounded">
+                      ⚠️
+                    </span>
+                  )}
                 </div>
-                <div className="flex justify-between text-[9px] text-gray-400 mt-0.5">
-                  <span>₹{price.todayLow.toFixed(0)}</span>
-                  <span>₹{price.todayHigh.toFixed(0)}</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            /* When high == low (just started tracking), show simple message */
-            <div className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
-              <span className="text-gray-500">📊</span>
-              <div className="text-center">
-                <p className="text-xs text-gray-600 font-medium">
-                  Today&apos;s Range: ₹{price.todayHigh.toFixed(2)}
+                <p className="text-base sm:text-lg font-bold text-red-700">
+                  {formatIndianPrice(displayLow)}
                 </p>
-                <p className="text-[10px] text-gray-400">
-                  Tracking started • High/Low will update as price moves
-                </p>
+                {lowTime ? (
+                  <p className="text-[9px] sm:text-[10px] text-red-600/70">
+                    {formatHighLowTime(lowTime)}
+                  </p>
+                ) : isEstimated && (
+                  <p className="text-[9px] text-red-500/60">est. range</p>
+                )}
               </div>
             </div>
-          )}
-        </div>
-      )}
+            
+            {/* Day Range Bar - More Compact */}
+            <div className="mt-2 px-1">
+              <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-sm border-2 border-white z-10"
+                  style={{
+                    left: `${Math.max(5, Math.min(95, ((price.pricePerGram - displayLow) / (displayHigh - displayLow)) * 100))}%`,
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-200 to-green-300 opacity-70" />
+              </div>
+              <div className="flex justify-between text-[9px] text-gray-400 mt-0.5">
+                <span>₹{displayLow.toFixed(0)}</span>
+                <span>₹{displayHigh.toFixed(0)}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       
       {/* Price Grid - Responsive */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4 border-t border-gray-100">

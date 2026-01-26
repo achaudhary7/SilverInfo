@@ -254,14 +254,26 @@ export async function isTodayPriceStored(): Promise<boolean> {
 // ============================================================================
 // DAILY EXTREMES (HIGH/LOW) TRACKING
 // ============================================================================
+// 
+// Uses in-memory cache for serverless environments (Vercel)
+// File storage as backup for local development
+// 
+// Strategy:
+// 1. Check in-memory cache first (fast, works across requests in same instance)
+// 2. Fall back to file storage (works in local dev)
+// 3. If both fail, create new from current price
+// ============================================================================
 
-/**
- * Get the file path for daily extremes
- */
-async function getExtremesFilePath(): Promise<string> {
-  const path = await getPath();
-  return path.join(process.cwd(), "data", "daily-extremes.json");
+// Global in-memory cache (persists across requests in same serverless instance)
+// This is the key fix for Vercel - globalThis persists between requests
+const EXTREMES_CACHE_KEY = 'silverinfo_daily_extremes';
+
+interface GlobalCache {
+  [EXTREMES_CACHE_KEY]?: DailyExtremes;
 }
+
+// Use globalThis for persistence across serverless invocations
+const globalCache = globalThis as unknown as GlobalCache;
 
 /**
  * Get today's date in IST timezone (YYYY-MM-DD)
@@ -275,106 +287,112 @@ function getTodayIST(): string {
 }
 
 /**
- * Read daily extremes from storage
+ * Get the file path for daily extremes (backup storage)
+ */
+async function getExtremesFilePath(): Promise<string> {
+  const path = await getPath();
+  return path.join(process.cwd(), "data", "daily-extremes.json");
+}
+
+/**
+ * Read daily extremes from memory cache or file storage
  */
 export async function readDailyExtremes(): Promise<DailyExtremes | null> {
+  const todayIST = getTodayIST();
+  
+  // 1. Check in-memory cache first (fastest)
+  const cached = globalCache[EXTREMES_CACHE_KEY];
+  if (cached && cached.date === todayIST) {
+    return cached;
+  }
+  
+  // 2. Try file storage (backup for local dev)
   try {
     const fs = await getFs();
     const filePath = await getExtremesFilePath();
     
-    if (!fs.existsSync(filePath)) {
-      return null;
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, "utf-8");
+      const extremes = JSON.parse(data) as DailyExtremes;
+      
+      if (extremes.date === todayIST) {
+        // Update memory cache from file
+        globalCache[EXTREMES_CACHE_KEY] = extremes;
+        return extremes;
+      }
     }
-    
-    const data = fs.readFileSync(filePath, "utf-8");
-    const extremes = JSON.parse(data) as DailyExtremes;
-    
-    // Check if it's today's data (IST)
-    const todayIST = getTodayIST();
-    if (extremes.date !== todayIST) {
-      console.log(`Daily extremes data is from ${extremes.date}, today is ${todayIST}. Resetting.`);
-      return null;
-    }
-    
-    return extremes;
   } catch (error) {
-    console.error("Error reading daily extremes:", error);
-    return null;
+    // File storage might not work on Vercel, that's OK
+    console.log("[DailyExtremes] File storage unavailable, using memory only");
   }
+  
+  return null;
 }
 
 /**
  * Update daily extremes with a new price
- * Call this whenever a new price is fetched
+ * Uses memory cache + optional file backup
  */
 export async function updateDailyExtremes(currentPrice: number): Promise<DailyExtremes> {
+  const now = new Date().toISOString();
+  const todayIST = getTodayIST();
+  
+  // Read existing data
+  let extremes = await readDailyExtremes();
+  
+  // If no data for today, create new
+  if (!extremes) {
+    extremes = {
+      date: todayIST,
+      high: currentPrice,
+      highTime: now,
+      low: currentPrice,
+      lowTime: now,
+      openPrice: currentPrice,
+      lastUpdated: now,
+    };
+    console.log(`[DailyExtremes] New day started. Open: ₹${currentPrice.toFixed(2)}`);
+  } else {
+    // Update high if current price is higher
+    if (currentPrice > extremes.high) {
+      console.log(`[DailyExtremes] New HIGH: ₹${currentPrice.toFixed(2)} (was ₹${extremes.high.toFixed(2)})`);
+      extremes.high = currentPrice;
+      extremes.highTime = now;
+    }
+    
+    // Update low if current price is lower
+    if (currentPrice < extremes.low) {
+      console.log(`[DailyExtremes] New LOW: ₹${currentPrice.toFixed(2)} (was ₹${extremes.low.toFixed(2)})`);
+      extremes.low = currentPrice;
+      extremes.lowTime = now;
+    }
+    
+    extremes.lastUpdated = now;
+  }
+  
+  // 1. Always update memory cache (primary storage for Vercel)
+  globalCache[EXTREMES_CACHE_KEY] = extremes;
+  
+  // 2. Try to update file storage (backup, may fail on Vercel)
   try {
     const fs = await getFs();
     const path = await getPath();
     const filePath = await getExtremesFilePath();
-    const now = new Date().toISOString();
-    const todayIST = getTodayIST();
     
-    let extremes = await readDailyExtremes();
-    
-    // If no data for today, create new
-    if (!extremes) {
-      extremes = {
-        date: todayIST,
-        high: currentPrice,
-        highTime: now,
-        low: currentPrice,
-        lowTime: now,
-        openPrice: currentPrice,
-        lastUpdated: now,
-      };
-      console.log(`[DailyExtremes] New day started. Open: ₹${currentPrice.toFixed(2)}`);
-    } else {
-      // Update high if current price is higher
-      if (currentPrice > extremes.high) {
-        console.log(`[DailyExtremes] New high: ₹${currentPrice.toFixed(2)} (was ₹${extremes.high.toFixed(2)})`);
-        extremes.high = currentPrice;
-        extremes.highTime = now;
-      }
-      
-      // Update low if current price is lower
-      if (currentPrice < extremes.low) {
-        console.log(`[DailyExtremes] New low: ₹${currentPrice.toFixed(2)} (was ₹${extremes.low.toFixed(2)})`);
-        extremes.low = currentPrice;
-        extremes.lowTime = now;
-      }
-      
-      extremes.lastUpdated = now;
-    }
-    
-    // Ensure directory exists
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
-    // Write to file
     fs.writeFileSync(filePath, JSON.stringify(extremes, null, 2), "utf-8");
-    
-    return extremes;
-  } catch (error) {
-    console.error("Error updating daily extremes:", error);
-    // Return fallback
-    return {
-      date: getTodayIST(),
-      high: currentPrice,
-      highTime: new Date().toISOString(),
-      low: currentPrice,
-      lowTime: new Date().toISOString(),
-      openPrice: currentPrice,
-      lastUpdated: new Date().toISOString(),
-    };
+  } catch {
+    // File write failed (expected on Vercel), memory cache is still updated
   }
+  
+  return extremes;
 }
 
 /**
  * Get daily extremes (for client consumption)
- * Returns null if no data available
  */
 export async function getDailyExtremes(): Promise<DailyExtremes | null> {
   return await readDailyExtremes();
