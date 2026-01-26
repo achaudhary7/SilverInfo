@@ -611,6 +611,12 @@ export default async function HomePage() {
                   <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">Quick Links</h3>
                   <div className="space-y-1">
                     <Link
+                      href="/gold"
+                      className="flex items-center gap-2 text-xs text-amber-600 hover:text-amber-700 py-1.5 rounded hover:bg-amber-50 font-medium"
+                    >
+                      <span>🥇</span> Gold Rate Today
+                    </Link>
+                    <Link
                       href="/silver-rate-today"
                       className="flex items-center gap-2 text-xs text-gray-600 hover:text-[#1e3a5f] py-1.5 rounded hover:bg-gray-50"
                     >

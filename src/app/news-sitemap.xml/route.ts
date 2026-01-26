@@ -43,6 +43,25 @@ export async function GET() {
       </image:image>
     </url>`;
   
+  // Add gold price page (hourly updates)
+  const goldPriceItem = `
+    <url>
+      <loc>${baseUrl}/gold</loc>
+      <news:news>
+        <news:publication>
+          <news:name>SilverInfo.in</news:name>
+          <news:language>en</news:language>
+        </news:publication>
+        <news:publication_date>${today.toISOString()}</news:publication_date>
+        <news:title>Gold Rate Today India - Live 24K 22K Prices ${today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</news:title>
+        <news:keywords>gold rate today, gold price india, 22k gold rate, 24k gold price, live gold rate</news:keywords>
+      </news:news>
+      <image:image>
+        <image:loc>${baseUrl}/images/gold/og-gold.png</image:loc>
+        <image:title>Gold Rate Today India</image:title>
+      </image:image>
+    </url>`;
+  
   const newsItems = recentUpdates.map((update) => {
     const pubDate = new Date(update.date);
     
@@ -70,6 +89,7 @@ export async function GET() {
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${marketAnalysisItem}
+${goldPriceItem}
 ${newsItems.join("")}
 </urlset>`;
 

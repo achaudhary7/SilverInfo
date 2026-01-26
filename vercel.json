@@ -6,6 +6,10 @@
       "schedule": "15 18 * * 1-5"
     },
     {
+      "path": "/api/cron/save-daily-gold-price",
+      "schedule": "50 18 * * 1-5"
+    },
+    {
       "path": "/api/cron/generate-weekly-article",
       "schedule": "30 17 * * 0"
     }
