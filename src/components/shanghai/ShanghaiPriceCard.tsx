@@ -39,22 +39,53 @@ function Tooltip({ children, text }: { children: React.ReactNode; text: string }
   );
 }
 
+// China Flag SVG Component (renders consistently across all platforms)
+function ChinaFlag({ className = "w-6 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+      <rect width="30" height="20" fill="#DE2910"/>
+      <g fill="#FFDE00">
+        {/* Main star */}
+        <polygon points="5,4 6.2,7.8 10,7.8 7,10 8,14 5,11.5 2,14 3,10 0,7.8 3.8,7.8"/>
+        {/* Small stars */}
+        <polygon points="12,2 12.4,3 13.5,3 12.6,3.7 13,4.8 12,4 11,4.8 11.4,3.7 10.5,3 11.6,3" transform="rotate(23 12 3)"/>
+        <polygon points="14,5 14.4,6 15.5,6 14.6,6.7 15,7.8 14,7 13,7.8 13.4,6.7 12.5,6 13.6,6" transform="rotate(-10 14 6)"/>
+        <polygon points="14,9 14.4,10 15.5,10 14.6,10.7 15,11.8 14,11 13,11.8 13.4,10.7 12.5,10 13.6,10" transform="rotate(30 14 10)"/>
+        <polygon points="12,12 12.4,13 13.5,13 12.6,13.7 13,14.8 12,14 11,14.8 11.4,13.7 10.5,13 11.6,13" transform="rotate(45 12 13)"/>
+      </g>
+    </svg>
+  );
+}
+
+// India Flag SVG Component
+function IndiaFlag({ className = "w-5 h-3.5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+      <rect width="30" height="6.67" fill="#FF9933"/>
+      <rect y="6.67" width="30" height="6.67" fill="#FFFFFF"/>
+      <rect y="13.33" width="30" height="6.67" fill="#138808"/>
+      <circle cx="15" cy="10" r="2.5" fill="#000080"/>
+      <circle cx="15" cy="10" r="2" fill="#FFFFFF"/>
+    </svg>
+  );
+}
+
 export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardProps) {
   const { price, isLoading, lastUpdated } = useLiveShanghaiPrice(initialPrice);
   
-  // Loading skeleton
+  // Loading skeleton - Light warm theme
   if (isLoading && !price) {
     return (
       <div 
         className="rounded-2xl p-6 animate-pulse"
         style={{ 
-          background: "linear-gradient(135deg, #722F37 0%, #4a1c24 100%)",
-          border: "1px solid rgba(255, 215, 0, 0.3)"
+          background: "linear-gradient(135deg, #FDF6E9 0%, #FAF0DC 100%)",
+          border: "1px solid #E8D5B5"
         }}
       >
-        <div className="h-8 bg-yellow-500/20 rounded w-1/3 mb-4"></div>
-        <div className="h-16 bg-yellow-500/20 rounded w-2/3 mb-4"></div>
-        <div className="h-4 bg-yellow-500/20 rounded w-1/2"></div>
+        <div className="h-8 bg-amber-200/50 rounded w-1/3 mb-4"></div>
+        <div className="h-16 bg-amber-200/50 rounded w-2/3 mb-4"></div>
+        <div className="h-4 bg-amber-200/50 rounded w-1/2"></div>
       </div>
     );
   }
@@ -64,11 +95,11 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
       <div 
         className="rounded-2xl p-6 text-center"
         style={{ 
-          background: "linear-gradient(135deg, #722F37 0%, #4a1c24 100%)",
-          border: "1px solid rgba(255, 215, 0, 0.3)"
+          background: "linear-gradient(135deg, #FDF6E9 0%, #FAF0DC 100%)",
+          border: "1px solid #E8D5B5"
         }}
       >
-        <p style={{ color: "#FFE4B5" }}>Unable to load Shanghai price. Please refresh.</p>
+        <p className="text-gray-700">Unable to load Shanghai price. Please refresh.</p>
       </div>
     );
   }
@@ -86,26 +117,26 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
     <div 
       className="rounded-2xl overflow-hidden"
       style={{ 
-        background: "linear-gradient(135deg, #722F37 0%, #4a1c24 100%)",
-        border: "2px solid rgba(255, 215, 0, 0.4)",
-        boxShadow: "0 4px 20px rgba(114, 47, 55, 0.4)"
+        background: "linear-gradient(135deg, #FDF6E9 0%, #FAF0DC 100%)",
+        border: "2px solid #C9A959",
+        boxShadow: "0 4px 20px rgba(201, 169, 89, 0.25)"
       }}
     >
-      {/* Header */}
+      {/* Header - Chinese Red accent */}
       <div 
         className="px-4 sm:px-6 py-3 flex items-center justify-between"
         style={{ 
-          background: "linear-gradient(90deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.04) 100%)",
-          borderBottom: "1px solid rgba(255, 215, 0, 0.15)"
+          background: "linear-gradient(90deg, #C41E3A 0%, #B31830 100%)",
+          borderBottom: "2px solid #C9A959"
         }}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🇨🇳</span>
+        <div className="flex items-center gap-2.5">
+          <ChinaFlag className="w-7 h-5 rounded shadow-sm" />
           <div>
-            <h2 className="text-sm sm:text-base font-bold" style={{ color: "#FFD700" }}>
+            <h2 className="text-sm sm:text-base font-bold text-white">
               Shanghai Silver Price
             </h2>
-            <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.7 }}>
+            <p className="text-xs text-white/70">
               SGE • {getBeijingTimeString()}
             </p>
           </div>
@@ -118,34 +149,26 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
               className="px-2 py-1 rounded text-xs font-medium"
               style={{ 
                 background: price.marketStatus === 'open' 
-                  ? "rgba(16, 185, 129, 0.2)" 
+                  ? "rgba(16, 185, 129, 0.9)" 
                   : price.marketStatus === 'pre-market'
-                    ? "rgba(251, 191, 36, 0.2)"
-                    : "rgba(156, 163, 175, 0.2)",
-                color: price.marketStatus === 'open' 
-                  ? "#10b981" 
-                  : price.marketStatus === 'pre-market'
-                    ? "#fbbf24"
-                    : "#9ca3af",
-                border: `1px solid ${price.marketStatus === 'open' ? "#10b981" : price.marketStatus === 'pre-market' ? "#fbbf24" : "#9ca3af"}40`
+                    ? "rgba(251, 191, 36, 0.9)"
+                    : "rgba(255, 255, 255, 0.3)",
+                color: price.marketStatus === 'open' || price.marketStatus === 'pre-market'
+                  ? "#ffffff" 
+                  : "#ffffff"
               }}
             >
-              {price.marketStatus === 'open' ? '🟢 Open' : price.marketStatus === 'pre-market' ? '🟡 Pre' : '⚪ Closed'}
+              {price.marketStatus === 'open' ? '● Open' : price.marketStatus === 'pre-market' ? '● Pre' : '○ Closed'}
             </span>
           </Tooltip>
           
           {/* Live indicator with pulse */}
           <span 
-            className="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5"
-            style={{ 
-              background: "rgba(16, 185, 129, 0.15)",
-              color: "#10b981",
-              border: "1px solid rgba(16, 185, 129, 0.3)"
-            }}
+            className="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 bg-white/20 text-white"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
             </span>
             LIVE
           </span>
@@ -157,7 +180,7 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         {/* Primary Price - CNY/kg (SGE Standard) */}
         <div className="mb-4">
           <Tooltip text="Shanghai Gold Exchange standard unit">
-            <p className="text-xs uppercase tracking-wide mb-1 inline-flex items-center gap-1" style={{ color: "#FFE4B5", opacity: 0.7 }}>
+            <p className="text-xs uppercase tracking-wide mb-1 inline-flex items-center gap-1 text-gray-600">
               SGE Price (CNY/kg)
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -167,70 +190,62 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           <div className="flex items-baseline gap-3 flex-wrap">
             <span 
               className="text-3xl sm:text-4xl font-bold"
-              style={{ color: "#FFD700", textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}
+              style={{ color: "#B8860B" }}
             >
               {formatCnyPrice(price.pricePerKgCny, 0)}
             </span>
             
             {/* 24h Change Badge */}
             <span 
-              className="px-2 py-1 rounded text-sm font-semibold"
-              style={{ 
-                background: isPositiveChange 
-                  ? "rgba(16, 185, 129, 0.2)" 
-                  : "rgba(239, 68, 68, 0.2)",
-                color: isPositiveChange ? "#10b981" : "#ef4444"
-              }}
+              className={`px-2 py-1 rounded text-sm font-semibold ${
+                isPositiveChange 
+                  ? "bg-green-100 text-green-700" 
+                  : "bg-red-100 text-red-700"
+              }`}
             >
               {isPositiveChange ? "↑" : "↓"} {Math.abs(price.change24hPercent).toFixed(2)}%
             </span>
           </div>
           
           {/* Per gram in CNY */}
-          <p className="text-sm mt-1" style={{ color: "#FFE4B5", opacity: 0.8 }}>
+          <p className="text-sm mt-1 text-gray-600">
             {formatCnyPrice(price.pricePerGramCny)}/gram
           </p>
         </div>
         
-        {/* 🇮🇳 INDIA vs SHANGHAI - Prominent for Indian users */}
+        {/* INDIA vs SHANGHAI - Prominent for Indian users */}
         <div 
           className="rounded-xl p-4 mb-4"
           style={{ 
-            background: "linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(44, 82, 130, 0.9) 100%)",
-            border: "1px solid rgba(255, 255, 255, 0.15)"
+            background: "linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%)",
+            border: "1px solid #3b82f6"
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-lg">🇮🇳</span>
+            <IndiaFlag className="w-5 h-3.5" />
             <h3 className="font-semibold text-white text-sm">India vs Shanghai Comparison</h3>
           </div>
           
           <div className="grid grid-cols-2 gap-3">
             <Tooltip text="Shanghai price converted to INR (no Indian duties)">
-              <div className="text-center p-2 rounded-lg cursor-help" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
-                <p className="text-xs text-gray-300 mb-1">Shanghai (INR)</p>
-                <p className="text-lg font-bold text-white">₹{shanghaiInInr.toFixed(0)}</p>
-                <p className="text-xs text-gray-400">per gram</p>
+              <div className="text-center p-2.5 rounded-lg cursor-help bg-white/10">
+                <p className="text-xs text-blue-200 mb-1">Shanghai (INR)</p>
+                <p className="text-xl font-bold text-white">₹{shanghaiInInr.toFixed(0)}</p>
+                <p className="text-xs text-blue-200/70">per gram</p>
               </div>
             </Tooltip>
             <Tooltip text="India market rate with 10% duty + 3% GST + 10% premium">
-              <div className="text-center p-2 rounded-lg cursor-help" style={{ background: "rgba(255, 255, 255, 0.1)" }}>
-                <p className="text-xs text-gray-300 mb-1">India Market</p>
-                <p className="text-lg font-bold text-amber-400">₹{indiaRate.toFixed(0)}</p>
-                <p className="text-xs text-gray-400">per gram</p>
+              <div className="text-center p-2.5 rounded-lg cursor-help bg-white/10">
+                <p className="text-xs text-blue-200 mb-1">India Market</p>
+                <p className="text-xl font-bold text-amber-400">₹{indiaRate.toFixed(0)}</p>
+                <p className="text-xs text-blue-200/70">per gram</p>
               </div>
             </Tooltip>
           </div>
           
-          <div className="mt-3 flex items-center justify-center gap-2">
+          <div className="mt-3 flex items-center justify-center">
             <Tooltip text="India price is higher due to 10% import duty + 3% GST + local premium">
-              <span 
-                className="px-3 py-1 rounded-full text-xs font-medium"
-                style={{ 
-                  background: "rgba(251, 191, 36, 0.2)",
-                  color: "#fbbf24"
-                }}
-              >
+              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300">
                 India +{indiaPremiumOverShanghai.toFixed(1)}% vs Shanghai
               </span>
             </Tooltip>
@@ -238,11 +253,7 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           
           <Link 
             href="/"
-            className="block text-center mt-3 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-90"
-            style={{ 
-              background: "rgba(255, 255, 255, 0.15)",
-              color: "#ffffff"
-            }}
+            className="block text-center mt-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-white/20 bg-white/10 text-white"
           >
             View Live India Silver Rate →
           </Link>
@@ -252,12 +263,9 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
           {/* USD/oz Price */}
           <Tooltip text="International standard: Troy ounce">
-            <div 
-              className="rounded-lg p-2 sm:p-3 text-center cursor-help"
-              style={{ background: "rgba(255, 215, 0, 0.08)" }}
-            >
-              <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>USD/oz</p>
-              <p className="text-sm sm:text-base font-bold" style={{ color: "#FFD700" }}>
+            <div className="rounded-lg p-2 sm:p-3 text-center cursor-help bg-amber-50 border border-amber-200">
+              <p className="text-xs mb-1 text-gray-500">USD/oz</p>
+              <p className="text-sm sm:text-base font-bold text-amber-700">
                 {formatUsdPrice(price.pricePerOzUsd)}
               </p>
             </div>
@@ -265,12 +273,9 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           
           {/* USD per gram */}
           <Tooltip text="Per gram in US Dollars">
-            <div 
-              className="rounded-lg p-2 sm:p-3 text-center cursor-help"
-              style={{ background: "rgba(255, 215, 0, 0.08)" }}
-            >
-              <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>USD/gram</p>
-              <p className="text-sm sm:text-base font-bold" style={{ color: "#FFD700" }}>
+            <div className="rounded-lg p-2 sm:p-3 text-center cursor-help bg-amber-50 border border-amber-200">
+              <p className="text-xs mb-1 text-gray-500">USD/gram</p>
+              <p className="text-sm sm:text-base font-bold text-amber-700">
                 {formatUsdPrice(price.pricePerGramUsd)}
               </p>
             </div>
@@ -278,12 +283,9 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
           
           {/* INR equivalent */}
           <Tooltip text="Shanghai price in INR (no Indian duties)">
-            <div 
-              className="rounded-lg p-2 sm:p-3 text-center cursor-help"
-              style={{ background: "rgba(255, 215, 0, 0.08)" }}
-            >
-              <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>INR/gram</p>
-              <p className="text-sm sm:text-base font-bold" style={{ color: "#FFD700" }}>
+            <div className="rounded-lg p-2 sm:p-3 text-center cursor-help bg-amber-50 border border-amber-200">
+              <p className="text-xs mb-1 text-gray-500">INR/gram</p>
+              <p className="text-sm sm:text-base font-bold text-amber-700">
                 ₹{price.pricePerGramInr.toFixed(0)}
               </p>
             </div>
@@ -291,61 +293,46 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         </div>
         
         {/* INR per Kg - useful for bulk buyers */}
-        <div 
-          className="rounded-lg p-2 mb-4 text-center"
-          style={{ background: "rgba(255, 215, 0, 0.05)" }}
-        >
-          <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.6 }}>
-            Shanghai Rate: <span className="font-medium" style={{ color: "#FFD700" }}>₹{(price.pricePerKgInr / 1000).toFixed(0)},000/kg</span> • 
+        <div className="rounded-lg p-2 mb-4 text-center bg-gray-50 border border-gray-200">
+          <p className="text-xs text-gray-600">
+            Shanghai Rate: <span className="font-semibold text-gray-800">₹{(price.pricePerKgInr / 1000).toFixed(0)},000/kg</span> • 
             <span className="ml-2">₹{price.pricePerOzInr?.toFixed(0) || (price.pricePerGramInr * 31.1).toFixed(0)}/oz</span>
           </p>
         </div>
         
         {/* Shanghai vs COMEX Comparison */}
-        <div 
-          className="rounded-lg p-3 sm:p-4 mb-4"
-          style={{ 
-            background: "rgba(255, 215, 0, 0.06)",
-            border: "1px solid rgba(255, 215, 0, 0.15)"
-          }}
-        >
+        <div className="rounded-lg p-3 sm:p-4 mb-4 bg-green-50 border border-green-200">
           <div className="flex items-center justify-between mb-2">
             <Tooltip text="Difference between Shanghai and NY COMEX prices">
-              <span className="text-sm font-semibold flex items-center gap-1" style={{ color: "#FFD700" }}>
+              <span className="text-sm font-semibold flex items-center gap-1 text-gray-700">
                 Shanghai Premium vs COMEX
                 <svg className="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </span>
             </Tooltip>
-            <span 
-              className="px-2 py-0.5 rounded text-xs font-bold"
-              style={{ 
-                background: "rgba(16, 185, 129, 0.2)",
-                color: "#10b981"
-              }}
-            >
+            <span className="px-2 py-0.5 rounded text-xs font-bold bg-green-500 text-white">
               +{price.premiumPercent.toFixed(2)}%
             </span>
           </div>
           
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p style={{ color: "#FFE4B5", opacity: 0.6 }}>COMEX (NY)</p>
-              <p className="font-medium" style={{ color: "#FFE4B5" }}>
+              <p className="text-gray-500">COMEX (NY)</p>
+              <p className="font-medium text-gray-800">
                 {formatUsdPrice(price.comexUsd)}/oz
               </p>
             </div>
             <div>
-              <p style={{ color: "#FFE4B5", opacity: 0.6 }}>Premium</p>
-              <p className="font-medium" style={{ color: "#10b981" }}>
+              <p className="text-gray-500">Premium</p>
+              <p className="font-medium text-green-600">
                 +{formatUsdPrice(price.premiumUsd)}/oz
               </p>
             </div>
           </div>
           
           {/* Premium explanation */}
-          <p className="text-xs mt-2" style={{ color: "#FFE4B5", opacity: 0.5 }}>
+          <p className="text-xs mt-2 text-gray-500">
             Shanghai trades at premium due to Chinese demand & import costs
           </p>
         </div>
@@ -353,23 +340,17 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         {/* Exchange Rates */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <Tooltip text="US Dollar to Chinese Yuan exchange rate">
-            <div 
-              className="rounded-lg p-2 text-center cursor-help"
-              style={{ background: "rgba(255, 255, 255, 0.05)" }}
-            >
-              <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.6 }}>USD/CNY</p>
-              <p className="text-sm font-medium" style={{ color: "#FFE4B5" }}>
+            <div className="rounded-lg p-2 text-center cursor-help bg-gray-50 border border-gray-200">
+              <p className="text-xs text-gray-500">USD/CNY</p>
+              <p className="text-sm font-medium text-gray-800">
                 {price.usdCny.toFixed(4)}
               </p>
             </div>
           </Tooltip>
           <Tooltip text="US Dollar to Indian Rupee exchange rate">
-            <div 
-              className="rounded-lg p-2 text-center cursor-help"
-              style={{ background: "rgba(255, 255, 255, 0.05)" }}
-            >
-              <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.6 }}>USD/INR</p>
-              <p className="text-sm font-medium" style={{ color: "#FFE4B5" }}>
+            <div className="rounded-lg p-2 text-center cursor-help bg-gray-50 border border-gray-200">
+              <p className="text-xs text-gray-500">USD/INR</p>
+              <p className="text-sm font-medium text-gray-800">
                 ₹{price.usdInr.toFixed(2)}
               </p>
             </div>
@@ -380,70 +361,47 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
         <div className="grid grid-cols-2 gap-2 mb-4">
           <Link 
             href="/"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-[1.02]"
-            style={{ 
-              background: "linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%)",
-              color: "#ffffff",
-              border: "1px solid rgba(255, 255, 255, 0.1)"
-            }}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-[1.02] bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <span>🇮🇳</span>
+            <IndiaFlag className="w-4 h-3" />
             India Rate
           </Link>
           <Link 
             href="/silver-price-calculator"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-[1.02]"
-            style={{ 
-              background: "rgba(255, 215, 0, 0.15)",
-              color: "#FFD700",
-              border: "1px solid rgba(255, 215, 0, 0.3)"
-            }}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-[1.02] bg-amber-500 hover:bg-amber-600 text-white"
           >
-            <span>🧮</span>
-            Calculator
+            🧮 Calculator
           </Link>
         </div>
         
         {/* Data Source - 100% Real-time API Data */}
-        <div 
-          className="rounded-lg p-3 text-center"
-          style={{ 
-            background: "rgba(16, 185, 129, 0.08)",
-            border: "1px solid rgba(16, 185, 129, 0.2)"
-          }}
-        >
-          <p className="text-xs font-medium mb-1 flex items-center justify-center gap-1" style={{ color: "#10b981" }}>
+        <div className="rounded-lg p-3 text-center bg-green-50 border border-green-200">
+          <p className="text-xs font-medium mb-1 flex items-center justify-center gap-1 text-green-700">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
             100% Real-time API Data
           </p>
-          <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.7 }}>
+          <p className="text-xs text-gray-600">
             COMEX: ${price.comexUsd.toFixed(2)}/oz • USD/CNY: {price.usdCny.toFixed(4)} • USD/INR: ₹{price.usdInr.toFixed(2)}
           </p>
-          <p className="text-xs mt-1" style={{ color: "#FFE4B5", opacity: 0.5 }}>
+          <p className="text-xs mt-1 text-gray-500">
             Shanghai = COMEX × (1 + {price.premiumPercent.toFixed(1)}% premium) × Exchange Rate
           </p>
         </div>
       </div>
       
       {/* Footer */}
-      <div 
-        className="px-4 sm:px-6 py-2 flex items-center justify-between text-xs"
-        style={{ 
-          background: "rgba(0, 0, 0, 0.15)",
-          borderTop: "1px solid rgba(255, 215, 0, 0.1)"
-        }}
-      >
-        <span className="flex items-center gap-1.5" style={{ color: "#FFE4B5", opacity: 0.5 }}>
+      <div className="px-4 sm:px-6 py-2 flex items-center justify-between text-xs bg-gray-100 border-t border-gray-200">
+        <span className="flex items-center gap-1.5 text-gray-500">
           <span className="relative flex h-1.5 w-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
           </span>
           Updated {formatShanghaiTimeAgo(lastUpdated)}
         </span>
-        <span style={{ color: "#FFE4B5", opacity: 0.5 }}>
+        <span className="text-gray-500">
           {price.source}
         </span>
       </div>

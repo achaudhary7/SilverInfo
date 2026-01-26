@@ -232,35 +232,42 @@ export default async function ShanghaiSilverPricePage() {
       <main 
         className="min-h-screen"
         style={{ 
-          background: "linear-gradient(180deg, #1f1418 0%, #2d1a20 50%, #1f1418 100%)"
+          background: "linear-gradient(180deg, #FDF6E9 0%, #FAF0DC 50%, #F5E6D0 100%)"
         }}
       >
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="mb-6">
-            <ol className="flex items-center gap-2 text-sm" style={{ color: "rgba(255, 215, 0, 0.6)" }}>
+            <ol className="flex items-center gap-2 text-sm text-gray-500">
               <li>
-                <Link href="/" className="hover:text-yellow-400 transition-colors">
+                <Link href="/" className="hover:text-amber-700 transition-colors">
                   Home
                 </Link>
               </li>
               <li>/</li>
-              <li style={{ color: "#FFD700" }}>Shanghai Silver Price</li>
+              <li className="text-amber-700 font-medium">Shanghai Silver Price</li>
             </ol>
           </nav>
 
           {/* Hero Section */}
           <header className="mb-8">
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-4xl">🇨🇳</span>
-              <h1 
-                className="text-2xl sm:text-3xl md:text-4xl font-bold"
-                style={{ color: "#FFD700" }}
-              >
+              {/* China Flag SVG */}
+              <svg className="w-10 h-7 rounded shadow-sm" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="20" fill="#DE2910"/>
+                <g fill="#FFDE00">
+                  <polygon points="5,4 6.2,7.8 10,7.8 7,10 8,14 5,11.5 2,14 3,10 0,7.8 3.8,7.8"/>
+                  <polygon points="12,2 12.4,3 13.5,3 12.6,3.7 13,4.8 12,4 11,4.8 11.4,3.7 10.5,3 11.6,3" transform="rotate(23 12 3)"/>
+                  <polygon points="14,5 14.4,6 15.5,6 14.6,6.7 15,7.8 14,7 13,7.8 13.4,6.7 12.5,6 13.6,6" transform="rotate(-10 14 6)"/>
+                  <polygon points="14,9 14.4,10 15.5,10 14.6,10.7 15,11.8 14,11 13,11.8 13.4,10.7 12.5,10 13.6,10" transform="rotate(30 14 10)"/>
+                  <polygon points="12,12 12.4,13 13.5,13 12.6,13.7 13,14.8 12,14 11,14.8 11.4,13.7 10.5,13 11.6,13" transform="rotate(45 12 13)"/>
+                </g>
+              </svg>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
                 Shanghai Silver Price Today
               </h1>
             </div>
-            <p className="text-base sm:text-lg" style={{ color: "#FFE4B5", opacity: 0.8 }}>
+            <p className="text-base sm:text-lg text-gray-600">
               Live SGE silver rate in CNY & USD • Shanghai vs COMEX premium • Updated every 30 seconds
             </p>
           </header>
@@ -272,22 +279,16 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* Price Units Table */}
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{ color: "#FFD700" }}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               📊 Shanghai Silver Price in Different Units
             </h2>
-            <div 
-              className="rounded-xl overflow-hidden"
-              style={{ 
-                background: "rgba(114, 47, 55, 0.4)",
-                border: "1px solid rgba(255, 215, 0, 0.2)"
-              }}
-            >
+            <div className="rounded-xl overflow-hidden bg-white border border-amber-200 shadow-sm">
               <table className="w-full">
                 <thead>
-                  <tr style={{ background: "rgba(255, 215, 0, 0.1)" }}>
-                    <th className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "#FFD700" }}>Unit</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold" style={{ color: "#FFD700" }}>CNY</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold" style={{ color: "#FFD700" }}>USD</th>
+                  <tr className="bg-amber-50">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-amber-800">Unit</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-amber-800">CNY</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-amber-800">USD</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,13 +300,13 @@ export default async function ShanghaiSilverPricePage() {
                   ].map((row, idx) => (
                     <tr 
                       key={row.unit}
-                      style={{ borderBottom: idx < 3 ? "1px solid rgba(255, 215, 0, 0.1)" : "none" }}
+                      className={idx < 3 ? "border-b border-gray-100" : ""}
                     >
-                      <td className="px-4 py-3 text-sm" style={{ color: "#FFE4B5" }}>{row.unit}</td>
-                      <td className="px-4 py-3 text-right text-sm font-medium" style={{ color: "#FFD700" }}>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.unit}</td>
+                      <td className="px-4 py-3 text-right text-sm font-medium text-amber-700">
                         {formatCnyPrice(row.cny)}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm" style={{ color: "#FFE4B5", opacity: 0.8 }}>
+                      <td className="px-4 py-3 text-right text-sm text-gray-600">
                         {formatUsdPrice(row.usd)}
                       </td>
                     </tr>
@@ -317,43 +318,31 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* Shanghai vs COMEX Explained */}
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{ color: "#FFD700" }}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               🔄 Shanghai vs COMEX: Understanding the Premium
             </h2>
-            <div 
-              className="rounded-xl p-4 sm:p-6"
-              style={{ 
-                background: "rgba(114, 47, 55, 0.4)",
-                border: "1px solid rgba(255, 215, 0, 0.2)"
-              }}
-            >
+            <div className="rounded-xl p-4 sm:p-6 bg-white border border-amber-200 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div 
-                  className="rounded-lg p-4"
-                  style={{ background: "rgba(255, 215, 0, 0.1)" }}
-                >
-                  <h3 className="font-semibold mb-2" style={{ color: "#FFD700" }}>🌍 COMEX (New York)</h3>
-                  <p className="text-2xl font-bold mb-1" style={{ color: "#FFE4B5" }}>
+                <div className="rounded-lg p-4 bg-blue-50 border border-blue-200">
+                  <h3 className="font-semibold mb-2 text-blue-800">🌍 COMEX (New York)</h3>
+                  <p className="text-2xl font-bold mb-1 text-gray-800">
                     {formatUsdPrice(price?.comexUsd || 31.5)}/oz
                   </p>
-                  <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.6 }}>Global benchmark price</p>
+                  <p className="text-xs text-gray-500">Global benchmark price</p>
                 </div>
-                <div 
-                  className="rounded-lg p-4"
-                  style={{ background: "rgba(255, 215, 0, 0.1)" }}
-                >
-                  <h3 className="font-semibold mb-2" style={{ color: "#FFD700" }}>🇨🇳 Shanghai (SGE)</h3>
-                  <p className="text-2xl font-bold mb-1" style={{ color: "#FFE4B5" }}>
+                <div className="rounded-lg p-4 bg-red-50 border border-red-200">
+                  <h3 className="font-semibold mb-2 text-red-800">🇨🇳 Shanghai (SGE)</h3>
+                  <p className="text-2xl font-bold mb-1 text-gray-800">
                     {formatUsdPrice(price?.pricePerOzUsd || 32.5)}/oz
                   </p>
-                  <p className="text-xs" style={{ color: "#10b981" }}>
+                  <p className="text-xs text-green-600 font-medium">
                     +{price?.premiumPercent?.toFixed(2) || 3.5}% premium
                   </p>
                 </div>
               </div>
               
-              <h4 className="font-semibold mb-2" style={{ color: "#FFE4B5" }}>Why Shanghai trades at a premium:</h4>
-              <ul className="space-y-2 text-sm" style={{ color: "#FFE4B5", opacity: 0.8 }}>
+              <h4 className="font-semibold mb-2 text-gray-700">Why Shanghai trades at a premium:</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
                 <li>🏭 <strong>Industrial Demand:</strong> China is world&apos;s largest silver consumer (solar panels, electronics)</li>
                 <li>📦 <strong>Import Costs:</strong> 10-15% import duties + 13% VAT on silver imports</li>
                 <li>⛏️ <strong>Limited Supply:</strong> China imports ~70% of silver needs</li>
@@ -364,31 +353,25 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* SGE Market Hours */}
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{ color: "#FFD700" }}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               ⏰ SGE Trading Hours (Beijing Time)
             </h2>
-            <div 
-              className="rounded-xl p-4 sm:p-6"
-              style={{ 
-                background: "rgba(114, 47, 55, 0.4)",
-                border: "1px solid rgba(255, 215, 0, 0.2)"
-              }}
-            >
+            <div className="rounded-xl p-4 sm:p-6 bg-white border border-amber-200 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="text-center p-3 rounded-lg" style={{ background: "rgba(255, 215, 0, 0.1)" }}>
-                  <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>Day Session (AM)</p>
-                  <p className="font-bold" style={{ color: "#FFD700" }}>9:00 - 11:30</p>
+                <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-xs mb-1 text-gray-500">Day Session (AM)</p>
+                  <p className="font-bold text-amber-700">9:00 - 11:30</p>
                 </div>
-                <div className="text-center p-3 rounded-lg" style={{ background: "rgba(255, 215, 0, 0.1)" }}>
-                  <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>Day Session (PM)</p>
-                  <p className="font-bold" style={{ color: "#FFD700" }}>13:30 - 15:30</p>
+                <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-xs mb-1 text-gray-500">Day Session (PM)</p>
+                  <p className="font-bold text-amber-700">13:30 - 15:30</p>
                 </div>
-                <div className="text-center p-3 rounded-lg" style={{ background: "rgba(255, 215, 0, 0.1)" }}>
-                  <p className="text-xs mb-1" style={{ color: "#FFE4B5", opacity: 0.6 }}>Night Session</p>
-                  <p className="font-bold" style={{ color: "#FFD700" }}>21:00 - 02:30</p>
+                <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-xs mb-1 text-gray-500">Night Session</p>
+                  <p className="font-bold text-amber-700">21:00 - 02:30</p>
                 </div>
               </div>
-              <p className="text-xs mt-3 text-center" style={{ color: "#FFE4B5", opacity: 0.5 }}>
+              <p className="text-xs mt-3 text-center text-gray-500">
                 All times in Beijing Time (UTC+8) • Markets closed on weekends & Chinese holidays
               </p>
             </div>
@@ -396,40 +379,38 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* Compare Section */}
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{ color: "#FFD700" }}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               🌏 Compare Silver Prices Globally
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link 
                 href="/"
-                className="block rounded-xl p-4 transition-all hover:scale-[1.02]"
-                style={{ 
-                  background: "linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)"
-                }}
+                className="block rounded-xl p-4 transition-all hover:scale-[1.02] bg-gradient-to-r from-blue-600 to-blue-700 shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">🇮🇳</span>
+                  {/* India Flag SVG */}
+                  <svg className="w-8 h-6 rounded shadow-sm" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="30" height="6.67" fill="#FF9933"/>
+                    <rect y="6.67" width="30" height="6.67" fill="#FFFFFF"/>
+                    <rect y="13.33" width="30" height="6.67" fill="#138808"/>
+                    <circle cx="15" cy="10" r="2.5" fill="#000080"/>
+                  </svg>
                   <div>
                     <h3 className="text-lg font-bold text-white">India Silver Rate</h3>
-                    <p className="text-sm text-gray-300">₹{price?.pricePerGramInr?.toFixed(0) || 400}/gram →</p>
+                    <p className="text-sm text-blue-100">₹{price?.indiaRatePerGram?.toFixed(0) || 400}/gram →</p>
                   </div>
                 </div>
               </Link>
               
               <Link 
                 href="/qatar"
-                className="block rounded-xl p-4 transition-all hover:scale-[1.02]"
-                style={{ 
-                  background: "linear-gradient(135deg, #5c1a5c 0%, #8b008b 100%)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)"
-                }}
+                className="block rounded-xl p-4 transition-all hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-purple-700 shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">🇶🇦</span>
                   <div>
                     <h3 className="text-lg font-bold text-white">Qatar Silver Rate</h3>
-                    <p className="text-sm text-gray-300">QAR prices →</p>
+                    <p className="text-sm text-purple-100">QAR prices →</p>
                   </div>
                 </div>
               </Link>
@@ -438,32 +419,22 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* FAQs */}
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{ color: "#FFD700" }}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               ❓ Frequently Asked Questions
             </h2>
             <div className="space-y-3">
               {faqItems.map((faq, idx) => (
                 <details 
                   key={idx}
-                  className="group rounded-lg overflow-hidden"
-                  style={{ 
-                    background: "rgba(114, 47, 55, 0.4)",
-                    border: "1px solid rgba(255, 215, 0, 0.2)"
-                  }}
+                  className="group rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm"
                 >
-                  <summary 
-                    className="px-4 py-3 cursor-pointer text-sm font-medium flex items-center justify-between"
-                    style={{ color: "#FFE4B5" }}
-                  >
+                  <summary className="px-4 py-3 cursor-pointer text-sm font-medium flex items-center justify-between text-gray-700 hover:bg-gray-50">
                     {faq.question}
-                    <span className="ml-2 transition-transform group-open:rotate-180" style={{ color: "#FFD700" }}>
+                    <span className="ml-2 transition-transform group-open:rotate-180 text-amber-600">
                       ▼
                     </span>
                   </summary>
-                  <div 
-                    className="px-4 pb-3 text-sm"
-                    style={{ color: "#FFE4B5", opacity: 0.8 }}
-                  >
+                  <div className="px-4 pb-3 text-sm text-gray-600 border-t border-gray-100">
                     {faq.answer}
                   </div>
                 </details>
@@ -473,7 +444,7 @@ export default async function ShanghaiSilverPricePage() {
 
           {/* Footer Note */}
           <footer className="text-center">
-            <p className="text-xs" style={{ color: "#FFE4B5", opacity: 0.4 }}>
+            <p className="text-xs text-gray-400">
               Shanghai silver prices are calculated from COMEX futures + estimated Shanghai premium.
               <br />
               Actual SGE prices may vary slightly. For official SGE rates, visit sge.com.cn
