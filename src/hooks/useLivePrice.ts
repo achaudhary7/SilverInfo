@@ -30,6 +30,15 @@ export function useLivePrice({
   const [hasNewPrice, setHasNewPrice] = useState(false);
   
   const previousPriceRef = useRef(initialPrice.pricePerGram);
+  
+  // Track the best high/low we've seen across all fetches (solves cold start issue)
+  // This persists the correct high/low even if a new serverless instance returns stale data
+  const bestHighRef = useRef<{ value: number; time: string } | null>(
+    initialPrice.todayHigh ? { value: initialPrice.todayHigh, time: initialPrice.todayHighTime || '' } : null
+  );
+  const bestLowRef = useRef<{ value: number; time: string } | null>(
+    initialPrice.todayLow ? { value: initialPrice.todayLow, time: initialPrice.todayLowTime || '' } : null
+  );
 
   // Fetch new price from API
   const fetchPrice = useCallback(async () => {
@@ -62,7 +71,44 @@ export function useLivePrice({
         setTimeout(() => setHasNewPrice(false), 1000);
       }
       
-      setPrice(newPrice);
+      // =====================================================================
+      // FIX: Merge high/low with best values seen
+      // This prevents cold-start issues where different serverless instances
+      // have different globalThis caches and return stale high/low values
+      // =====================================================================
+      
+      // Update best high: keep the MAXIMUM we've ever seen
+      const apiHigh = newPrice.todayHigh || newPrice.pricePerGram;
+      const apiHighTime = newPrice.todayHighTime || new Date().toISOString();
+      if (!bestHighRef.current || apiHigh > bestHighRef.current.value) {
+        bestHighRef.current = { value: apiHigh, time: apiHighTime };
+      }
+      // Also check current price against best high
+      if (newPrice.pricePerGram > (bestHighRef.current?.value || 0)) {
+        bestHighRef.current = { value: newPrice.pricePerGram, time: new Date().toISOString() };
+      }
+      
+      // Update best low: keep the MINIMUM we've ever seen
+      const apiLow = newPrice.todayLow || newPrice.pricePerGram;
+      const apiLowTime = newPrice.todayLowTime || new Date().toISOString();
+      if (!bestLowRef.current || apiLow < bestLowRef.current.value) {
+        bestLowRef.current = { value: apiLow, time: apiLowTime };
+      }
+      // Also check current price against best low
+      if (newPrice.pricePerGram < (bestLowRef.current?.value || Infinity)) {
+        bestLowRef.current = { value: newPrice.pricePerGram, time: new Date().toISOString() };
+      }
+      
+      // Merge the best values into the price object
+      const mergedPrice: SilverPrice = {
+        ...newPrice,
+        todayHigh: bestHighRef.current?.value || newPrice.todayHigh,
+        todayHighTime: bestHighRef.current?.time || newPrice.todayHighTime,
+        todayLow: bestLowRef.current?.value || newPrice.todayLow,
+        todayLowTime: bestLowRef.current?.time || newPrice.todayLowTime,
+      };
+      
+      setPrice(mergedPrice);
       setLastUpdated(new Date());
       setSecondsAgo(0);
     } catch (error) {

@@ -21,6 +21,12 @@ export interface SilverPrice {
   // Additional data for market analysis (WhyPriceChanged component)
   usdInr?: number;      // USD/INR exchange rate
   comexUsd?: number;    // COMEX silver price in USD per troy ounce
+  // Daily extremes - tracked high/low for today (from priceStorage)
+  todayHigh?: number;
+  todayHighTime?: string;
+  todayLow?: number;
+  todayLowTime?: string;
+  todayOpen?: number;
 }
 
 export interface HistoricalPrice {
