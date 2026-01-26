@@ -239,83 +239,89 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
         </div>
       </div>
       
-      {/* Today's High/Low Section - Prominent Display */}
+      {/* Today's High/Low Section - Compact Display */}
       {price.todayHigh && price.todayLow && (
         <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="grid grid-cols-2 gap-3">
-            {/* Today's High */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-green-100/50 rounded-full -mr-8 -mt-8" />
-              <div className="relative">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-lg">📈</span>
-                  <span className="text-[10px] sm:text-xs font-medium text-green-700">Today&apos;s High</span>
-                </div>
-                <p className="text-lg sm:text-xl font-bold text-green-700">
-                  {formatIndianPrice(price.todayHigh)}
-                </p>
-                {price.todayHighTime && (
-                  <p className="text-[10px] text-green-600/80 mt-0.5">
-                    at {formatHighLowTime(price.todayHighTime)}
+          {/* Only show if we have meaningful data (high != low) */}
+          {price.todayHigh > price.todayLow ? (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                {/* Today's High - Compact */}
+                <div className="bg-green-50 rounded-lg p-2 sm:p-3 border border-green-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] sm:text-xs font-medium text-green-700 flex items-center gap-1">
+                      <span className="hidden sm:inline">📈</span> High
+                    </span>
+                    {/* Only show AT HIGH if not also at low */}
+                    {price.pricePerGram >= price.todayHigh * 0.999 && (
+                      <span className="text-[8px] sm:text-[10px] font-bold text-green-800 bg-green-200 px-1 py-0.5 rounded">
+                        🔥 NOW
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-base sm:text-lg font-bold text-green-700">
+                    {formatIndianPrice(price.todayHigh)}
                   </p>
-                )}
-                {/* Show how close current is to high */}
-                {price.pricePerGram >= price.todayHigh * 0.998 && (
-                  <span className="absolute top-2 right-2 text-[10px] font-bold text-green-800 bg-green-200 px-1.5 py-0.5 rounded animate-pulse">
-                    🔥 AT HIGH
-                  </span>
-                )}
-              </div>
-            </div>
-            
-            {/* Today's Low */}
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-3 border border-red-200 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-red-100/50 rounded-full -mr-8 -mt-8" />
-              <div className="relative">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-lg">📉</span>
-                  <span className="text-[10px] sm:text-xs font-medium text-red-700">Today&apos;s Low</span>
+                  {price.todayHighTime && (
+                    <p className="text-[9px] sm:text-[10px] text-green-600/70">
+                      {formatHighLowTime(price.todayHighTime)}
+                    </p>
+                  )}
                 </div>
-                <p className="text-lg sm:text-xl font-bold text-red-700">
-                  {formatIndianPrice(price.todayLow)}
-                </p>
-                {price.todayLowTime && (
-                  <p className="text-[10px] text-red-600/80 mt-0.5">
-                    at {formatHighLowTime(price.todayLowTime)}
+                
+                {/* Today's Low - Compact */}
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] sm:text-xs font-medium text-red-700 flex items-center gap-1">
+                      <span className="hidden sm:inline">📉</span> Low
+                    </span>
+                    {/* Only show AT LOW if not also at high */}
+                    {price.pricePerGram <= price.todayLow * 1.001 && (
+                      <span className="text-[8px] sm:text-[10px] font-bold text-red-800 bg-red-200 px-1 py-0.5 rounded">
+                        ⚠️ NOW
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-base sm:text-lg font-bold text-red-700">
+                    {formatIndianPrice(price.todayLow)}
                   </p>
-                )}
-                {/* Show how close current is to low */}
-                {price.pricePerGram <= price.todayLow * 1.002 && (
-                  <span className="absolute top-2 right-2 text-[10px] font-bold text-red-800 bg-red-200 px-1.5 py-0.5 rounded animate-pulse">
-                    ⚠️ AT LOW
-                  </span>
-                )}
+                  {price.todayLowTime && (
+                    <p className="text-[9px] sm:text-[10px] text-red-600/70">
+                      {formatHighLowTime(price.todayLowTime)}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-          
-          {/* Day Range Bar */}
-          {price.todayHigh > price.todayLow && (
-            <div className="mt-3 px-1">
-              <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                <span>Low</span>
-                <span>Day Range</span>
-                <span>High</span>
+              
+              {/* Day Range Bar - More Compact */}
+              <div className="mt-2 px-1">
+                <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-sm border-2 border-white z-10"
+                    style={{
+                      left: `${Math.max(5, Math.min(95, ((price.pricePerGram - price.todayLow) / (price.todayHigh - price.todayLow)) * 100))}%`,
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-200 to-green-300 opacity-70" />
+                </div>
+                <div className="flex justify-between text-[9px] text-gray-400 mt-0.5">
+                  <span>₹{price.todayLow.toFixed(0)}</span>
+                  <span>₹{price.todayHigh.toFixed(0)}</span>
+                </div>
               </div>
-              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-                {/* Current price position indicator */}
-                <div 
-                  className="absolute top-0 bottom-0 w-2 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-md z-10"
-                  style={{
-                    left: `${((price.pricePerGram - price.todayLow) / (price.todayHigh - price.todayLow)) * 100}%`,
-                  }}
-                />
-                {/* Range fill */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-300 to-green-300 opacity-60" />
+            </>
+          ) : (
+            /* When high == low (just started tracking), show simple message */
+            <div className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
+              <span className="text-gray-500">📊</span>
+              <div className="text-center">
+                <p className="text-xs text-gray-600 font-medium">
+                  Today&apos;s Range: ₹{price.todayHigh.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Tracking started • High/Low will update as price moves
+                </p>
               </div>
-              <p className="text-center text-[10px] text-gray-400 mt-1">
-                Current position in today&apos;s range
-              </p>
             </div>
           )}
         </div>
