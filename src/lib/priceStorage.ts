@@ -296,6 +296,11 @@ async function getExtremesFilePath(): Promise<string> {
 
 /**
  * Read daily extremes from memory cache or file storage
+ * 
+ * Priority:
+ * 1. In-memory globalThis cache (fastest, per-instance)
+ * 2. Committed JSON file (read-only on Vercel, serves as baseline seed)
+ * 3. Return null (will create new from current price)
  */
 export async function readDailyExtremes(): Promise<DailyExtremes | null> {
   const todayIST = getTodayIST();
@@ -306,7 +311,7 @@ export async function readDailyExtremes(): Promise<DailyExtremes | null> {
     return cached;
   }
   
-  // 2. Try file storage (backup for local dev)
+  // 2. Try file storage (committed file works on Vercel as read-only seed)
   try {
     const fs = await getFs();
     const filePath = await getExtremesFilePath();
@@ -316,14 +321,16 @@ export async function readDailyExtremes(): Promise<DailyExtremes | null> {
       const extremes = JSON.parse(data) as DailyExtremes;
       
       if (extremes.date === todayIST) {
+        console.log(`[DailyExtremes] Loaded from file: High=₹${extremes.high}, Low=₹${extremes.low}`);
         // Update memory cache from file
         globalCache[EXTREMES_CACHE_KEY] = extremes;
         return extremes;
+      } else {
+        console.log(`[DailyExtremes] File has old date (${extremes.date}), ignoring`);
       }
     }
   } catch (error) {
-    // File storage might not work on Vercel, that's OK
-    console.log("[DailyExtremes] File storage unavailable, using memory only");
+    console.log("[DailyExtremes] File read failed, will create new:", error);
   }
   
   return null;
@@ -331,13 +338,17 @@ export async function readDailyExtremes(): Promise<DailyExtremes | null> {
 
 /**
  * Update daily extremes with a new price
- * Uses memory cache + optional file backup
+ * 
+ * Strategy:
+ * 1. Read from memory cache or file seed
+ * 2. Compare current price with extremes - NEVER reduce high, NEVER increase low
+ * 3. Update memory cache (file updates only work locally)
  */
 export async function updateDailyExtremes(currentPrice: number): Promise<DailyExtremes> {
   const now = new Date().toISOString();
   const todayIST = getTodayIST();
   
-  // Read existing data
+  // Read existing data (from memory or file seed)
   let extremes = await readDailyExtremes();
   
   // If no data for today, create new
@@ -353,17 +364,24 @@ export async function updateDailyExtremes(currentPrice: number): Promise<DailyEx
     };
     console.log(`[DailyExtremes] New day started. Open: ₹${currentPrice.toFixed(2)}`);
   } else {
-    // Update high if current price is higher
-    if (currentPrice > extremes.high) {
-      console.log(`[DailyExtremes] New HIGH: ₹${currentPrice.toFixed(2)} (was ₹${extremes.high.toFixed(2)})`);
-      extremes.high = currentPrice;
+    // IMPORTANT: Use Math.max/min to NEVER lose data
+    // This protects against stale data from cold instances
+    const existingHigh = extremes.high;
+    const existingLow = extremes.low;
+    
+    // Update high: take the maximum of existing and current
+    const newHigh = Math.max(existingHigh, currentPrice);
+    if (newHigh > existingHigh) {
+      console.log(`[DailyExtremes] New HIGH: ₹${currentPrice.toFixed(2)} (was ₹${existingHigh.toFixed(2)})`);
+      extremes.high = newHigh;
       extremes.highTime = now;
     }
     
-    // Update low if current price is lower
-    if (currentPrice < extremes.low) {
-      console.log(`[DailyExtremes] New LOW: ₹${currentPrice.toFixed(2)} (was ₹${extremes.low.toFixed(2)})`);
-      extremes.low = currentPrice;
+    // Update low: take the minimum of existing and current
+    const newLow = Math.min(existingLow, currentPrice);
+    if (newLow < existingLow) {
+      console.log(`[DailyExtremes] New LOW: ₹${currentPrice.toFixed(2)} (was ₹${existingLow.toFixed(2)})`);
+      extremes.low = newLow;
       extremes.lowTime = now;
     }
     
@@ -373,7 +391,7 @@ export async function updateDailyExtremes(currentPrice: number): Promise<DailyEx
   // 1. Always update memory cache (primary storage for Vercel)
   globalCache[EXTREMES_CACHE_KEY] = extremes;
   
-  // 2. Try to update file storage (backup, may fail on Vercel)
+  // 2. Try to update file storage (works locally, fails silently on Vercel)
   try {
     const fs = await getFs();
     const path = await getPath();
@@ -385,7 +403,7 @@ export async function updateDailyExtremes(currentPrice: number): Promise<DailyEx
     }
     fs.writeFileSync(filePath, JSON.stringify(extremes, null, 2), "utf-8");
   } catch {
-    // File write failed (expected on Vercel), memory cache is still updated
+    // File write failed (expected on Vercel read-only FS), memory cache is still updated
   }
   
   return extremes;

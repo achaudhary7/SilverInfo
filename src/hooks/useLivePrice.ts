@@ -117,7 +117,37 @@ export function useLivePrice({
   pollInterval = 60000,
   enabled = true,
 }: UseLivePriceOptions): UseLivePriceReturn {
-  const [price, setPrice] = useState<SilverPrice>(initialPrice);
+  // Initialize with server data merged with any localStorage data
+  const [price, setPrice] = useState<SilverPrice>(() => {
+    // On client, merge server data with localStorage
+    if (typeof window !== 'undefined') {
+      const storedHigh = loadStoredExtreme(STORAGE_KEY_HIGH);
+      const storedLow = loadStoredExtreme(STORAGE_KEY_LOW);
+      
+      const serverHigh = initialPrice.todayHigh || initialPrice.pricePerGram;
+      const serverLow = initialPrice.todayLow || initialPrice.pricePerGram;
+      
+      const mergedHigh = storedHigh ? Math.max(storedHigh.value, serverHigh) : serverHigh;
+      const mergedLow = storedLow ? Math.min(storedLow.value, serverLow) : serverLow;
+      
+      // If server has better data, save it
+      if (serverHigh > (storedHigh?.value || 0)) {
+        saveStoredExtreme(STORAGE_KEY_HIGH, { value: serverHigh, time: initialPrice.todayHighTime || new Date().toISOString() });
+      }
+      if (serverLow < (storedLow?.value || Infinity)) {
+        saveStoredExtreme(STORAGE_KEY_LOW, { value: serverLow, time: initialPrice.todayLowTime || new Date().toISOString() });
+      }
+      
+      return {
+        ...initialPrice,
+        todayHigh: mergedHigh,
+        todayHighTime: storedHigh?.time || initialPrice.todayHighTime,
+        todayLow: mergedLow,
+        todayLowTime: storedLow?.time || initialPrice.todayLowTime,
+      };
+    }
+    return initialPrice;
+  });
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date(initialPrice.timestamp));
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -132,6 +162,23 @@ export function useLivePrice({
   
   // Track if we've received valid API data with proper high/low tracking
   const hasReceivedValidTrackingRef = useRef(false);
+  
+  // On mount, sync refs with localStorage (in case initial state missed something)
+  useEffect(() => {
+    const storedHigh = loadStoredExtreme(STORAGE_KEY_HIGH);
+    const storedLow = loadStoredExtreme(STORAGE_KEY_LOW);
+    
+    if (storedHigh && storedHigh.value > bestHighRef.current.value) {
+      bestHighRef.current = storedHigh;
+    }
+    if (storedLow && storedLow.value < bestLowRef.current.value) {
+      bestLowRef.current = storedLow;
+    }
+    
+    // Also save current best to localStorage in case server had better data
+    saveStoredExtreme(STORAGE_KEY_HIGH, bestHighRef.current);
+    saveStoredExtreme(STORAGE_KEY_LOW, bestLowRef.current);
+  }, []);
 
   // Fetch new price from API
   const fetchPrice = useCallback(async () => {
