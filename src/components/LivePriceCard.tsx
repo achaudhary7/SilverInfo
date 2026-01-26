@@ -5,10 +5,35 @@ import { useState, useEffect } from "react";
 import { useLivePrice, formatTimeAgo } from "@/hooks/useLivePrice";
 import { formatIndianPrice, type SilverPrice } from "@/lib/metalApi";
 
+// Extended price type with daily extremes from API
+interface ExtendedSilverPrice extends SilverPrice {
+  todayHigh?: number;
+  todayHighTime?: string;
+  todayLow?: number;
+  todayLowTime?: string;
+  todayOpen?: number;
+}
+
 interface LivePriceCardProps {
   initialPrice: SilverPrice;
   pollInterval?: number;
   lastWeekPrice?: number; // Price from 7 days ago for comparison
+}
+
+// Format time for high/low display (e.g., "10:30 AM")
+function formatHighLowTime(isoTimestamp?: string): string {
+  if (!isoTimestamp) return "";
+  try {
+    const date = new Date(isoTimestamp);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    });
+  } catch {
+    return "";
+  }
 }
 
 // Check if MCX market is open (9 AM - 11:30 PM IST, Mon-Fri)
@@ -45,11 +70,14 @@ function getChangeIndicator(change: number) {
 }
 
 export default function LivePriceCard({ initialPrice, pollInterval = 60000, lastWeekPrice }: LivePriceCardProps) {
-  const { price, secondsAgo, isRefreshing, hasNewPrice, refresh } = useLivePrice({
+  const { price: basePrice, secondsAgo, isRefreshing, hasNewPrice, refresh } = useLivePrice({
     initialPrice,
     pollInterval,
     enabled: true,
   });
+  
+  // Cast to extended type to access daily extremes
+  const price = basePrice as ExtendedSilverPrice;
   
   const [marketStatus, setMarketStatus] = useState({ isOpen: true, label: "MCX Open" });
   const [showShareToast, setShowShareToast] = useState(false);
@@ -210,6 +238,88 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
           </div>
         </div>
       </div>
+      
+      {/* Today's High/Low Section - Prominent Display */}
+      {price.todayHigh && price.todayLow && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Today's High */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-green-100/50 rounded-full -mr-8 -mt-8" />
+              <div className="relative">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-lg">📈</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-green-700">Today&apos;s High</span>
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-green-700">
+                  {formatIndianPrice(price.todayHigh)}
+                </p>
+                {price.todayHighTime && (
+                  <p className="text-[10px] text-green-600/80 mt-0.5">
+                    at {formatHighLowTime(price.todayHighTime)}
+                  </p>
+                )}
+                {/* Show how close current is to high */}
+                {price.pricePerGram >= price.todayHigh * 0.998 && (
+                  <span className="absolute top-2 right-2 text-[10px] font-bold text-green-800 bg-green-200 px-1.5 py-0.5 rounded animate-pulse">
+                    🔥 AT HIGH
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {/* Today's Low */}
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-3 border border-red-200 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-red-100/50 rounded-full -mr-8 -mt-8" />
+              <div className="relative">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-lg">📉</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-red-700">Today&apos;s Low</span>
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-red-700">
+                  {formatIndianPrice(price.todayLow)}
+                </p>
+                {price.todayLowTime && (
+                  <p className="text-[10px] text-red-600/80 mt-0.5">
+                    at {formatHighLowTime(price.todayLowTime)}
+                  </p>
+                )}
+                {/* Show how close current is to low */}
+                {price.pricePerGram <= price.todayLow * 1.002 && (
+                  <span className="absolute top-2 right-2 text-[10px] font-bold text-red-800 bg-red-200 px-1.5 py-0.5 rounded animate-pulse">
+                    ⚠️ AT LOW
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Day Range Bar */}
+          {price.todayHigh > price.todayLow && (
+            <div className="mt-3 px-1">
+              <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                <span>Low</span>
+                <span>Day Range</span>
+                <span>High</span>
+              </div>
+              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+                {/* Current price position indicator */}
+                <div 
+                  className="absolute top-0 bottom-0 w-2 bg-[#1e3a5f] rounded-full transform -translate-x-1/2 shadow-md z-10"
+                  style={{
+                    left: `${((price.pricePerGram - price.todayLow) / (price.todayHigh - price.todayLow)) * 100}%`,
+                  }}
+                />
+                {/* Range fill */}
+                <div className="absolute inset-0 bg-gradient-to-r from-red-300 via-yellow-300 to-green-300 opacity-60" />
+              </div>
+              <p className="text-center text-[10px] text-gray-400 mt-1">
+                Current position in today&apos;s range
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Price Grid - Responsive */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4 border-t border-gray-100">

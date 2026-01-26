@@ -28,6 +28,17 @@ export interface StoredDailyPrice {
   timestamp: string;         // ISO timestamp when saved
 }
 
+// Today's high/low tracking
+export interface DailyExtremes {
+  date: string;              // YYYY-MM-DD (IST)
+  high: number;              // Highest price seen today (INR per gram)
+  highTime: string;          // ISO timestamp when high was recorded
+  low: number;               // Lowest price seen today (INR per gram)
+  lowTime: string;           // ISO timestamp when low was recorded
+  openPrice: number;         // First price of the day
+  lastUpdated: string;       // ISO timestamp of last update
+}
+
 export interface DailyPricesData {
   _metadata: {
     description: string;
@@ -238,4 +249,133 @@ export async function isTodayPriceStored(): Promise<boolean> {
   } catch (error) {
     return false;
   }
+}
+
+// ============================================================================
+// DAILY EXTREMES (HIGH/LOW) TRACKING
+// ============================================================================
+
+/**
+ * Get the file path for daily extremes
+ */
+async function getExtremesFilePath(): Promise<string> {
+  const path = await getPath();
+  return path.join(process.cwd(), "data", "daily-extremes.json");
+}
+
+/**
+ * Get today's date in IST timezone (YYYY-MM-DD)
+ */
+function getTodayIST(): string {
+  const now = new Date();
+  // Convert to IST (UTC+5:30)
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istDate = new Date(now.getTime() + istOffset);
+  return istDate.toISOString().split("T")[0];
+}
+
+/**
+ * Read daily extremes from storage
+ */
+export async function readDailyExtremes(): Promise<DailyExtremes | null> {
+  try {
+    const fs = await getFs();
+    const filePath = await getExtremesFilePath();
+    
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+    
+    const data = fs.readFileSync(filePath, "utf-8");
+    const extremes = JSON.parse(data) as DailyExtremes;
+    
+    // Check if it's today's data (IST)
+    const todayIST = getTodayIST();
+    if (extremes.date !== todayIST) {
+      console.log(`Daily extremes data is from ${extremes.date}, today is ${todayIST}. Resetting.`);
+      return null;
+    }
+    
+    return extremes;
+  } catch (error) {
+    console.error("Error reading daily extremes:", error);
+    return null;
+  }
+}
+
+/**
+ * Update daily extremes with a new price
+ * Call this whenever a new price is fetched
+ */
+export async function updateDailyExtremes(currentPrice: number): Promise<DailyExtremes> {
+  try {
+    const fs = await getFs();
+    const path = await getPath();
+    const filePath = await getExtremesFilePath();
+    const now = new Date().toISOString();
+    const todayIST = getTodayIST();
+    
+    let extremes = await readDailyExtremes();
+    
+    // If no data for today, create new
+    if (!extremes) {
+      extremes = {
+        date: todayIST,
+        high: currentPrice,
+        highTime: now,
+        low: currentPrice,
+        lowTime: now,
+        openPrice: currentPrice,
+        lastUpdated: now,
+      };
+      console.log(`[DailyExtremes] New day started. Open: ₹${currentPrice.toFixed(2)}`);
+    } else {
+      // Update high if current price is higher
+      if (currentPrice > extremes.high) {
+        console.log(`[DailyExtremes] New high: ₹${currentPrice.toFixed(2)} (was ₹${extremes.high.toFixed(2)})`);
+        extremes.high = currentPrice;
+        extremes.highTime = now;
+      }
+      
+      // Update low if current price is lower
+      if (currentPrice < extremes.low) {
+        console.log(`[DailyExtremes] New low: ₹${currentPrice.toFixed(2)} (was ₹${extremes.low.toFixed(2)})`);
+        extremes.low = currentPrice;
+        extremes.lowTime = now;
+      }
+      
+      extremes.lastUpdated = now;
+    }
+    
+    // Ensure directory exists
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    // Write to file
+    fs.writeFileSync(filePath, JSON.stringify(extremes, null, 2), "utf-8");
+    
+    return extremes;
+  } catch (error) {
+    console.error("Error updating daily extremes:", error);
+    // Return fallback
+    return {
+      date: getTodayIST(),
+      high: currentPrice,
+      highTime: new Date().toISOString(),
+      low: currentPrice,
+      lowTime: new Date().toISOString(),
+      openPrice: currentPrice,
+      lastUpdated: new Date().toISOString(),
+    };
+  }
+}
+
+/**
+ * Get daily extremes (for client consumption)
+ * Returns null if no data available
+ */
+export async function getDailyExtremes(): Promise<DailyExtremes | null> {
+  return await readDailyExtremes();
 }
