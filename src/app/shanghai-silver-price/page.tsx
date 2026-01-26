@@ -39,7 +39,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Shanghai Silver Price Today | Live SGE Rate in USD & CNY - SilverInfo",
-  description: "Live Shanghai silver price today ¥27,000/kg (~$121/oz). Real-time SGE silver rate, Shanghai vs COMEX premium (+10-12%), prices in CNY, USD & INR. Compare India vs Shanghai rates. Updated every 30 seconds.",
+  description: "Live Shanghai Silver Price today (SGE) in CNY, USD & INR. Compare Shanghai vs COMEX premium, unit conversions, and India market rates updated in real time. ¥27,000/kg | $121/oz | +11% premium.",
   keywords: [
     "shanghai silver price",
     "shanghai silver price today",
