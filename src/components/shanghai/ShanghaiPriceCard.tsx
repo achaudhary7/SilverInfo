@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useLiveShanghaiPrice, formatShanghaiTimeAgo } from "@/hooks/useLiveShanghaiPrice";
 import { formatCnyPrice, formatUsdPrice, getBeijingTimeString } from "@/lib/shanghaiApi";
 import type { ShanghaiSilverPrice } from "@/lib/shanghaiApi";
@@ -73,6 +74,22 @@ function IndiaFlag({ className = "w-5 h-3.5" }: { className?: string }) {
 export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardProps) {
   const { price, isLoading, lastUpdated } = useLiveShanghaiPrice(initialPrice);
   
+  // State for Beijing time (client-side only to avoid hydration mismatch)
+  const [beijingTime, setBeijingTime] = useState<string>("");
+  
+  // Update Beijing time on client only
+  useEffect(() => {
+    // Set initial time
+    setBeijingTime(getBeijingTimeString());
+    
+    // Update every minute
+    const interval = setInterval(() => {
+      setBeijingTime(getBeijingTimeString());
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   // Loading skeleton - Light warm theme
   if (isLoading && !price) {
     return (
@@ -137,7 +154,7 @@ export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardPro
               Shanghai Silver Price
             </h2>
             <p className="text-xs text-white/70">
-              SGE • {getBeijingTimeString()}
+              SGE • {beijingTime || "Loading..."}
             </p>
           </div>
         </div>
