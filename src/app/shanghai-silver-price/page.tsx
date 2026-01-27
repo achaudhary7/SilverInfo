@@ -1797,8 +1797,8 @@ export default async function ShanghaiSilverPricePage() {
             </div>
           </section>
 
-          {/* FAQs with Schema Markup */}
-          <section className="mb-8" itemScope itemType="https://schema.org/FAQPage">
+          {/* FAQs - Schema provided via JSON-LD script above */}
+          <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 text-gray-800">
               ❓ Frequently Asked Questions
             </h2>
@@ -1807,23 +1807,15 @@ export default async function ShanghaiSilverPricePage() {
                 <details 
                   key={idx}
                   className="group rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm"
-                  itemScope
-                  itemProp="mainEntity"
-                  itemType="https://schema.org/Question"
                 >
-                  <summary className="px-4 py-3 cursor-pointer text-sm font-medium flex items-center justify-between text-gray-700 hover:bg-gray-50" itemProp="name">
+                  <summary className="px-4 py-3 cursor-pointer text-sm font-medium flex items-center justify-between text-gray-700 hover:bg-gray-50">
                     {faq.question}
                     <span className="ml-2 transition-transform group-open:rotate-180 text-amber-600">
                       ▼
                     </span>
                   </summary>
-                  <div 
-                    className="px-4 pb-3 text-sm text-gray-600 border-t border-gray-100"
-                    itemScope
-                    itemProp="acceptedAnswer"
-                    itemType="https://schema.org/Answer"
-                  >
-                    <p itemProp="text">{faq.answer}</p>
+                  <div className="px-4 pb-3 text-sm text-gray-600 border-t border-gray-100">
+                    <p>{faq.answer}</p>
                   </div>
                 </details>
               ))}
