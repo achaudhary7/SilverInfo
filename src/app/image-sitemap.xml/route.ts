@@ -12,6 +12,9 @@
 
 import { getAllUpdates, getAllLearnArticles } from "@/lib/markdown";
 
+// ISR: Revalidate every hour (images don't change frequently)
+export const revalidate = 3600;
+
 export async function GET() {
   const baseUrl = "https://silverinfo.in";
   

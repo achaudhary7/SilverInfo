@@ -1,14 +1,9 @@
 {
-  "_metadata": {
-    "description": "Daily silver price extremes (high/low) tracking",
-    "source": "Tracked from COMEX + INR conversion",
-    "lastUpdated": "2026-01-26T22:50:00.000Z"
-  },
-  "date": "2026-01-26",
-  "high": 422.00,
-  "highTime": "2026-01-26T10:30:00.000Z",
-  "low": 412.50,
-  "lowTime": "2026-01-26T09:45:00.000Z",
-  "openPrice": 418.00,
-  "lastUpdated": "2026-01-26T22:50:00.000Z"
+  "date": "2026-01-30",
+  "high": 345.32,
+  "highTime": "2026-01-30T12:23:20.769Z",
+  "low": 328.68,
+  "lowTime": "2026-01-30T13:05:47.305Z",
+  "openPrice": 342.66,
+  "lastUpdated": "2026-01-30T13:21:42.792Z"
 }

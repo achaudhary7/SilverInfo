@@ -11,21 +11,30 @@ export const revalidate = 600;
 // Page last updated date (update when making significant changes)
 const LAST_UPDATED = "2026-01-23";
 
-export const metadata: Metadata = {
-  title: "Silver Investment Calculator - Calculate Profit & Loss",
-  description:
-    "Free silver investment calculator for India. Calculate your silver investment returns, profit/loss, and compare with current market prices. Track your silver portfolio gains.",
-  keywords: [
-    "silver investment calculator",
-    "silver profit calculator",
-    "silver gain loss calculator",
-    "silver roi calculator",
-    "silver return calculator india",
-  ],
-  alternates: {
-    canonical: "/investment-calculator",
-  },
-};
+// Dynamic metadata with live price
+export async function generateMetadata(): Promise<Metadata> {
+  const price = await getSilverPriceWithChange();
+  const pricePerGram = price?.pricePerGram?.toFixed(2) || "95.00";
+  
+  return {
+    title: `Silver Investment Calculator | Current Rate ₹${pricePerGram}/g - Track Profit/Loss - SilverInfo.in`,
+    description: `Free silver investment calculator for India. Current silver rate: ₹${pricePerGram}/gram. Calculate your investment returns, profit/loss, and compare with current market prices.`,
+    keywords: [
+      "silver investment calculator",
+      "silver profit calculator",
+      "silver gain loss calculator",
+      "silver roi calculator",
+      "silver return calculator india",
+    ],
+    alternates: {
+      canonical: "/investment-calculator",
+    },
+    openGraph: {
+      title: `Silver Investment Calculator | ₹${pricePerGram}/g - SilverInfo.in`,
+      description: `Track silver investment profit/loss at current rate ₹${pricePerGram}/gram.`,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -52,6 +61,7 @@ const faqItems: FAQItem[] = [
 
 export default async function InvestmentCalculatorPage() {
   const price = await getSilverPriceWithChange();
+  const currentPrice = price?.pricePerGram ?? 100;
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
@@ -165,7 +175,7 @@ export default async function InvestmentCalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Calculator - 2 columns on Desktop */}
               <div className="lg:col-span-2 space-y-6">
-                <InvestmentCalculator currentPrice={price.pricePerGram} />
+                <InvestmentCalculator currentPrice={currentPrice} />
                 
                 {/* How It Works */}
                 <div className="card p-6">
@@ -240,7 +250,7 @@ export default async function InvestmentCalculatorPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Live Silver Rate */}
-                <LiveRateCard price={price} showLink={false} />
+                {price ? <LiveRateCard price={price} showLink={false} /> : null}
 
                 {/* Historical Returns Reference */}
                 <div className="card p-6">

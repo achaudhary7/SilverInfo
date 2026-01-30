@@ -35,6 +35,9 @@ interface LivePriceWidgetProps {
 
 export async function LivePriceWidget(props: LivePriceWidgetProps) {
   const price = await getPrice();
+  if (!price) {
+    return <div className="text-gray-500 text-sm">Unable to load price</div>;
+  }
   return <PriceWidget price={price} {...props} />;
 }
 
@@ -49,6 +52,9 @@ interface LivePriceBannerProps {
 
 export async function LivePriceBanner(props: LivePriceBannerProps) {
   const price = await getPrice();
+  if (!price) {
+    return <div className="text-gray-500 text-sm">Unable to load price</div>;
+  }
   return <PriceBanner price={price} {...props} />;
 }
 
@@ -64,6 +70,9 @@ interface LivePriceTableProps {
 
 export async function LivePriceTable(props: LivePriceTableProps) {
   const price = await getPrice();
+  if (!price) {
+    return <div className="text-gray-500 text-sm">Unable to load price</div>;
+  }
   return <PriceTable price={price} {...props} />;
 }
 
@@ -83,6 +92,10 @@ export async function LivePriceInline({
   className = "" 
 }: LivePriceInlineProps) {
   const price = await getPrice();
+  
+  if (!price) {
+    return <span className="text-gray-500">—</span>;
+  }
   
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -125,5 +138,8 @@ interface LiveSilverRateCardProps {
 
 export async function LiveSilverRateCard(props: LiveSilverRateCardProps) {
   const price = await getPrice();
+  if (!price) {
+    return <div className="text-gray-500 text-sm">Unable to load price</div>;
+  }
   return <LiveRateCard price={price} {...props} />;
 }

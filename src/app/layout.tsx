@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -6,6 +6,14 @@ import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Explicit viewport configuration for SEO best practices
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#1e3a5f",
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -133,12 +141,15 @@ export default function RootLayout({
     <html lang="en-IN">
       <head>
         {/* Structured Data - Organization & Website */}
+        {/* suppressHydrationWarning: Google SWG script may modify these schemas client-side */}
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
 
@@ -148,7 +159,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1e3a5f" />
+        {/* theme-color is now set via viewport export above */}
 
         {/* Preconnect for performance - establishes full connection early */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -162,29 +173,35 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
         <link rel="dns-prefetch" href="https://api.frankfurter.app" />
         
-        {/* Google Analytics 4 (gtag.js) */}
+        {/* Google Analytics 4 (gtag.js) - Deferred loading to reduce Edge Requests */}
+        {/* Using afterInteractive strategy equivalent via defer */}
         <script
-          async
+          defer
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
         />
         <script
+          id="ga-init"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}');
+              gtag('config', '${GA_MEASUREMENT_ID}', { 
+                send_page_view: true,
+                cookie_flags: 'SameSite=None;Secure'
+              });
             `,
           }}
         />
         
         {/* Google Reader Revenue Manager - Subscribe with Google Basic */}
-        {/* For Google News Publisher Center integration */}
+        {/* Deferred to not block initial page load */}
         <script
-          async
+          defer
           src="https://news.google.com/swg/js/v1/swg-basic.js"
         />
         <script
+          id="swg-init"
           dangerouslySetInnerHTML={{
             __html: `
               (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
@@ -215,7 +232,8 @@ export default function RootLayout({
         
         {/* Vercel Analytics & Speed Insights - Core Web Vitals tracking */}
         <Analytics />
-        <SpeedInsights />
+        {/* Sample 50% of sessions to reduce Edge Requests while still getting accurate metrics */}
+        <SpeedInsights sampleRate={0.5} />
       </body>
     </html>
   );

@@ -11,6 +11,9 @@ import {
 import { LivePriceWidget } from "@/components/price";
 import AuthorBio, { ReviewedByBadge } from "@/components/AuthorBio";
 
+// ISR: Revalidate articles every day (content rarely changes after publish)
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   const slugs = getAllLearnSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -68,7 +71,12 @@ export default async function LearnArticlePage({
     author: {
       "@type": "Person",
       name: article.author,
-      url: "https://silverinfo.in/about",
+      url: "https://silverinfo.in/about/team",
+      jobTitle: "Silver Market Research",
+      worksFor: {
+        "@type": "Organization",
+        name: "SilverInfo.in",
+      },
     },
     datePublished: article.date,
     dateModified: article.date, // Content is current as of publish date

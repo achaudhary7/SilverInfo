@@ -3,8 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { getAllLearnArticles, formatDate } from "@/lib/markdown";
 
+// Force static generation - articles change infrequently
+export const dynamic = "force-static";
+export const revalidate = 3600; // Revalidate every hour
+
 export const metadata: Metadata = {
-  title: "Learn About Silver - Guides & Education",
+  title: "Learn About Silver - Guides & Education - SilverInfo.in",
   description:
     "Comprehensive guides about silver - sterling silver, hallmarks, purity testing, investment comparisons, and more. Learn everything about buying and investing in silver in India.",
   keywords: [
@@ -44,11 +48,34 @@ export default function LearnPage() {
     ],
   };
 
+  // CollectionPage Schema for better SEO (listing pages)
+  const collectionPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Silver Guides & Education",
+    description: "Comprehensive guides to help you understand silver - from purity and hallmarks to investment strategies.",
+    url: "https://silverinfo.in/learn",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: articles.length,
+      itemListElement: articles.map((article, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://silverinfo.in/learn/${article.slug}`,
+        name: article.title,
+      })),
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
       />
 
       {/* Header */}

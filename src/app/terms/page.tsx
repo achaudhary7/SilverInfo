@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - this page rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
   title: "Terms of Service - SilverInfo.in",
   description:
@@ -17,11 +21,35 @@ export default function TermsPage() {
     { name: "Terms of Service", url: "https://silverinfo.in/terms" },
   ]);
 
+  // WebPage schema for terms of service
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Terms of Service - SilverInfo.in",
+    description: "Terms and conditions for using SilverInfo.in silver price tracking platform.",
+    url: "https://silverinfo.in/terms",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+    },
+    about: {
+      "@type": "Thing",
+      name: "Terms of Service",
+    },
+    dateModified: "2026-01-22",
+    inLanguage: "en-IN",
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
       <div className="min-h-screen bg-gray-50">
         {/* Header */}

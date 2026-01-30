@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - this page rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
   title: "Contact Us - SilverInfo.in",
   description:
@@ -17,11 +21,36 @@ export default function ContactPage() {
     { name: "Contact", url: "https://silverinfo.in/contact" },
   ]);
 
+  // ContactPage schema for rich results
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact SilverInfo.in",
+    description: "Get in touch with SilverInfo.in for questions about silver prices, feedback, or partnership inquiries.",
+    url: "https://silverinfo.in/contact",
+    mainEntity: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+      logo: "https://silverinfo.in/logo.png",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        url: "https://silverinfo.in/contact",
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
       />
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

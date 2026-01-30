@@ -90,7 +90,7 @@ Some profit-booking possible, but overall trend remains bullish.
 
 ### Domestic Factors
 - MCX silver futures trading
-- Import duty structure (10% customs + 3% GST)
+- Import duty structure (6% customs + 3% IGST) – Budget July 2024
 - Local demand from jewelry and industrial sectors
 
 ---

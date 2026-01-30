@@ -144,6 +144,14 @@ async function getWeeklyData(): Promise<WeeklyData> {
     getCityPrices(),
   ]);
 
+  // If API fails, throw error to handle in caller
+  if (!currentPrice) {
+    throw new Error("Unable to fetch current silver price from API");
+  }
+
+  // Use empty array if cities fetch fails
+  const cityPrices: CityPrice[] = cities || [];
+
   // If we don't have stored prices, use current price
   if (weekPrices.length === 0) {
     weekPrices.push({
@@ -175,7 +183,7 @@ async function getWeeklyData(): Promise<WeeklyData> {
     weekChangePercent: Math.round(weekChangePercent * 100) / 100,
     avgPrice: Math.round(avgPrice * 100) / 100,
     dailyPrices: weekPrices,
-    cities,
+    cities: cityPrices,
     currentPrice,
   };
 }

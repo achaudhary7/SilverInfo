@@ -27,7 +27,7 @@ interface UseLiveShanghaiPriceReturn {
   refresh: () => Promise<void>;
 }
 
-const POLL_INTERVAL = 30000; // 30 seconds
+const POLL_INTERVAL = 60000; // 60 seconds (reduced from 30s to lower Edge Requests)
 const MAX_RETRIES = 3;
 
 export function useLiveShanghaiPrice(
@@ -45,12 +45,9 @@ export function useLiveShanghaiPrice(
 
   const fetchPrice = useCallback(async () => {
     try {
-      const response = await fetch("/api/shanghai-price", {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      // Fetch from API route - server-side caching via unstable_cache + Edge caching via headers
+      // Note: Client-side fetches don't support `next: { revalidate }` option
+      const response = await fetch("/api/shanghai-price");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

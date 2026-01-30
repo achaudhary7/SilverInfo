@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" fill="none">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#B8860B"/>
+    </linearGradient>
+    <linearGradient id="silverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#C0C0C0"/>
+      <stop offset="100%" style="stop-color:#A8A8A8"/>
+    </linearGradient>
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF4757"/>
+      <stop offset="100%" style="stop-color:#C0392B"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="420" fill="url(#bgGradient)"/>
+  
+  <!-- Grid lines -->
+  <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="200" y1="0" x2="200" y2="420"/>
+    <line x1="400" y1="0" x2="400" y2="420"/>
+    <line x1="600" y1="0" x2="600" y2="420"/>
+  </g>
+  
+  <!-- Breaking News Banner -->
+  <rect x="0" y="0" width="800" height="50" fill="#FF4757"/>
+  <text x="400" y="33" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="20" font-weight="bold">
+    BREAKING NEWS " JANUARY 30, 2026
+  </text>
+  
+  <!-- Main Title -->
+  <text x="400" y="95" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="bold">
+    PRECIOUS METALS CRASH
+  </text>
+  <text x="400" y="125" text-anchor="middle" fill="#FF4757" font-family="Arial, sans-serif" font-size="18">
+    Biggest Single-Day Sell-off in 13 Years
+  </text>
+  
+  <!-- Gold Section -->
+  <g transform="translate(100, 150)">
+    <!-- Gold Icon -->
+    <circle cx="50" cy="50" r="40" fill="url(#goldGradient)" filter="url(#glow)"/>
+    <text x="50" y="58" text-anchor="middle" fill="#1a1a2e" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Au</text>
+    
+    <!-- Gold Label -->
+    <text x="110" y="35" fill="#FFD700" font-family="Arial, sans-serif" font-size="22" font-weight="bold">GOLD</text>
+    
+    <!-- Price Drop -->
+    <text x="110" y="65" fill="white" font-family="Arial, sans-serif" font-size="16">$5,595 � $4,941</text>
+    
+    <!-- Percentage -->
+    <rect x="110" y="75" width="80" height="30" rx="5" fill="url(#redGradient)"/>
+    <text x="150" y="96" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">� 8%</text>
+  </g>
+  
+  <!-- Down Arrow (Large) -->
+  <g transform="translate(350, 180)">
+    <polygon points="50,0 100,60 75,60 75,100 25,100 25,60 0,60" fill="#FF4757" opacity="0.8"/>
+  </g>
+  
+  <!-- Silver Section -->
+  <g transform="translate(500, 150)">
+    <!-- Silver Icon -->
+    <circle cx="50" cy="50" r="40" fill="url(#silverGradient)" filter="url(#glow)"/>
+    <text x="50" y="58" text-anchor="middle" fill="#1a1a2e" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Ag</text>
+    
+    <!-- Silver Label -->
+    <text x="110" y="35" fill="#C0C0C0" font-family="Arial, sans-serif" font-size="22" font-weight="bold">SILVER</text>
+    
+    <!-- Price Drop -->
+    <text x="110" y="65" fill="white" font-family="Arial, sans-serif" font-size="16">$120 � $95</text>
+    
+    <!-- Percentage -->
+    <rect x="110" y="75" width="80" height="30" rx="5" fill="url(#redGradient)"/>
+    <text x="150" y="96" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">� 17%</text>
+  </g>
+  
+  <!-- Cause Section -->
+  <rect x="50" y="290" width="700" height="80" rx="10" fill="#ffffff" fill-opacity="0.05"/>
+  <text x="400" y="320" text-anchor="middle" fill="#FFD700" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
+    TRIGGER: Trump nominates Kevin Warsh as Fed Chair
+  </text>
+  <text x="400" y="350" text-anchor="middle" fill="#C0C0C0" font-family="Arial, sans-serif" font-size="14">
+    Hawkish pick signals end of "dollar debasement" trade " USD rebounds " Profit-taking intensifies
+  </text>
+  
+  <!-- Footer -->
+  <rect x="0" y="385" width="800" height="35" fill="#0f0f23"/>
+  <text x="400" y="408" text-anchor="middle" fill="#888" font-family="Arial, sans-serif" font-size="14">
+    SilverInfo.in " Live Prices Updated Every 30 Seconds
+  </text>
+</svg>

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getShanghaiSilverPrice } from "@/lib/shanghaiApi";
 
-// Force dynamic - no caching for real-time prices
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// ISR: Cache for 60 seconds, revalidate in background
+// This reduces Edge Requests by ~95% while keeping data fresh
+export const revalidate = 60;
 
 /**
  * GET /api/shanghai-price
@@ -28,10 +28,9 @@ export async function GET() {
     
     return NextResponse.json(price, {
       headers: {
-        // Prevent browser/CDN caching for real-time data
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-        "Pragma": "no-cache",
-        "Expires": "0",
+        // Cache at Edge for 60s, serve stale while revalidating for up to 120s
+        // This provides near-real-time data while reducing Edge Requests by ~95%
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {

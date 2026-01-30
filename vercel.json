@@ -13,5 +13,16 @@
       "path": "/api/cron/generate-weekly-article",
       "schedule": "30 17 * * 0"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=30, stale-while-revalidate=60"
+        }
+      ]
+    }
   ]
 }

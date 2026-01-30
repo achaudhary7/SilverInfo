@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useLivePrice, formatTimeAgo } from "@/hooks/useLivePrice";
 import { formatIndianPrice, type SilverPrice } from "@/lib/metalApi";
+import { PriceSourceInline } from "@/components/ui/PriceSourceBadge";
 
 // Extended price type with daily extremes from API
 interface ExtendedSilverPrice extends SilverPrice {
@@ -153,7 +154,7 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
       <div className="flex items-start justify-between gap-2 mb-4">
         {/* Left: Price */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 mb-1">
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
             <p className="text-xs sm:text-sm text-gray-500">Silver Rate Today</p>
             {/* Live Indicator */}
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-50 border border-green-200">
@@ -163,6 +164,8 @@ export default function LivePriceCard({ initialPrice, pollInterval = 60000, last
               </span>
               <span className="text-[10px] font-medium text-green-700">LIVE</span>
             </span>
+            {/* Price Source */}
+            <PriceSourceInline source={price.source || "calculated"} />
           </div>
           <p 
             className={`text-2xl sm:text-4xl font-bold text-gray-900 price-display transition-all duration-300 ${

@@ -49,6 +49,14 @@ export async function GET(request: NextRequest) {
     // Fetch current price
     const price = await getSilverPrice();
     
+    // If API fails, return error
+    if (!price) {
+      return NextResponse.json(
+        { error: "Unable to fetch current price from API" },
+        { status: 503 }
+      );
+    }
+    
     // Prepare storage data
     const today = new Date().toISOString().split("T")[0];
     const storedPrice: StoredDailyPrice = {

@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - methodology rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
-  title: "How We Calculate Silver Prices - Data Methodology",
+  title: "How We Calculate Silver Prices - Data Methodology - SilverInfo.in",
   description:
     "Learn how SilverInfo.in calculates silver prices in India. Understand our data sources, calculation formula, update frequency, and methodology for accurate indicative prices.",
   keywords: [
@@ -23,6 +27,9 @@ export default function HowWeCalculatePage() {
     { name: "Home", url: "https://silverinfo.in" },
     { name: "How We Calculate", url: "https://silverinfo.in/how-we-calculate" },
   ]);
+
+  // Dynamic date for schema freshness
+  const currentDate = new Date().toISOString().split('T')[0];
 
   // Article schema for methodology page (helps with Featured Snippets)
   const articleSchema = {
@@ -45,7 +52,7 @@ export default function HowWeCalculatePage() {
       },
     },
     datePublished: "2026-01-01",
-    dateModified: "2026-01-23",
+    dateModified: currentDate, // Dynamic date for freshness signal
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": "https://silverinfo.in/how-we-calculate",
@@ -82,7 +89,7 @@ export default function HowWeCalculatePage() {
       {
         "@type": "HowToStep",
         name: "Add Import Duties",
-        text: "Add 7.5% import duty and 3% GST to get the final indicative price. Final Price = Base × 1.1075",
+        text: "Add 6% import duty (Budget July 2024), 3% IGST, and 3% MCX premium. Final Price = Base × 1.124",
         url: "https://silverinfo.in/how-we-calculate#step4",
       },
     ],
@@ -118,6 +125,12 @@ export default function HowWeCalculatePage() {
             </h1>
             <p className="text-gray-600 mt-2">
               Our transparent methodology for calculating indicative silver prices in India
+            </p>
+            <p className="text-xs text-gray-400 mt-2 flex items-center gap-2">
+              <span>📅</span>
+              <time dateTime={currentDate}>
+                Last reviewed: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </time>
             </p>
           </div>
         </section>
@@ -184,15 +197,15 @@ export default function HowWeCalculatePage() {
                 </p>
 
                 <div className="not-prose bg-gray-900 text-gray-100 rounded-lg p-6 my-6 font-mono text-sm overflow-x-auto">
-                  <p className="text-green-400 mb-2">// Step-by-step calculation</p>
+                  <p className="text-green-400 mb-2">// Step-by-step calculation (Budget July 2024 rates)</p>
                   <p><span className="text-blue-400">Base Price</span> = (COMEX_USD × USD_INR) ÷ 31.1035</p>
-                  <p className="mt-2"><span className="text-blue-400">With Import Duty</span> = Base × 1.10 <span className="text-gray-500">// 10% (7.5% customs + 2.5% AIDC)</span></p>
+                  <p className="mt-2"><span className="text-blue-400">With Import Duty</span> = Base × 1.06 <span className="text-gray-500">// 6% (5% customs + 1% AIDC)</span></p>
                   <p><span className="text-blue-400">With IGST</span> = Above × 1.03 <span className="text-gray-500">// 3% IGST</span></p>
-                  <p><span className="text-blue-400">Final Price</span> = Above × 1.10 <span className="text-gray-500">// 10% MCX/local premium</span></p>
+                  <p><span className="text-blue-400">Final Price</span> = Above × 1.03 <span className="text-gray-500">// 3% MCX/local premium</span></p>
                   <p className="mt-4 text-yellow-400">// Result: ₹ per gram (indicative)</p>
                 </div>
 
-                <h3>Breakdown of Charges</h3>
+                <h3>Breakdown of Charges (Budget July 2024)</h3>
                 <table className="not-prose w-full my-6">
                   <thead>
                     <tr className="bg-gray-100">
@@ -204,13 +217,13 @@ export default function HowWeCalculatePage() {
                   <tbody>
                     <tr>
                       <td className="p-3 border font-medium">Basic Customs Duty</td>
-                      <td className="p-3 border">7.5%</td>
-                      <td className="p-3 border text-gray-600">Import duty on silver</td>
+                      <td className="p-3 border">5%</td>
+                      <td className="p-3 border text-gray-600">Import duty on silver (reduced in Budget July 2024)</td>
                     </tr>
                     <tr>
                       <td className="p-3 border font-medium">AIDC</td>
-                      <td className="p-3 border">2.5%</td>
-                      <td className="p-3 border text-gray-600">Agriculture Infrastructure Development Cess</td>
+                      <td className="p-3 border">1%</td>
+                      <td className="p-3 border text-gray-600">Agriculture Infrastructure Development Cess (reduced)</td>
                     </tr>
                     <tr>
                       <td className="p-3 border font-medium">IGST</td>
@@ -219,7 +232,7 @@ export default function HowWeCalculatePage() {
                     </tr>
                     <tr>
                       <td className="p-3 border font-medium">MCX Premium</td>
-                      <td className="p-3 border">~10%</td>
+                      <td className="p-3 border">~3%</td>
                       <td className="p-3 border text-gray-600">Local market premium over international price</td>
                     </tr>
                   </tbody>
@@ -286,7 +299,7 @@ export default function HowWeCalculatePage() {
                     <li>• Prices shown are <strong>indicative estimates</strong> derived from COMEX futures</li>
                     <li>• Actual retail prices may differ by 2-5% based on jeweler and location</li>
                     <li>• COMEX futures prices may differ from Indian spot prices</li>
-                    <li>• For official rates, check <a href="https://www.mcxindia.com" className="underline">MCX India</a> or your local jeweler</li>
+                    <li>• For official rates, check <a href="https://www.mcxindia.com" target="_blank" rel="noopener noreferrer" className="underline">MCX India</a> or your local jeweler</li>
                   </ul>
                 </div>
 

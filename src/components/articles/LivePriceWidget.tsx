@@ -24,8 +24,9 @@ export default function LivePriceWidget() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const response = await fetch("/api/price?t=" + Date.now(), {
-          cache: "no-store",
+        // Use Edge cache to reduce requests
+        const response = await fetch("/api/price", {
+          next: { revalidate: 15 },
         });
         if (response.ok) {
           const data = await response.json();

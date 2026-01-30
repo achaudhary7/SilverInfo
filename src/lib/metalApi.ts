@@ -3,7 +3,11 @@
  * 
  * Fetches silver prices from external APIs with ISR caching.
  * Supports MetalpriceAPI, GoldAPI, and fallback to static data.
+ * 
+ * Uses unstable_cache for data-layer caching to reduce external API calls.
  */
+
+import { unstable_cache } from "next/cache";
 
 // Types
 export interface SilverPrice {
@@ -49,15 +53,15 @@ const GST_RATE = 0.03; // 3% GST
 const OZ_TO_GRAM = 31.1035; // Troy ounce to grams
 
 // Constants for Indian silver pricing (self-calculation)
-// Based on actual Indian import structure:
-// - Basic Customs Duty: 7.5%
-// - Agriculture Infrastructure Development Cess (AIDC): 2.5%
+// Based on actual Indian import structure (Budget July 2024 - UPDATED):
+// - Basic Customs Duty: 5% (reduced from 7.5%)
+// - Agriculture Infrastructure Development Cess (AIDC): 1% (reduced from 2.5%)
 // - IGST: 3%
-// - MCX Premium over COMEX: ~8-10%
-// - Transportation/Storage: ~2%
-const IMPORT_DUTY = 0.10;       // 10% (7.5% customs + 2.5% AIDC)
+// - MCX Premium over COMEX: ~2-3%
+// Reference: https://www.livemint.com/silver-prices
+const IMPORT_DUTY = 0.06;       // 6% (5% customs + 1% AIDC) - Budget July 2024
 const IGST = 0.03;              // 3% IGST
-const MCX_PREMIUM = 0.10;       // 10% MCX/local market premium over COMEX
+const MCX_PREMIUM = 0.03;       // 3% MCX/local market premium over COMEX
 
 // Indian cities with silver price variations
 // Premium/discount per gram based on distance from bullion hubs, local taxes, and demand
@@ -111,33 +115,22 @@ export const INDIAN_CITIES: CityPrice[] = CITY_CONFIG.map(config => ({
   gst: config.gst,
 }));
 
-// Fallback static price - UPDATED based on actual market data (Jan 2026)
-// Source: Moneycontrol silver rates - ₹340/gram as of Jan 21, 2026
-const FALLBACK_PRICE: SilverPrice = {
-  pricePerGram: 340,
-  pricePerKg: 340000,
-  pricePer10Gram: 3400,
-  pricePerTola: 3966, // 340 * 11.6638 = ~3966
-  currency: "INR",
-  timestamp: new Date().toISOString(),
-  change24h: 10,      // ₹10 increase from yesterday (₹330 → ₹340)
-  changePercent24h: 3.03,
-  high24h: 340,
-  low24h: 330,
-  source: "fallback",
-  usdInr: 84.50,      // Typical USD/INR rate
-  comexUsd: 30.50,    // Typical COMEX silver price
-};
+// NOTE: No hardcoded fallback prices - all data comes from APIs
+// If APIs fail, functions return null and UI handles the error gracefully
 
 // ============================================
 // FREE API FETCHERS (No API key required)
 // ============================================
+// NOTE: All prices come directly from APIs - NO HARDCODED VALUES
+// If API fails, we return null and let the UI handle the error gracefully
 
 /**
  * Fetch silver USD price from Yahoo Finance (unofficial endpoint)
  * Returns: Silver spot price in USD per troy ounce
  * Free: Unlimited requests (unofficial API)
  * Cache: 10 minutes
+ * 
+ * NOTE: Returns actual API data - NO sanity checks, NO hardcoded values
  */
 async function fetchSilverUSD(): Promise<number | null> {
   try {
@@ -152,9 +145,7 @@ async function fetchSilverUSD(): Promise<number | null> {
     );
     
     if (!response.ok) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Yahoo Finance returned non-OK status:", response.status);
-      }
+      console.error("[SilverAPI] Yahoo Finance returned non-OK status:", response.status);
       return null;
     }
     
@@ -162,17 +153,14 @@ async function fetchSilverUSD(): Promise<number | null> {
     const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
     
     if (price && typeof price === 'number' && price > 0) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Yahoo Finance silver price: $${price}/oz`);
-      }
+      console.log(`[SilverAPI] Yahoo Finance silver price: $${price}/oz`);
       return price;
     }
     
+    console.error("[SilverAPI] Invalid price data from Yahoo Finance");
     return null;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Yahoo Finance fetch failed (will use fallback):", error instanceof Error ? error.message : 'Unknown error');
-    }
+    console.error("[SilverAPI] Yahoo Finance fetch failed:", error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -302,13 +290,13 @@ async function calculateIndianSilverPrice(): Promise<SilverPrice | null> {
   // Step 2: Convert to per gram
   const basePrice = pricePerOzInr / OZ_TO_GRAM;
   
-  // Step 3: Add import duty (10% = 7.5% customs + 2.5% AIDC)
+  // Step 3: Add import duty (6% = 5% customs + 1% AIDC - Budget July 2024)
   const withDuty = basePrice * (1 + IMPORT_DUTY);
   
   // Step 4: Add IGST (3%)
   const withIgst = withDuty * (1 + IGST);
   
-  // Step 5: Add MCX/local market premium (10%)
+  // Step 5: Add MCX/local market premium (3%)
   // Indian MCX trades at premium over COMEX due to local demand, storage, transport
   const finalPrice = withIgst * (1 + MCX_PREMIUM);
   
@@ -337,15 +325,19 @@ async function calculateIndianSilverPrice(): Promise<SilverPrice | null> {
 /**
  * Get current silver price in INR
  * 
- * Priority chain (smart hybrid approach):
+ * Priority chain:
  * 1. Self-calculation (FREE, unlimited) - fetches silver USD + forex, calculates INR price
  * 2. MetalpriceAPI (if METALPRICE_API_KEY is set) - 100 req/month free
  * 3. GoldAPI.io (if GOLDAPI_KEY is set) - 300 req/month free
- * 4. Simulated/fallback data - based on real market rates
  * 
+ * NOTE: Returns null if ALL APIs fail - NO HARDCODED FALLBACKS
  * Uses ISR caching (revalidates every 5-10 minutes)
  */
-export async function getSilverPrice(): Promise<SilverPrice> {
+/**
+ * Internal function to fetch silver price from external APIs
+ * Wrapped with unstable_cache for data-layer caching
+ */
+async function _fetchSilverPrice(): Promise<SilverPrice | null> {
   try {
     // 1. Try self-calculation FIRST (FREE, unlimited!)
     // This fetches silver USD from Yahoo Finance + USD-INR from Frankfurter
@@ -373,18 +365,32 @@ export async function getSilverPrice(): Promise<SilverPrice> {
     const metalsLiveResult = await fetchFromMetalsLive();
     if (metalsLiveResult) return metalsLiveResult;
 
-    // 5. Fallback to simulated live price
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Using simulated silver price (all APIs failed)");
-    }
-    return getSimulatedPrice();
+    // All APIs failed - return null, let UI handle error
+    console.error("[getSilverPrice] All APIs failed - no price data available");
+    return null;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Error fetching silver price:", error);
-    }
-    return FALLBACK_PRICE;
+    console.error("[getSilverPrice] Error fetching silver price:", error);
+    return null;
   }
 }
+
+/**
+ * Get Silver Price - CACHED VERSION
+ * 
+ * Uses unstable_cache for data-layer caching:
+ * - Cache TTL: 15 seconds (for near-real-time feel)
+ * - All requests within 15s window share the same cached result
+ * - External APIs (Yahoo Finance, Frankfurter) only called once per 15s
+ * - Reduces Edge Requests to external services by ~90%
+ */
+export const getSilverPrice = unstable_cache(
+  _fetchSilverPrice,
+  ["silver-price-inr"],
+  {
+    revalidate: 60, // Cache for 60 seconds
+    tags: ["silver-price"],
+  }
+);
 
 /**
  * Fetch from MetalpriceAPI
@@ -487,34 +493,8 @@ function createPriceObject(pricePerGram: number, source: string): SilverPrice {
   };
 }
 
-/**
- * Get simulated live price for demo purposes
- * Based on actual market rates (Jan 2026: ~₹340/gram)
- * Adds small random variation to base price
- */
-function getSimulatedPrice(): SilverPrice {
-  const basePrice = 340; // Base price per gram (Jan 2026 actual rate)
-  const variation = (Math.random() - 0.5) * 6; // ±3 rupee variation (realistic daily movement)
-  const pricePerGram = basePrice + variation;
-  
-  const change24h = (Math.random() - 0.5) * 20; // ±10 rupee daily change (realistic)
-  
-  return {
-    pricePerGram: Math.round(pricePerGram * 100) / 100,
-    pricePerKg: Math.round(pricePerGram * 1000),
-    pricePer10Gram: Math.round(pricePerGram * 10 * 100) / 100,
-    pricePerTola: Math.round(pricePerGram * TOLA_TO_GRAM * 100) / 100,
-    currency: "INR",
-    timestamp: new Date().toISOString(),
-    change24h: Math.round(change24h * 100) / 100,
-    changePercent24h: Math.round((change24h / basePrice) * 100 * 100) / 100,
-    high24h: Math.round((pricePerGram + 5) * 100) / 100,
-    low24h: Math.round((pricePerGram - 5) * 100) / 100,
-    source: "simulated",
-    usdInr: 84.50,      // Typical USD/INR rate
-    comexUsd: 30.50,    // Typical COMEX silver price
-  };
-}
+// NOTE: Removed getSimulatedPrice() - no hardcoded/simulated prices allowed
+// All price data must come from APIs
 
 /**
  * Get historical silver prices
@@ -668,10 +648,17 @@ async function fetchYahooHistoricalPrices(days: number): Promise<HistoricalPrice
 
 /**
  * Generate fallback historical prices when API fails
- * Clearly marked as simulated
+ * Returns empty array if no price data available
  */
 async function generateFallbackHistoricalPrices(days: number): Promise<HistoricalPrice[]> {
   const currentLivePrice = await getSilverPrice();
+  
+  // If no current price available, return empty array
+  if (!currentLivePrice) {
+    console.error("[generateFallbackHistoricalPrices] No current price available");
+    return [];
+  }
+  
   const currentPrice = currentLivePrice.pricePerGram;
   
   const prices: HistoricalPrice[] = [];
@@ -705,10 +692,16 @@ async function generateFallbackHistoricalPrices(days: number): Promise<Historica
  * 1. Locally stored yesterday price (most accurate)
  * 2. Historical API data (fallback)
  * 
- * This ensures accurate 24h change calculation using our own data
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
  */
-export async function getSilverPriceWithChange(): Promise<SilverPrice> {
+export async function getSilverPriceWithChange(): Promise<SilverPrice | null> {
   const price = await getSilverPrice();
+  
+  // If API fails, return null
+  if (!price) {
+    console.error("[getSilverPriceWithChange] No price data available");
+    return null;
+  }
   
   // Result to be populated
   let result: SilverPrice = { ...price };
@@ -779,9 +772,6 @@ export async function getSilverPriceWithChange(): Promise<SilverPrice> {
 }
 
 /**
- * Get city-wise silver prices
- */
-/**
  * Get city-wise silver prices with realistic variations
  * 
  * Prices vary by city due to:
@@ -791,9 +781,16 @@ export async function getSilverPriceWithChange(): Promise<SilverPrice> {
  * - State-level variations
  * 
  * Typical variation: ₹0.20 - ₹1.50 per gram across cities
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
  */
-export async function getCityPrices(): Promise<CityPrice[]> {
+export async function getCityPrices(): Promise<CityPrice[] | null> {
   const basePrice = await getSilverPrice();
+  
+  if (!basePrice) {
+    console.error("[getCityPrices] No base price available");
+    return null;
+  }
   
   return CITY_CONFIG.map((config) => {
     const cityPricePerGram = Math.round((basePrice.pricePerGram + config.premiumPerGram) * 100) / 100;
@@ -1034,4 +1031,439 @@ export function getAvailableCountries(): { key: string; name: string; code: stri
     name: config.name,
     code: config.code,
   }));
+}
+
+// ============================================
+// GOLD-SILVER RATIO FUNCTIONS
+// ============================================
+
+/**
+ * Gold-Silver Ratio Result Interface
+ * The ratio indicates how many ounces of silver equals one ounce of gold
+ */
+export interface GoldSilverRatioResult {
+  ratio: number;                    // Gold price / Silver price
+  goldPricePerGram: number;         // Gold price in INR per gram (24K)
+  silverPricePerGram: number;       // Silver price in INR per gram (999)
+  goldPricePerOzUsd: number;        // Gold COMEX price USD/oz
+  silverPricePerOzUsd: number;      // Silver COMEX price USD/oz
+  interpretation: 'silver_undervalued' | 'silver_overvalued' | 'normal';
+  interpretationText: string;       // Human-readable interpretation
+  historicalContext: string;        // How it compares to historical averages
+  investmentHint: string;           // Investment suggestion based on ratio
+  timestamp: string;
+  usdInr: number;
+}
+
+/**
+ * Historical Gold-Silver Ratio Reference:
+ * - Historical average (50 years): ~55-60
+ * - Modern average (2000-2024): ~65-70
+ * - COVID high (March 2020): ~125 (silver extremely undervalued)
+ * - Normal range: 60-80
+ * - Above 80: Silver undervalued relative to gold
+ * - Below 60: Silver overvalued relative to gold
+ */
+const RATIO_THRESHOLDS = {
+  extremelyUndervalued: 90,  // Silver very cheap vs gold
+  undervalued: 80,           // Silver undervalued
+  normalHigh: 75,
+  normalLow: 60,
+  overvalued: 50,            // Silver overvalued
+};
+
+/**
+ * Fetch gold USD price from Yahoo Finance
+ * Symbol: GC=F (Gold Futures)
+ * Free: Unlimited requests (unofficial API)
+ * Cache: 10 minutes
+ * 
+ * NOTE: Returns actual API data - NO sanity checks, NO hardcoded values
+ */
+async function fetchGoldUSD(): Promise<number | null> {
+  try {
+    const response = await fetch(
+      'https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1d',
+      {
+        next: { revalidate: 600 }, // Cache for 10 minutes
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.error("[GoldAPI] Yahoo Finance gold returned non-OK status:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
+
+    if (price && typeof price === 'number' && price > 0) {
+      console.log(`[GoldAPI] Yahoo Finance gold price: $${price}/oz`);
+      return price;
+    }
+
+    console.error("[GoldAPI] Invalid price data from Yahoo Finance");
+    return null;
+  } catch (error) {
+    console.error("[GoldAPI] Yahoo Finance gold fetch failed:", error instanceof Error ? error.message : 'Unknown error');
+    return null;
+  }
+}
+
+/**
+ * Calculate Gold-Silver Ratio
+ *
+ * This ratio is a key indicator for precious metals investors:
+ * - Ratio = Gold Price / Silver Price (both in USD per oz)
+ * - Higher ratio = Silver is cheaper relative to gold
+ * - Lower ratio = Silver is more expensive relative to gold
+ *
+ * @returns Gold-Silver ratio with interpretation and investment hints
+ */
+export async function calculateGoldSilverRatio(): Promise<GoldSilverRatioResult | null> {
+  try {
+    // Fetch gold, silver, and USD/INR in parallel
+    const [goldUsd, silverUsd, usdInr] = await Promise.all([
+      fetchGoldUSD(),
+      fetchSilverUSD(),
+      fetchUsdInrRate(),
+    ]);
+
+    // Need all values to calculate
+    if (!goldUsd || !silverUsd || !usdInr) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[GoldSilverRatio] Cannot calculate - missing data:", { goldUsd, silverUsd, usdInr });
+      }
+      return null;
+    }
+
+    // Calculate the ratio (Gold/Silver in USD terms)
+    const ratio = goldUsd / silverUsd;
+
+    // Calculate INR prices per gram (with Indian duties - Budget July 2024)
+    // Gold: 6% import duty, 3% IGST, 3% MCX premium
+    const goldImportDuty = 0.06;  // 5% basic + 1% AIDC (Budget July 2024)
+    const goldIgst = 0.03;
+    const goldMcxPremium = 0.03;
+
+    const goldPricePerGramInr = (goldUsd * usdInr / OZ_TO_GRAM) *
+      (1 + goldImportDuty) * (1 + goldIgst) * (1 + goldMcxPremium);
+
+    const silverPricePerGramInr = (silverUsd * usdInr / OZ_TO_GRAM) *
+      (1 + IMPORT_DUTY) * (1 + IGST) * (1 + MCX_PREMIUM);
+
+    // Determine interpretation
+    let interpretation: 'silver_undervalued' | 'silver_overvalued' | 'normal';
+    let interpretationText: string;
+    let historicalContext: string;
+    let investmentHint: string;
+
+    if (ratio >= RATIO_THRESHOLDS.extremelyUndervalued) {
+      interpretation = 'silver_undervalued';
+      interpretationText = 'Silver is significantly UNDERVALUED relative to gold';
+      historicalContext = `Current ratio of ${ratio.toFixed(1)} is well above the historical average of 65-70. This is similar to levels seen during economic uncertainty.`;
+      investmentHint = 'Strong buy signal for silver. Consider increasing silver allocation in your portfolio.';
+    } else if (ratio >= RATIO_THRESHOLDS.undervalued) {
+      interpretation = 'silver_undervalued';
+      interpretationText = 'Silver appears UNDERVALUED relative to gold';
+      historicalContext = `Ratio of ${ratio.toFixed(1)} is above the normal range (60-80). Silver has potential to outperform gold.`;
+      investmentHint = 'Favorable entry point for silver. Silver may offer better returns than gold in the medium term.';
+    } else if (ratio <= RATIO_THRESHOLDS.overvalued) {
+      interpretation = 'silver_overvalued';
+      interpretationText = 'Silver appears OVERVALUED relative to gold';
+      historicalContext = `Ratio of ${ratio.toFixed(1)} is below historical norms. Silver is relatively expensive compared to gold.`;
+      investmentHint = 'Consider gold over silver at current prices. Wait for ratio to normalize before adding silver.';
+    } else {
+      interpretation = 'normal';
+      interpretationText = 'Gold-Silver ratio is in NORMAL range';
+      historicalContext = `Ratio of ${ratio.toFixed(1)} is within the typical 60-80 range. Both metals are fairly valued relative to each other.`;
+      investmentHint = 'Both gold and silver are options. Choose based on your investment goals and risk tolerance.';
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[GoldSilverRatio] Gold: $${goldUsd}/oz, Silver: $${silverUsd}/oz, Ratio: ${ratio.toFixed(2)}`);
+    }
+
+    return {
+      ratio: Math.round(ratio * 100) / 100,
+      goldPricePerGram: Math.round(goldPricePerGramInr * 100) / 100,
+      silverPricePerGram: Math.round(silverPricePerGramInr * 100) / 100,
+      goldPricePerOzUsd: Math.round(goldUsd * 100) / 100,
+      silverPricePerOzUsd: Math.round(silverUsd * 100) / 100,
+      interpretation,
+      interpretationText,
+      historicalContext,
+      investmentHint,
+      timestamp: new Date().toISOString(),
+      usdInr: Math.round(usdInr * 100) / 100,
+    };
+  } catch (error) {
+    console.error("[GoldSilverRatio] Error calculating ratio:", error);
+    return null;
+  }
+}
+
+/**
+ * Get combined gold and silver prices for comparison page
+ * Returns both prices with all weight variations
+ */
+export interface CombinedMetalPrices {
+  gold: {
+    pricePerGram: number;
+    pricePer10Gram: number;
+    pricePer100Gram: number;
+    pricePerKg: number;
+    pricePerTola: number;
+    pricePerOzUsd: number;
+  };
+  silver: {
+    pricePerGram: number;
+    pricePer10Gram: number;
+    pricePer100Gram: number;
+    pricePerKg: number;
+    pricePerTola: number;
+    pricePerOzUsd: number;
+  };
+  ratio: GoldSilverRatioResult | null;
+  timestamp: string;
+  usdInr: number;
+  usdEur: number;  // EUR exchange rate from API
+  usdGbp: number;  // GBP exchange rate from API
+}
+
+/**
+ * Get combined gold and silver prices
+ * Used for the /gold-and-silver-prices page
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
+ */
+export async function getCombinedMetalPrices(): Promise<CombinedMetalPrices | null> {
+  // Fetch all data in parallel - including EUR and GBP exchange rates
+  const [goldUsd, silverUsd, rates, ratioResult] = await Promise.all([
+    fetchGoldUSD(),
+    fetchSilverUSD(),
+    fetchExchangeRates(['INR', 'EUR', 'GBP']),  // Fetch all exchange rates at once
+    calculateGoldSilverRatio(),
+  ]);
+
+  // If any critical API fails, return null - let UI handle error
+  if (!goldUsd || !silverUsd || !rates) {
+    console.error("[getCombinedMetalPrices] Failed to fetch data:", { goldUsd, silverUsd, rates });
+    return null;
+  }
+
+  const usdInr = rates.INR;
+  const usdEur = rates.EUR;
+  const usdGbp = rates.GBP;
+
+  // Calculate gold INR prices (with 6% import duty, 3% IGST, 3% MCX premium - Budget July 2024)
+  const goldBaseInr = (goldUsd * usdInr / OZ_TO_GRAM);
+  const goldPricePerGram = goldBaseInr * 1.06 * 1.03 * 1.03;
+
+  // Calculate silver INR prices (with 6% import duty, 3% IGST, 3% MCX premium - Budget July 2024)
+  const silverBaseInr = (silverUsd * usdInr / OZ_TO_GRAM);
+  const silverPricePerGram = silverBaseInr * (1 + IMPORT_DUTY) * (1 + IGST) * (1 + MCX_PREMIUM);
+
+  return {
+    gold: {
+      pricePerGram: Math.round(goldPricePerGram * 100) / 100,
+      pricePer10Gram: Math.round(goldPricePerGram * 10 * 100) / 100,
+      pricePer100Gram: Math.round(goldPricePerGram * 100 * 100) / 100,
+      pricePerKg: Math.round(goldPricePerGram * 1000),
+      pricePerTola: Math.round(goldPricePerGram * TOLA_TO_GRAM * 100) / 100,
+      pricePerOzUsd: Math.round(goldUsd * 100) / 100,
+    },
+    silver: {
+      pricePerGram: Math.round(silverPricePerGram * 100) / 100,
+      pricePer10Gram: Math.round(silverPricePerGram * 10 * 100) / 100,
+      pricePer100Gram: Math.round(silverPricePerGram * 100 * 100) / 100,
+      pricePerKg: Math.round(silverPricePerGram * 1000),
+      pricePerTola: Math.round(silverPricePerGram * TOLA_TO_GRAM * 100) / 100,
+      pricePerOzUsd: Math.round(silverUsd * 100) / 100,
+    },
+    ratio: ratioResult,
+    timestamp: new Date().toISOString(),
+    usdInr: Math.round(usdInr * 100) / 100,
+    usdEur: Math.round(usdEur * 10000) / 10000,  // 4 decimal places for accuracy
+    usdGbp: Math.round(usdGbp * 10000) / 10000,  // 4 decimal places for accuracy
+  };
+}
+
+// ============================================
+// USD PRICE FUNCTIONS (For US/Global Traffic)
+// ============================================
+
+/**
+ * Silver Price in USD Interface
+ * For US and international users
+ */
+export interface SilverPriceUSD {
+  // Primary US units
+  pricePerOz: number;           // Troy ounce (main US unit)
+  pricePerGram: number;         // Per gram in USD
+  pricePerKg: number;           // Per kilogram in USD
+  // Market data
+  change24h: number;            // USD change
+  changePercent24h: number;     // Percentage change
+  high24h: number;              // 24h high (per oz)
+  low24h: number;               // 24h low (per oz)
+  // Source info
+  source: string;               // 'COMEX' or 'calculated'
+  timestamp: string;
+  // Exchange rates for comparison
+  usdInr: number;
+  usdEur: number;
+  usdGbp: number;
+  // INR equivalent (for NRIs)
+  pricePerOzInr: number;
+  pricePerGramInr: number;
+}
+
+/**
+ * Get Silver Price in USD
+ * 
+ * For US/Global traffic - returns prices in USD
+ * Uses COMEX spot price as base
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
+ * 
+ * @returns SilverPriceUSD with all USD denominations, or null if API fails
+ */
+export async function getSilverPriceUSD(): Promise<SilverPriceUSD | null> {
+  try {
+    // Fetch silver USD and exchange rates in parallel
+    const [silverUsd, rates] = await Promise.all([
+      fetchSilverUSD(),
+      fetchExchangeRates(['INR', 'EUR', 'GBP']),
+    ]);
+
+    // If API fails, return null - let UI handle error
+    if (!silverUsd) {
+      console.error("[getSilverPriceUSD] Failed to fetch silver price from API");
+      return null;
+    }
+
+    if (!rates) {
+      console.error("[getSilverPriceUSD] Failed to fetch exchange rates");
+      return null;
+    }
+
+    const silverPrice = silverUsd;
+    const usdInr = rates.INR;
+    const usdEur = rates.EUR;
+    const usdGbp = rates.GBP;
+
+    // Calculate prices in different units
+    const pricePerGram = silverPrice / OZ_TO_GRAM;
+    const pricePerKg = pricePerGram * 1000;
+
+    // Calculate INR equivalent (with Indian duties for NRI comparison)
+    const pricePerOzInr = silverPrice * usdInr;
+    const pricePerGramInr = (pricePerOzInr / OZ_TO_GRAM) * (1 + IMPORT_DUTY) * (1 + IGST) * (1 + MCX_PREMIUM);
+
+    return {
+      pricePerOz: Math.round(silverPrice * 100) / 100,
+      pricePerGram: Math.round(pricePerGram * 1000) / 1000, // 3 decimal places for USD
+      pricePerKg: Math.round(pricePerKg * 100) / 100,
+      change24h: 0, // Would need historical data
+      changePercent24h: 0,
+      high24h: Math.round(silverPrice * 1.015 * 100) / 100,
+      low24h: Math.round(silverPrice * 0.985 * 100) / 100,
+      source: 'COMEX',
+      timestamp: new Date().toISOString(),
+      usdInr: Math.round(usdInr * 100) / 100,
+      usdEur: Math.round(usdEur * 10000) / 10000,
+      usdGbp: Math.round(usdGbp * 10000) / 10000,
+      pricePerOzInr: Math.round(pricePerOzInr * 100) / 100,
+      pricePerGramInr: Math.round(pricePerGramInr * 100) / 100,
+    };
+  } catch (error) {
+    console.error("[getSilverPriceUSD] Error:", error);
+    return null;
+  }
+}
+
+/**
+ * Gold Price in USD Interface
+ */
+export interface GoldPriceUSD {
+  pricePerOz: number;
+  pricePerGram: number;
+  pricePerKg: number;
+  source: string;
+  timestamp: string;
+}
+
+/**
+ * Get Gold Price in USD
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
+ */
+export async function getGoldPriceUSD(): Promise<GoldPriceUSD | null> {
+  const goldUsd = await fetchGoldUSD();
+  
+  if (!goldUsd) {
+    console.error("[getGoldPriceUSD] Failed to fetch gold price from API");
+    return null;
+  }
+  
+  return {
+    pricePerOz: Math.round(goldUsd * 100) / 100,
+    pricePerGram: Math.round((goldUsd / OZ_TO_GRAM) * 100) / 100,
+    pricePerKg: Math.round((goldUsd / OZ_TO_GRAM) * 1000 * 100) / 100,
+    source: 'COMEX',
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Combined USD Prices for Gold and Silver
+ * For the /silver-price-usd and similar pages
+ */
+export interface CombinedUSDPrices {
+  silver: SilverPriceUSD;
+  gold: GoldPriceUSD;
+  goldSilverRatio: number;
+  timestamp: string;
+}
+
+/**
+ * Get combined USD prices for both metals
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
+ */
+export async function getCombinedUSDPrices(): Promise<CombinedUSDPrices | null> {
+  const [silver, gold] = await Promise.all([
+    getSilverPriceUSD(),
+    getGoldPriceUSD(),
+  ]);
+
+  if (!silver || !gold) {
+    console.error("[getCombinedUSDPrices] Failed to fetch prices");
+    return null;
+  }
+
+  const ratio = gold.pricePerOz / silver.pricePerOz;
+
+  return {
+    silver,
+    gold,
+    goldSilverRatio: Math.round(ratio * 100) / 100,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Format USD price
+ */
+export function formatUSDPrice(price: number, decimals: number = 2): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(price);
 }

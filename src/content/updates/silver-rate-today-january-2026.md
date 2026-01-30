@@ -43,7 +43,7 @@ Our [live prices](/) are calculated using:
 
 - **International Spot Price**: COMEX silver futures (USD/oz)
 - **Forex Rate**: Current USD-INR exchange rate
-- **Import Duty**: 10% (Basic Customs + AIDC)
+- **Import Duty**: 6% (5% Basic Customs + 1% AIDC) – Budget July 2024
 - **IGST**: 3% on silver
 - **Local Premium**: ~10% for MCX alignment
 

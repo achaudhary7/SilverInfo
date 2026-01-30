@@ -4,8 +4,11 @@ import Image from "next/image";
 import { getAllUpdates, formatDate } from "@/lib/markdown";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// ISR: Revalidate every hour for fresh article list
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
-  title: "Silver Market Updates - Daily Price News & Analysis",
+  title: "Silver Market Updates - Daily Price News & Analysis - SilverInfo.in",
   description:
     "Stay updated with daily silver price news, market analysis, and expert insights. Get the latest silver market updates from India and international markets.",
   keywords: [
@@ -27,11 +30,34 @@ export default function UpdatesPage() {
     { name: "Updates", url: "https://silverinfo.in/updates" },
   ]);
 
+  // CollectionPage Schema for better SEO (news/updates listing)
+  const collectionPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Silver Market Updates",
+    description: "Daily silver price updates, market analysis, and silver news from India and international markets.",
+    url: "https://silverinfo.in/updates",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: updates.length,
+      itemListElement: updates.map((update, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://silverinfo.in/updates/${update.slug}`,
+        name: update.title,
+      })),
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
       />
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

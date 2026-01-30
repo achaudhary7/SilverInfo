@@ -11,22 +11,31 @@ export const revalidate = 600;
 // Page last updated date
 const LAST_UPDATED = "2026-01-23";
 
-export const metadata: Metadata = {
-  title: "Inflation-Adjusted Returns Calculator - Real Silver Returns India",
-  description:
-    "Calculate real returns on silver after adjusting for inflation. Uses official CPI data to show true purchasing power gains on your silver investment.",
-  keywords: [
-    "inflation adjusted returns calculator",
-    "real return calculator",
-    "silver real returns india",
-    "CPI adjusted returns",
-    "purchasing power calculator",
-    "silver inflation calculator",
-  ],
-  alternates: {
-    canonical: "/inflation-adjusted-calculator",
-  },
-};
+// Dynamic metadata with live price
+export async function generateMetadata(): Promise<Metadata> {
+  const price = await getSilverPriceWithChange();
+  const pricePerGram = price?.pricePerGram?.toFixed(2) || "95.00";
+  
+  return {
+    title: `Inflation-Adjusted Returns Calculator | Silver ₹${pricePerGram}/g - Real Returns - SilverInfo.in`,
+    description: `Calculate real returns on silver after inflation. Current rate: ₹${pricePerGram}/gram. Uses official CPI data to show true purchasing power gains on your silver investment.`,
+    keywords: [
+      "inflation adjusted returns calculator",
+      "real return calculator",
+      "silver real returns india",
+      "CPI adjusted returns",
+      "purchasing power calculator",
+      "silver inflation calculator",
+    ],
+    alternates: {
+      canonical: "/inflation-adjusted-calculator",
+    },
+    openGraph: {
+      title: `Silver Inflation Calculator | ₹${pricePerGram}/g - Real Returns`,
+      description: `Calculate inflation-adjusted returns on silver at ₹${pricePerGram}/gram.`,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -58,6 +67,7 @@ const faqItems: FAQItem[] = [
 
 export default async function InflationAdjustedCalculatorPage() {
   const price = await getSilverPriceWithChange();
+  const currentPrice = price?.pricePerGram ?? 100;
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
@@ -165,7 +175,7 @@ export default async function InflationAdjustedCalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Calculator - 2 columns on Desktop */}
               <div className="lg:col-span-2 space-y-6">
-                <InflationAdjustedCalculator currentPrice={price.pricePerGram} />
+                <InflationAdjustedCalculator currentPrice={currentPrice} />
                 
                 {/* Educational Content */}
                 <div className="card p-6">
@@ -213,7 +223,7 @@ export default async function InflationAdjustedCalculatorPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Live Silver Rate */}
-                <LiveRateCard price={price} showLink={false} />
+                {price ? <LiveRateCard price={price} showLink={false} /> : null}
 
                 {/* Inflation Quick Facts */}
                 <div className="card p-6">

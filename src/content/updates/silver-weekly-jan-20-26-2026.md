@@ -135,7 +135,7 @@ Union Budget 2026 will be presented on **February 1, 2026**. Key expectations:
 
 | Area | Expectation | Impact on Silver |
 |------|-------------|------------------|
-| Import Duty | May reduce from 10% | ↓ Prices if reduced |
+| Import Duty | Currently 6% (July 2024) | Likely unchanged |
 | GST on Jewelry | Status quo expected | Neutral |
 | Solar Incentives | Likely boost | ↑ Industrial demand |
 | Inflation Control | Key priority | Mixed impact |

@@ -16,22 +16,52 @@ export const revalidate = 600;
 // Page content last reviewed date - now dynamic
 const LAST_UPDATED = new Date().toISOString().split('T')[0];
 
-export const metadata: Metadata = {
-  title: "Silver Rate Today - Live Silver Price per Gram in India",
-  description:
-    "Check indicative silver rate today in India. Get silver price per gram, per kg, per 10 grams with historical charts and city-wise prices. Calculated from COMEX, auto-refreshes every 30 seconds.",
-  keywords: [
-    "silver rate today",
-    "silver price per gram",
-    "silver rate today in india",
-    "today silver rate",
-    "silver price chart",
-    "silver price history",
-  ],
-  alternates: {
-    canonical: "/silver-rate-today",
-  },
-};
+// Dynamic metadata with date for freshness signal (SEO best practice)
+export async function generateMetadata(): Promise<Metadata> {
+  const priceData = await getSilverPriceWithChange();
+  const price = priceData?.pricePerGram?.toFixed(0) || "100";
+  
+  const dateString = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  return {
+    title: `Silver Rate Today (${dateString}) | Live ₹${price}/gram India - SilverInfo.in`,
+    description: `Silver rate today in India (${dateString}): ₹${price}/gram. Live silver price per gram, 10g, kg with city-wise rates. Calculated from COMEX, auto-refreshes every 30 seconds.`,
+    keywords: [
+      "silver rate today",
+      "silver price per gram",
+      "silver rate today in india",
+      "today silver rate",
+      "silver price chart",
+      "silver price history",
+      "chandi ka bhav",
+      "aaj chandi rate",
+    ],
+    alternates: {
+      canonical: "/silver-rate-today",
+    },
+    openGraph: {
+      title: `Silver Rate Today India (${dateString}) | ₹${price}/gram`,
+      description: `Live silver rate today: ₹${price}/gram. City-wise prices updated every 30 seconds.`,
+      type: "website",
+      locale: "en_IN",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Silver Rate Today (${dateString}) | ₹${price}/gram`,
+      description: `Live silver price in India. ₹${price}/gram. Updated every 30 seconds.`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -87,11 +117,44 @@ const UNIT_INFO = {
 };
 
 export default async function SilverRateTodayPage() {
-  const [price, historicalPrices, cityPrices] = await Promise.all([
+  const [priceData, historicalPrices, cityPricesData] = await Promise.all([
     getSilverPriceWithChange(),
     getHistoricalPrices(365), // Full year of data
     getCityPrices(),
   ]);
+  
+  // If API completely fails, show error page - NO FAKE DATA
+  if (!priceData) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Silver Rate Today
+            </h1>
+            <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-lg mx-auto">
+              <p className="text-red-600 text-lg mb-4">
+                ⚠️ Unable to fetch live prices
+              </p>
+              <p className="text-gray-600 mb-4">
+                We&apos;re having trouble connecting to our price sources. Please refresh the page or try again later.
+              </p>
+              <a 
+                href="/silver-rate-today"
+                className="inline-block px-6 py-2 bg-[#1e3a5f] text-white rounded-lg hover:bg-[#2a4a6f] transition-colors"
+              >
+                Refresh Page
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+  
+  // Use real API data only - no fallbacks
+  const price = priceData;
+  const cityPrices = cityPricesData || [];
   
   // Get last week's price for comparison
   const lastWeekPrice = historicalPrices.length >= 7 
@@ -110,8 +173,8 @@ export default async function SilverRateTodayPage() {
     "@type": "ItemList",
     name: "Silver Prices in Indian Cities Today",
     description: "Live silver rates across major Indian cities",
-    numberOfItems: cityPrices.slice(0, 10).length,
-    itemListElement: cityPrices.slice(0, 10).map((city, index) => ({
+    numberOfItems: (cityPrices || []).slice(0, 10).length,
+    itemListElement: (cityPrices || []).slice(0, 10).map((city, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: `Silver Rate in ${city.city}`,
@@ -173,6 +236,24 @@ export default async function SilverRateTodayPage() {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "SilverInfo.in",
+            url: "https://silverinfo.in",
+            logo: "https://silverinfo.in/logo.png",
+            description: "India's trusted source for live silver and gold prices with transparent COMEX-based calculations.",
+            contactPoint: {
+              "@type": "ContactPoint",
+              contactType: "customer service",
+              url: "https://silverinfo.in/contact",
+            },
+          }),
+        }}
+      />
 
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -202,7 +283,7 @@ export default async function SilverRateTodayPage() {
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
-              Silver Rate Today in India
+              Silver Rate Today - {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </h1>
             <p className="text-sm sm:text-lg text-[#1e3a5f] font-semibold mb-1 sm:mb-2">
               Calculated, Not Copied.
@@ -215,7 +296,7 @@ export default async function SilverRateTodayPage() {
               </a>
             </p>
             <p className="text-[10px] sm:text-xs text-gray-400">
-              Content last reviewed: {new Date(LAST_UPDATED).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Content last reviewed: <time dateTime={LAST_UPDATED}>{new Date(LAST_UPDATED).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
             </p>
           </div>
         </section>
@@ -455,6 +536,50 @@ export default async function SilverRateTodayPage() {
             {/* Related Searches - SEO & Internal Linking */}
             <div className="mt-8">
               <RelatedSearches currentPage="silver-rate" />
+            </div>
+
+            {/* External Authority Links - E-E-A-T Signal */}
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">📊 Official Data Sources</h3>
+              <div className="flex flex-wrap gap-3 text-xs">
+                <a 
+                  href="https://www.mcxindia.com/market-data/spot-market-price" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#1e3a5f] hover:text-[#2c5282] hover:underline"
+                >
+                  MCX India →
+                </a>
+                <a 
+                  href="https://www.rbi.org.in/scripts/ReferenceRateArchive.aspx" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#1e3a5f] hover:text-[#2c5282] hover:underline"
+                >
+                  RBI Exchange Rates →
+                </a>
+                <a 
+                  href="https://www.cmegroup.com/markets/metals/precious/silver.html" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#1e3a5f] hover:text-[#2c5282] hover:underline"
+                >
+                  COMEX Silver Futures →
+                </a>
+                <a 
+                  href="https://ibjarates.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#1e3a5f] hover:text-[#2c5282] hover:underline"
+                >
+                  IBJA Rates →
+                </a>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2">
+                <time dateTime={new Date().toISOString()}>
+                  Data last verified: {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                </time>
+              </p>
             </div>
 
             {/* FAQ Section */}

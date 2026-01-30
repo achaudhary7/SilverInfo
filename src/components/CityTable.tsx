@@ -26,7 +26,7 @@ export default function CityTable({ cities, limit = 10, showViewAll = true }: Ci
               href="/silver-rate-today#cities"
               className="text-xs sm:text-sm font-medium text-[#1e3a5f] hover:underline whitespace-nowrap py-2 px-3 -mr-3 rounded-lg hover:bg-gray-100 active:bg-gray-200 min-h-[44px] flex items-center"
             >
-              View All →
+              All Cities →
             </Link>
           )}
         </div>

@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - this page rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
   title: "Privacy Policy - SilverInfo.in",
   description:
@@ -17,11 +21,35 @@ export default function PrivacyPolicyPage() {
     { name: "Privacy Policy", url: "https://silverinfo.in/privacy-policy" },
   ]);
 
+  // WebPage schema for privacy policy
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Privacy Policy - SilverInfo.in",
+    description: "Learn how SilverInfo.in collects, uses, and protects your information.",
+    url: "https://silverinfo.in/privacy-policy",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+    },
+    about: {
+      "@type": "Thing",
+      name: "Privacy Policy",
+    },
+    dateModified: "2026-01-22",
+    inLanguage: "en-IN",
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

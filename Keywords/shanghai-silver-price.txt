@@ -1,0 +1,369 @@
+Page wise
+
+current shanghai silver price in usd	2	6	33.3%	10.3
+shanghai silver price in dollars today	1	8	12.5%	9.5
+sge silver price	1	8	12.5%	9.9
+live shanghai silver price	1	6	16.7%	8.8
+shanghai silver price right now	1	4	25%	11.5
+shanghai silver price in usd per oz today per gram	1	3	33.3%	9.7
+shanghai premium silver price	1	2	50%	6.5
+comex vs shanghai silver	1	2	50%	8.5
+sge silver price in dollars	1	2	50%	8.5
+sge silver price today usd	1	2	50%	10.5
+shanghai silver price live	1	2	50%	14.5
+shanghai silver price now live	1	1	100%	1.0
+silver price shanghai exchange in usd	1	1	100%	6.0
+shanghai silver ons price	1	1	100%	10.0
+shanghai silver price live in usd	1	1	100%	10.0
+shanghai silver price in usd live today	1	1	100%	11.0
+shanghai live silver price	1	1	100%	13.0
+current shanghai silver price	1	1	100%	14.0
+shanghai silver price per ounce in usd	1	1	100%	14.0
+live shanghai silver spot price	1	1	100%	15.0
+shanghai live silver price today	1	1	100%	15.0
+shanghai silver price today january 26 2026	0	32	0%	5.8
+silberpreis shanghai live	0	26	0%	12.9
+shanghai silver benchmark price january 26 2026	0	22	0%	6.2
+shanghai gold exchange silver trading hours	0	22	0%	7.6
+shanghai silver price in usd	0	21	0%	9.0
+shanghai silver price	0	21	0%	10.1
+shanghai silver price usd per ounce january 26 2026	0	16	0%	4.4
+silver price shanghai vs comex january 26 2026	0	15	0%	5.5
+current shanghai silver price january 26 2026	0	14	0%	8.0
+shanghai silver price in dollars	0	14	0%	9.1
+current silver price shanghai vs comex january 26 2026	0	13	0%	1.2
+current shfe silver price cny per kg	0	13	0%	10.2
+shanghai gold exchange silver benchmark price january 26 2026	0	12	0%	10.6
+current silver price shanghai vs comex january 2026	0	8	0%	3.8
+shanghai silver price in usd today	0	8	0%	8.4
+shanghai silver price vs comex	0	7	0%	5.3
+current silver price shanghai january 26 2026	0	7	0%	8.0
+what time does shanghai silver market open	0	7	0%	9.6
+shanghai silver premium over comex january 26 2026	0	6	0%	2.3
+shanghai silver benchmark price unit	0	6	0%	3.3
+unit of shanghai silver benchmark price sge	0	6	0%	3.7
+shanghai silver spot price cny per kg today	0	6	0%	4.5
+shanghai silver dollar	0	5	0%	5.8
+current sge silver price january 2026	0	5	0%	6.8
+shanghai gold exchange ag(t+d) latest price cny per kg	0	5	0%	8.0
+shanghai silver price per ounce in dollars	0	5	0%	8.2
+shanghai silver price in ounces	0	5	0%	8.8
+current shfe silver price usd per ounce	0	5	0%	9.2
+shanghai silver price in usd per oz today	0	5	0%	9.2
+shanghai silver price in usd live	0	5	0%	13.8
+sge silver price today cny per kg	0	4	0%	4.8
+sge silver benchmark price today usd	0	4	0%	5.8
+shanghai gold exchange (sge) silver price	0	4	0%	7.3
+shanghai gold exchange silver price today cny	0	4	0%	7.3
+silver price premium in shanghai	0	4	0%	8.5
+sangai silver price	0	4	0%	9.3
+sge silver price in usd	0	4	0%	10.0
+shanghai silver market open time	0	4	0%	10.0
+shanghai silver price in dollars today per gram	0	4	0%	10.5
+sangai silver rate	0	4	0%	11.0
+shanghai silver price in usd per ounce	0	4	0%	11.0
+shanghai exchange silver price today	0	4	0%	14.0
+shanghai silver premium over comex 2025 2026	0	3	0%	3.0
+sge silver benchmark price january 26 2026	0	3	0%	3.3
+shanghai gold exchange silver price ag(t+d) latest	0	3	0%	5.7
+comex shanghai silver	0	3	0%	6.0
+comex vs shanghai silver price	0	3	0%	6.0
+current shanghai silver premium over london spot	0	3	0%	7.7
+silver shanghai price	0	3	0%	7.7
+does shanghai gold exchange silver price include vat	0	3	0%	8.7
+shfe silver futures trading hours beijing time	0	3	0%	9.0
+shanghai gold exchange silver price today january 2026	0	3	0%	9.3
+shanghai gold exchange silver price	0	3	0%	10.3
+silver price today shanghai usd per ounce	0	3	0%	10.3
+sge silver price usd today	0	3	0%	11.0
+shanghai exchange silver rate	0	3	0%	11.0
+shanghai silver exchange price today	0	3	0%	11.0
+silver price shanghai	0	3	0%	16.0
+shfe silver futures price today cny per kg	0	2	0%	2.0
+what is the unit for shanghai silver benchmark price	0	2	0%	3.0
+shanghai silver spot price cny per kg	0	2	0%	3.5
+current shfe silver futures price cny per kg	0	2	0%	4.0
+current sge silver price cny per kg	0	2	0%	5.0
+sge ag(t+d) latest price cny/kg	0	2	0%	6.0
+sge silver price live	0	2	0%	7.0
+shanghai silver price per oz	0	2	0%	7.0
+shfe silver price today cny per kg	0	2	0%	7.0
+sge price of silver	0	2	0%	7.5
+shanghai silver price today january 2026	0	2	0%	7.5
+shfe silver price usd per ounce	0	2	0%	8.0
+silver price in shanghai today per ounce usd	0	2	0%	8.0
+current silver price shanghai gold exchange january 2026	0	2	0%	8.5
+shanghai silver price today cny per gram	0	2	0%	8.5
+silver price in shanghai	0	2	0%	8.5
+silver shanghai price in usd	0	2	0%	8.5
+sge silver benchmark price today	0	2	0%	9.0
+shanghai gold exchange silberpreis	0	2	0%	9.0
+shanghai gold exchange silver price in usd	0	2	0%	9.0
+shanghai gold exchange trading hours silver	0	2	0%	9.0
+shanghai silver benchmark price units	0	2	0%	9.0
+shanghai silver price oz usd	0	2	0%	9.0
+shfe silver futures price today cny	0	2	0%	9.0
+shanghai silver premium	0	2	0%	9.5
+shanghai silver price in usd per oz	0	2	0%	9.5
+shanghai silver price usd	0	2	0%	9.5
+silver price in dollars in shanghai	0	2	0%	9.5
+china shanghai silver price today	0	2	0%	10.0
+shanghai silver price premium	0	2	0%	10.0
+shanghai silver price usd january 26 2026	0	2	0%	10.0
+silver price shanghai live	0	2	0%	10.0
+shanghai silver price in usd today per ounce	0	2	0%	10.5
+shanghai silver price usd per ounce	0	2	0%	10.5
+when does the shanghai silver market open today	0	2	0%	10.5
+silver price shanghai exchange today	0	2	0%	11.0
+shanghai silver prices today usd	0	2	0%	12.0
+live shanghai silver price today	0	2	0%	12.5
+sge silver	0	2	0%	13.0
+shanghai silver spot price per ounce	0	2	0%	14.5
+shanghai silver price today in dollars	0	2	0%	15.0
+shanghai silver price today in usd	0	2	0%	16.0
+shanghai exchange silver price live	0	2	0%	17.0
+shanghai silver rate in usd	0	2	0%	17.0
+current silver price in shanghai usd	0	2	0%	17.5
+shanghai exchange silver price in dollars	0	2	0%	18.0
+current silver price on shanghai futures exchange	0	2	0%	21.5
+current shanghai silver premium over comex january 2026	0	1	0%	1.0
+pro unze	0	1	0%	2.0
+shanghai gold exchange silver price ag(t+d) latest cny per kg	0	1	0%	2.0
+sge ag(t+d) latest price cny per kg	0	1	0%	3.0
+shanghai silver price premium over comex january 2026	0	1	0%	3.0
+w tej chwili	0	1	0%	3.0
+comex silver price vs shanghai silver price	0	1	0%	4.0
+current shfe silver futures price cny/kg	0	1	0%	4.0
+current shfe silver price rmb per kg	0	1	0%	4.0
+how to convert shfe silver price to usd per ounce	0	1	0%	4.0
+shanghai silver benchmark price unit currency	0	1	0%	4.0
+shfe silver futures price today cny/kg	0	1	0%	4.0
+shanghai gold exchange silver benchmark price today january 26 2026	0	1	0%	5.0
+current shanghai silver price usd	0	1	0%	6.0
+current silver price shanghai premium january 2026	0	1	0%	6.0
+sge silver benchmark price latest	0	1	0%	6.0
+shanghai futures exchange silver futures trading hours night session 21:00 02:30	0	1	0%	6.0
+shanghai silver live price	0	1	0%	6.0
+shanghai silver price in usd per troy ounce	0	1	0%	6.0
+shanghai silver price per oz in usd	0	1	0%	6.0
+shfe silver futures price cny per kg latest	0	1	0%	6.0
+is shanghai silver market open	0	1	0%	7.0
+shanghai silver benchmark price	0	1	0%	7.0
+shanghai silver etf	0	1	0%	7.0
+shanghai silver market open	0	1	0%	7.0
+shanghai silver ounce price	0	1	0%	7.0
+shanghai silver spot price per ounce usd	0	1	0%	7.0
+shanghai silver trade	0	1	0%	7.0
+shanghai vs comex silver	0	1	0%	7.0
+silver price usd in shanghai	0	1	0%	7.0
+silver sge price	0	1	0%	7.0
+price of an ounce of silver in shanghai	0	1	0%	8.0
+shanghai gold exchange silver ag(t+d) price today	0	1	0%	8.0
+shanghai gold exchange silver price ag(t+d) today	0	1	0%	8.0
+shanghai gold exchange silver t+d price today	0	1	0%	8.0
+shanghai physical silver price in usd	0	1	0%	8.0
+shanghai silver benchmark	0	1	0%	8.0
+shanghai silver price now	0	1	0%	8.0
+silver price shanghai vs new york	0	1	0%	8.0
+silver shanghai gold exchange	0	1	0%	8.0
+live shanghai silver price in usd per oz	0	1	0%	9.0
+shanghai futures exchange silver price latest	0	1	0%	9.0
+shanghai futures exchange silver trading hours	0	1	0%	9.0
+shanghai gold exchange ag(t+d) latest price cny/kg	0	1	0%	9.0
+shanghai gold exchange silver benchmark price today	0	1	0%	9.0
+shanghai gold exchange silver price january 26 2026	0	1	0%	9.0
+shanghai gold exchange silver price per ounce	0	1	0%	9.0
+shanghai gold exchange silver price today	0	1	0%	9.0
+shanghai gold exchange silver price usd	0	1	0%	9.0
+shanghai silver price in usd ounce	0	1	0%	9.0
+shanghai silver price premium today	0	1	0%	9.0
+shanghai silver price usd live	0	1	0%	9.0
+shfe silver price today live	0	1	0%	9.0
+silver price in shanghai market	0	1	0%	9.0
+silver price per ounce shanghai exchange	0	1	0%	9.0
+silver shanghai price per oz	0	1	0%	9.0
+current silver price per ounce in shanghai	0	1	0%	10.0
+shanghai silver exchange today live	0	1	0%	10.0
+shanghai silver price per ounce in usd today	0	1	0%	10.0
+shanghai silver price premium vs comex january 2026	0	1	0%	10.0
+shanghai silver price vs comex silver price difference	0	1	0%	10.0
+shanghai silver vs comex	0	1	0%	10.0
+shanghai spot silver price per ounce	0	1	0%	10.0
+silver in shanghai price	0	1	0%	10.0
+silver price in shanghai today in usd	0	1	0%	10.0
+silver shanghai price live	0	1	0%	10.0
+what time does shanghai silver exchange open	0	1	0%	10.0
+what time does the shanghai silver exchange open	0	1	0%	10.0
+what's the silver price in shanghai	0	1	0%	10.0
+current shanghai gold exchange silver price in usd	0	1	0%	11.0
+current silver price in shanghai china	0	1	0%	11.0
+current silver price shanghai gold exchange cny per kg	0	1	0%	11.0
+does sge silver price include vat	0	1	0%	11.0
+sge silver benchmark price	0	1	0%	11.0
+sge silver price january 2026	0	1	0%	11.0
+shanghai gold exchange silver benchmark price	0	1	0%	11.0
+shanghai silver ounce price in usd	0	1	0%	11.0
+shanghai silver price dollar	0	1	0%	11.0
+shanghai silver price january 26 2026	0	1	0%	11.0
+shanghai silver price ounce	0	1	0%	11.0
+shanghai silver price right now in usd	0	1	0%	11.0
+shanghai silver proce	0	1	0%	11.0
+shanghai silver spot price ounce	0	1	0%	11.0
+shanghai silver usd	0	1	0%	11.0
+silver price on shanghai exchange	0	1	0%	11.0
+silver shanghai price usd	0	1	0%	11.0
+shanghai futures exchange silver price today	0	1	0%	12.0
+shanghai silver exchange opening hours	0	1	0%	12.0
+shanghai silver price in dollars per ounce today	0	1	0%	12.0
+shanghai silver price per ounce in us dollars	0	1	0%	12.0
+shanghai silver rate today	0	1	0%	12.0
+shanghai spot silver price in usd	0	1	0%	12.0
+shanghai vs comex silver price today	0	1	0%	12.0
+silver price shanghai exchange in dollars	0	1	0%	12.0
+silver price shanghai in usd	0	1	0%	12.0
+silver price today shanghai in usd	0	1	0%	12.0
+silver shanghai latest	0	1	0%	12.0
+शंघाई चांदी की कीमत	0	1	0%	12.0
+silver price shanghai current	0	1	0%	13.0
+shanghai silver price physical	0	1	0%	15.0
+shanghai comex silver price today	0	1	0%	16.0
+silver price shanghai china	0	1	0%	16.0
+silver price shanghai exchange	0	1	0%	16.0
+shanghai metals exchange silver price today	0	1	0%	17.0
+silver shanghai prices	0	1	0%	17.0
+silver price in china today usd per gram	0	1	0%	19.0
+china silver shanghai	0	1	0%	20.0
+shanghai silver spot price today	0	1	0%	20.0
+shanghai silver price today	0	1	0%	23.0
+shanghai silver price in dollars live	0	1	0%	28.0
+
+
+----
+
+Country wise---
+United States	3	242	1.2%	7.1
+India	3	57	5.3%	10.3
+Turkey	3	21	14.3%	8.5
+Pakistan	2	18	11.1%	8.8
+Australia	2	2	100%	6.0
+United Kingdom	1	19	5.3%	7.6
+Austria	1	10	10%	7.5
+Indonesia	1	10	10%	8.9
+Netherlands	1	8	12.5%	9.3
+Iran	1	5	20%	11.4
+Russia	1	4	25%	7.3
+Switzerland	1	4	25%	10.5
+Nepal	1	3	33.3%	10.3
+United Arab Emirates	1	3	33.3%	12.3
+South Korea	0	55	0%	7.9
+Germany	0	36	0%	12.0
+Vietnam	0	27	0%	10.4
+Canada	0	16	0%	8.3
+Brazil	0	11	0%	6.9
+Hong Kong	0	10	0%	11.2
+Czechia	0	8	0%	9.5
+France	0	8	0%	10.6
+China	0	7	0%	11.9
+Ireland	0	7	0%	11.9
+Japan	0	6	0%	5.2
+Belgium	0	5	0%	8.2
+Poland	0	5	0%	8.6
+Thailand	0	5	0%	10.2
+Taiwan	0	4	0%	7.0
+Bulgaria	0	4	0%	7.8
+Egypt	0	4	0%	9.3
+Malaysia	0	4	0%	9.3
+Saudi Arabia	0	4	0%	9.5
+Spain	0	4	0%	10.0
+Morocco	0	3	0%	6.3
+Sweden	0	3	0%	6.7
+Norway	0	3	0%	7.3
+Argentina	0	3	0%	7.7
+Iraq	0	3	0%	8.7
+Slovenia	0	3	0%	9.7
+Lithuania	0	3	0%	12.0
+Singapore	0	2	0%	7.0
+Peru	0	2	0%	8.0
+Kenya	0	2	0%	8.5
+Belarus	0	2	0%	9.0
+Romania	0	2	0%	9.5
+Colombia	0	2	0%	10.0
+Algeria	0	2	0%	12.0
+Mexico	0	2	0%	14.0
+Uruguay	0	1	0%	3.0
+Venezuela	0	1	0%	4.0
+Trinidad & Tobago	0	1	0%	5.0
+Portugal	0	1	0%	6.0
+Ukraine	0	1	0%	6.0
+Jordan	0	1	0%	7.0
+Syria	0	1	0%	7.0
+Costa Rica	0	1	0%	8.0
+Finland	0	1	0%	8.0
+Honduras	0	1	0%	9.0
+Cambodia	0	1	0%	9.0
+Panama	0	1	0%	9.0
+Azerbaijan	0	1	0%	10.0
+Western Sahara	0	1	0%	10.0
+Namibia	0	1	0%	10.0
+Slovakia	0	1	0%	10.0
+Ecuador	0	1	0%	11.0
+Georgia	0	1	0%	11.0
+New Zealand	0	1	0%	11.0
+Paraguay	0	1	0%	11.0
+Bangladesh	0	1	0%	12.0
+Sri Lanka	0	1	0%	12.0
+Bhutan	0	1	0%	13.0
+Guatemala	0	1	0%	16.0
+---
+
+
+does shanghai gold exchange silver spot price include vat?	0	56
+shanghai silver price january 28 2026	0	41
+does shanghai gold exchange silver price include vat	0	21
+shanghai silver price vs comex january 2026	0	21
+does shanghai gold exchange silver price include vat?	0	20
+silver price premium shanghai vs comex january 2026	0	19
+shanghai silver price premium over comex january 2026	0	17
+current silver price shanghai vs comex january 2026	0	15
+shanghai futures exchange silver trading hours	0	14
+does shanghai gold exchange silver spot price include vat	0	13
+silver price shanghai january 28 2026	0	12
+shanghai gold exchange silver price january 28 2026	0	12
+silver price shanghai vs comex premium january 2026	0	11
+current shanghai silver premium over comex january 2026	0	10
+current silver price shanghai january 2026	0	10
+current shanghai silver price january 28 2026	0	9
+shanghai silver price vs comex premium january 2026	0	8
+shanghai silver spot price january 2026	0	8
+shfe silver price january 28 2026	0	8
+shanghai silver price premium vs comex january 2026	0	8
+silver price shanghai vs comex january 2026	0	8
+current silver price comex vs shanghai january 2026	0	7
+silver price shanghai sge january 2026	0	7
+shanghai silver premium current january 2026	0	7
+silver price shanghai premium january 2026	0	7
+current silver price shanghai sge vs comex january 2026	0	6
+shanghai silver price usd january 2026	0	6
+current shanghai silver price usd per ounce january 2026	0	6
+current shanghai silver premium january 2026	0	6
+current silver price shanghai premium january 2026	0	6
+current silver spot price shanghai january 2026	0	6
+does sge silver price include vat	0	6
+shanghai silver price	3	5
+shanghai silver price usd 2026-01-28	0	5
+silver price shanghai premium vs comex january 2026	0	5
+shanghai gold exchange silver price today january 2026	0	5
+shanghai silver price january 2026 usd	0	4
+current shfe silver futures price cny per kg january 2026	0	4
+shanghai silver price sge january 2026	0	4
+shanghai silver futures price january 2026	0	4
+silver price forecast 2026-01-29	0	4
+shanghai silver price today	0	4
+current shanghai silver spot price january 2026	0	3
+current silver price shanghai futures exchange january 2026	0	3
+shanghai silver premiums january 2026	0	3
+shfe silver price january 2026	0	3
+silver price comex vs shanghai premium january 2026	0	3
+shanghai silver premium to comex january 2026	0	3
+current shfe silver futures price cny per kg	0	3
+current silver price shanghai gold exchange cny per kg	0	3

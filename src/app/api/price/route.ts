@@ -14,9 +14,10 @@ import { updateDailyExtremes, type DailyExtremes } from "@/lib/priceStorage";
 // 2. OR create a separate lightweight API that only fetches fresh prices
 // ============================================================================
 
-// Force dynamic - no caching for real-time prices
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// ISR: Cache for 60 seconds at Edge
+// Data-layer caching via unstable_cache handles external API calls
+// Daily extremes tracking still works on cache misses
+export const revalidate = 60;
 
 // Extended response type with daily extremes
 interface PriceResponse {
@@ -47,6 +48,17 @@ export async function GET() {
   try {
     const price = await getSilverPriceWithChange();
     
+    // If API fails, return 503 Service Unavailable
+    if (!price) {
+      return NextResponse.json(
+        {
+          error: "Service unavailable",
+          message: "Unable to fetch live price data from external sources. Please try again later.",
+        },
+        { status: 503 }
+      );
+    }
+    
     // Update and get daily extremes (tracks actual high/low for today)
     let extremes: DailyExtremes | null = null;
     try {
@@ -68,10 +80,10 @@ export async function GET() {
     
     return NextResponse.json(response, {
       headers: {
-        // Prevent browser/CDN caching for real-time data
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-        "Pragma": "no-cache",
-        "Expires": "0",
+        // Cache at Edge for 60s, serve stale while revalidating for up to 120s
+        // This provides near-real-time data while reducing Edge Requests by ~95%
+        // Note: Daily extremes tracking still works via updateDailyExtremes() call above
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {

@@ -11,22 +11,31 @@ export const revalidate = 600;
 // Page last updated date
 const LAST_UPDATED = "2026-01-23";
 
-export const metadata: Metadata = {
-  title: "Silver Break-Even Calculator - Jewellery & Bullion India",
-  description:
-    "Calculate break-even price for silver jewellery and bullion. Includes making charges, GST, and other fees. Compare against current market price to know if you're in profit.",
-  keywords: [
-    "silver break even calculator",
-    "silver jewellery cost calculator",
-    "silver making charges calculator",
-    "silver resale value calculator",
-    "silver buyback price calculator",
-    "silver profit calculator india",
-  ],
-  alternates: {
-    canonical: "/break-even-calculator",
-  },
-};
+// Dynamic metadata with live price
+export async function generateMetadata(): Promise<Metadata> {
+  const price = await getSilverPriceWithChange();
+  const pricePerGram = price?.pricePerGram?.toFixed(2) || "95.00";
+  
+  return {
+    title: `Silver Break-Even Calculator | Current Rate ₹${pricePerGram}/g - Jewellery & Bullion - SilverInfo.in`,
+    description: `Calculate break-even price for silver jewellery and bullion. Current silver rate: ₹${pricePerGram}/gram. Includes making charges, GST, and fees. Know if you're in profit.`,
+    keywords: [
+      "silver break even calculator",
+      "silver jewellery cost calculator",
+      "silver making charges calculator",
+      "silver resale value calculator",
+      "silver buyback price calculator",
+      "silver profit calculator india",
+    ],
+    alternates: {
+      canonical: "/break-even-calculator",
+    },
+    openGraph: {
+      title: `Silver Break-Even Calculator | ₹${pricePerGram}/g - SilverInfo.in`,
+      description: `Calculate break-even at ₹${pricePerGram}/gram. Know when you're in profit.`,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -58,6 +67,10 @@ const faqItems: FAQItem[] = [
 
 export default async function BreakEvenCalculatorPage() {
   const price = await getSilverPriceWithChange();
+  
+  // Handle API failure with default price
+  const currentPrice = price?.pricePerGram ?? 100; // Fallback for display
+  
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
@@ -171,7 +184,7 @@ export default async function BreakEvenCalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Calculator - 2 columns on Desktop */}
               <div className="lg:col-span-2 space-y-6">
-                <BreakEvenCalculator currentPrice={price.pricePerGram} />
+                <BreakEvenCalculator currentPrice={currentPrice} />
                 
                 {/* Jewellery vs Bullion Comparison */}
                 <div className="card p-6">
@@ -267,7 +280,13 @@ export default async function BreakEvenCalculatorPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Live Silver Rate */}
-                <LiveRateCard price={price} showLink={false} />
+                {price ? (
+                  <LiveRateCard price={price} showLink={false} />
+                ) : (
+                  <div className="card p-6 text-center text-gray-500">
+                    <p>Unable to fetch live price</p>
+                  </div>
+                )}
 
                 {/* Typical Costs Reference */}
                 <div className="card p-6">

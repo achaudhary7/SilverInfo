@@ -1,8 +1,8 @@
 ---
 title: "Union Budget 2026: How Will It Impact Silver Prices in India?"
-description: "Complete analysis of Union Budget 2026's potential impact on silver prices at ₹397/gram. Expected import duty changes, GST modifications, and what it means for silver investors. Updated January 26, 2026."
+description: "Complete analysis of Union Budget 2026's potential impact on silver prices at ₹400+/gram. Expected import duty changes, GST modifications, and what it means for silver investors. Updated January 29, 2026."
 date: "2026-01-24"
-lastModified: "2026-01-26"
+lastModified: "2026-01-29"
 author: "SilverInfo Team"
 category: "Market Analysis"
 tags: ["union budget 2026", "silver import duty", "silver GST", "budget impact silver", "silver prices india"]
@@ -12,13 +12,13 @@ featured: true
 
 ## Key Takeaways
 
-- Budget 2026 to be presented on **February 1, 2026** – just 6 days away!
-- **Current silver price: ₹397.73/gram** (as of January 26, 2026)
-- Silver import duty currently at **7.5%** – changes expected
+- Budget 2026 to be presented on **February 1, 2026** – just 3 days away!
+- **Current silver price: ₹400+/gram** (as of January 29, 2026) – crossed ₹400 milestone!
+- Silver import duty currently at **6%** (reduced from 7.5% in July 2024)
 - GST on silver currently **3%** – likely to remain unchanged
 - Solar energy push could boost industrial silver demand
-- Market expects ₹10,000-15,000/kg price swing post-budget
-- Silver has rallied **+4.65%** in the past 3 days ahead of budget
+- Market expects ₹5,000-10,000/kg price swing post-budget
+- Silver has rallied **+8%** this week ahead of budget, crossing ₹400
 
 ---
 
@@ -47,7 +47,7 @@ Before we discuss potential changes, let's understand the current taxes:
 ### 1. Import Duty Changes (High Probability)
 
 **Current Situation:**
-- Import duty on silver: **7.5%**
+- Import duty on silver: **6%** (reduced from 7.5% in July 2024)
 - India imports ~5,500-6,500 tonnes of silver annually
 - One of the largest silver importing nations globally
 
@@ -59,7 +59,7 @@ Before we discuss potential changes, let's understand the current taxes:
 | **Status Quo** | 7.5% | Neutral |
 | **Duty Hike** | 10% | Prices ↑ ₹10,000-12,000/kg |
 
-**Expert View:** Most analysts expect a **slight reduction** to 5-6% to boost the jewelry industry and align with gold duty cuts from previous years.
+**Expert View:** After July 2024 duty cut to 6%, most analysts expect **status quo**. Further cuts unlikely given fiscal constraints.
 
 ### 2. GST Modifications (Low Probability)
 
@@ -202,10 +202,10 @@ Based on government priorities and industry lobbying:
 
 ### Most Likely Scenario (60% probability)
 
-- **Import duty**: Cut to 6%
+- **Import duty**: Unchanged at 6% (already cut in July 2024)
 - **GST**: Unchanged at 3%
 - **Solar push**: Strong incentives
-- **Price impact**: ₹5,000-8,000/kg decline short-term
+- **Price impact**: Neutral to slightly positive
 
 ### Bullish Scenario (25% probability)
 

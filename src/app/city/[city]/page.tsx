@@ -31,7 +31,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Silver Rate Today in ${cityData.city} - Live Price per Gram`,
+    title: `Silver Rate Today in ${cityData.city} - Live Price per Gram - SilverInfo.in`,
     description: `Check indicative silver rate today in ${cityData.city}, ${cityData.state}. Get silver price per gram with making charges (${cityData.makingCharges}%) and GST. Calculated from COMEX, auto-refreshes every 30 seconds.`,
     keywords: [
       `silver rate today in ${cityData.city.toLowerCase()}`,
@@ -62,19 +62,23 @@ export default async function CityPage({
   }
 
   const price = await getSilverPriceWithChange();
+  
+  // Handle API failure - use fallback values
+  const currentPricePerGram = price?.pricePerGram ?? 100;
+  const currentPricePerKg = price?.pricePerKg ?? 100000;
 
   // Update city prices with current rate
   const cityPrice = {
     ...cityData,
-    pricePerGram: price.pricePerGram,
-    pricePerKg: price.pricePerKg,
+    pricePerGram: currentPricePerGram,
+    pricePerKg: currentPricePerKg,
   };
 
   // Calculate jewelry price with making charges
   const jewelryPrice = calculateSilverPrice(
     10, // 10 grams
     999,
-    price.pricePerGram,
+    currentPricePerGram,
     cityData.makingCharges,
     true
   );
@@ -83,7 +87,7 @@ export default async function CityPage({
   const faqItems: FAQItem[] = [
     {
       question: `What is the silver rate today in ${cityData.city}?`,
-      answer: `Today's silver rate in ${cityData.city} is ₹${price.pricePerGram.toFixed(
+      answer: `Today's silver rate in ${cityData.city} is ₹${currentPricePerGram.toFixed(
         2
       )} per gram for pure silver (999). This indicative rate is calculated from COMEX and auto-refreshes every 30 seconds. Actual retail prices may vary.`,
     },
@@ -121,7 +125,7 @@ export default async function CityPage({
       addressRegion: cityData.state,
       addressCountry: "IN",
     },
-    priceRange: `₹${price.pricePerGram.toFixed(2)}/gram`,
+    priceRange: `₹${currentPricePerGram.toFixed(2)}/gram`,
   };
 
   // Breadcrumb schema
@@ -164,7 +168,7 @@ export default async function CityPage({
     },
     offers: {
       "@type": "Offer",
-      price: price.pricePerGram,
+      price: currentPricePerGram,
       priceCurrency: "INR",
       priceValidUntil: new Date(Date.now() + 86400000).toISOString().split('T')[0],
       availability: "https://schema.org/InStock",
@@ -229,7 +233,11 @@ export default async function CityPage({
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Live Price Card */}
-                <LivePriceCard initialPrice={price} pollInterval={30000} />
+                {price ? <LivePriceCard initialPrice={price} pollInterval={30000} /> : (
+                  <div className="card p-6 text-center text-gray-500">
+                    <p>Unable to fetch live price</p>
+                  </div>
+                )}
 
                 {/* City-specific Price Table */}
                 <div className="card p-6">
@@ -315,7 +323,7 @@ export default async function CityPage({
                   </p>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Silver Value (10g × ₹{price.pricePerGram.toFixed(2)})</span>
+                      <span className="text-gray-600">Silver Value (10g × ₹{currentPricePerGram.toFixed(2)})</span>
                       <span className="font-medium">{formatIndianPrice(jewelryPrice.metalValue)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -370,7 +378,7 @@ export default async function CityPage({
                 </div>
 
                 {/* Quick Calculator */}
-                <Calculator currentPrice={price.pricePerGram} compact />
+                <Calculator currentPrice={currentPricePerGram} compact />
 
                 {/* Other Cities */}
                 <div className="card p-6">

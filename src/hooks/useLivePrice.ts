@@ -114,7 +114,7 @@ function getInitialLow(price: SilverPrice): { value: number; time: string } {
 
 export function useLivePrice({
   initialPrice,
-  pollInterval = 60000,
+  pollInterval = 60000, // 60 seconds - matches API route cache TTL
   enabled = true,
 }: UseLivePriceOptions): UseLivePriceReturn {
   // Initialize with server data merged with any localStorage data
@@ -185,16 +185,9 @@ export function useLivePrice({
     try {
       setIsRefreshing(true);
       
-      // Add timestamp to prevent any caching
-      const timestamp = Date.now();
-      const response = await fetch(`/api/price?t=${timestamp}`, {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache",
-        },
-      });
+      // Fetch from API - server-side caching via unstable_cache + Edge caching via headers
+      // Note: Client-side fetches don't support `next: { revalidate }` option
+      const response = await fetch("/api/price");
       
       if (!response.ok) {
         throw new Error("Failed to fetch price");

@@ -36,7 +36,7 @@ interface UseLiveGoldPriceReturn {
 // CONSTANTS
 // ============================================================================
 
-const POLL_INTERVAL = 30000; // 30 seconds
+const POLL_INTERVAL = 60000; // 60 seconds (reduced from 30s to lower Edge Requests)
 const API_ENDPOINT = "/api/gold-price";
 
 // ============================================================================
@@ -67,12 +67,9 @@ export function useLiveGoldPrice(
   // ========================================================================
   const fetchPrice = useCallback(async () => {
     try {
-      const response = await fetch(API_ENDPOINT, {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      // Fetch from API - server-side caching via unstable_cache + Edge caching via headers
+      // Note: Client-side fetches don't support `next: { revalidate }` option
+      const response = await fetch(API_ENDPOINT);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

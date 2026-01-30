@@ -11,22 +11,31 @@ export const revalidate = 600;
 // Page last updated date
 const LAST_UPDATED = "2026-01-23";
 
-export const metadata: Metadata = {
-  title: "Silver Price Calculator - Calculate Silver Value in INR",
-  description:
-    "Free silver price calculator for India. Calculate silver value based on weight, purity (999, 925, 800), making charges, and GST. Convert grams to tola and get instant results.",
-  keywords: [
-    "silver price calculator",
-    "silver calculator india",
-    "925 silver price calculator",
-    "silver weight calculator",
-    "silver making charges calculator",
-    "tola to gram converter",
-  ],
-  alternates: {
-    canonical: "/silver-price-calculator",
-  },
-};
+// Dynamic metadata with live price
+export async function generateMetadata(): Promise<Metadata> {
+  const price = await getSilverPriceWithChange();
+  const pricePerGram = price?.pricePerGram?.toFixed(2) || "95.00";
+  
+  return {
+    title: `Silver Price Calculator | Current Rate ₹${pricePerGram}/g - Calculate Value - SilverInfo.in`,
+    description: `Free silver price calculator for India. Current rate: ₹${pricePerGram}/gram. Calculate silver value based on weight, purity (999, 925, 800), making charges, and GST. Convert grams to tola.`,
+    keywords: [
+      "silver price calculator",
+      "silver calculator india",
+      "925 silver price calculator",
+      "silver weight calculator",
+      "silver making charges calculator",
+      "tola to gram converter",
+    ],
+    alternates: {
+      canonical: "/silver-price-calculator",
+    },
+    openGraph: {
+      title: `Silver Price Calculator | ₹${pricePerGram}/g - SilverInfo.in`,
+      description: `Calculate silver value at ₹${pricePerGram}/gram. Free calculator with purity, making charges, and GST.`,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -58,6 +67,7 @@ const faqItems: FAQItem[] = [
 
 export default async function SilverCalculatorPage() {
   const price = await getSilverPriceWithChange();
+  const currentPrice = price?.pricePerGram ?? 100;
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
@@ -215,13 +225,13 @@ export default async function SilverCalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Calculator - Full Width on Mobile, 2 columns on Desktop */}
               <div className="lg:col-span-2">
-                <Calculator currentPrice={price.pricePerGram} />
+                <Calculator currentPrice={currentPrice} />
               </div>
 
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Current Price Reference with Live Indicator */}
-                <LiveRateCard price={price} showLink={false} />
+                {price ? <LiveRateCard price={price} showLink={false} /> : null}
 
                 {/* Quick Conversion Table */}
                 <div className="card p-6">

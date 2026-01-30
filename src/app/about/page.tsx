@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - this page rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 // Page content last reviewed date - now dynamic
 const LAST_UPDATED = new Date().toISOString().split('T')[0];
 

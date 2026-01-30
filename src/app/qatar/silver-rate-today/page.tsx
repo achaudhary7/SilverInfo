@@ -7,30 +7,53 @@ import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib
 
 export const revalidate = 600; // ISR: revalidate every 10 minutes
 
-export const metadata: Metadata = {
-  title: "Silver Price in Qatar Today - Live Rate in QAR & INR | SilverInfo",
-  description:
-    "Check live silver price in Qatar today in QAR and Indian Rupees (INR). Get silver rate per gram, per 10g, per kg with 24 carat purity. Real-time prices from COMEX for NRIs.",
-  keywords: [
-    "silver price qatar today",
-    "silver price qatar today 24 carat",
-    "silver price qatar today 24 carat in indian rupees",
-    "qatar silver rate today in indian rupees",
-    "qatar silver rate today in indian rupees 22k",
-    "10 gram silver price in qatar",
-    "silver rate in qatar",
-    "qatar silver price",
-    "silver price doha",
-  ],
-  alternates: {
-    canonical: "/qatar/silver-rate-today",
-  },
-  openGraph: {
-    title: "Silver Price in Qatar Today - Live QAR & INR Rates",
-    description: "Live silver prices in Qatar for NRIs. Check rates in QAR and INR.",
-    type: "website",
-  },
-};
+// Dynamic metadata with date for freshness signal (SEO best practice)
+export async function generateMetadata(): Promise<Metadata> {
+  const qatarPrice = await getInternationalSilverPrice("qatar");
+  const priceQar = qatarPrice?.pricePerGram?.toFixed(2) || "4.50";
+  
+  const dateString = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  return {
+    title: `Silver Price Qatar Today (${dateString}) | QAR ${priceQar}/g Live - SilverInfo.in`,
+    description: `Silver price in Qatar today (${dateString}): QAR ${priceQar}/gram. Live silver rate in QAR & INR for NRIs. 24 carat purity, 10g, kg prices from COMEX.`,
+    keywords: [
+      "silver price qatar today",
+      "silver price qatar today 24 carat",
+      "silver price qatar today 24 carat in indian rupees",
+      "qatar silver rate today in indian rupees",
+      "qatar silver rate today in indian rupees 22k",
+      "10 gram silver price in qatar",
+      "silver rate in qatar",
+      "qatar silver price",
+      "silver price doha",
+    ],
+    alternates: {
+      canonical: "/qatar/silver-rate-today",
+    },
+    openGraph: {
+      title: `Silver Price Qatar Today (${dateString}) | QAR ${priceQar}/g`,
+      description: `Live silver prices in Qatar for NRIs (${dateString}). Check rates in QAR and INR.`,
+      type: "website",
+      locale: "en_QA",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Silver Price Qatar (${dateString}) | QAR ${priceQar}/g`,
+      description: `Live silver rate in Qatar. QAR ${priceQar}/gram. Updated every 30 seconds.`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  };
+}
 
 // FAQ items targeting keywords
 const faqItems: FAQItem[] = [
@@ -163,7 +186,7 @@ export default async function QatarSilverRatePage() {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-              Silver Price in Qatar Today
+              Silver Price in Qatar Today - {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </h1>
             <p className="text-sm sm:text-base text-gray-300 max-w-2xl mb-2">
               Live silver rates in Qatari Riyal (QAR) and Indian Rupees (INR). 

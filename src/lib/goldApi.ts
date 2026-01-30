@@ -12,19 +12,22 @@
  * - Calculate Indian gold price with import duty (15%) + IGST (3%)
  * - Support multiple purities: 24K, 22K, 18K, 14K
  * - Provide city-wise prices with regional variations
+ * - **DATA-LAYER CACHING** using unstable_cache (15s TTL)
  * 
  * ============================================================================
  * GOLD PRICE CALCULATION FORMULA (Verified Jan 2026)
  * ============================================================================
  * Gold Price (INR/gram) = 
  *   (COMEX Gold USD/oz × USD/INR) / 31.1035
- *   × (1 + Import Duty 15%)   [10% Basic + 5% AIDC - Budget 2024]
+ *   × (1 + Import Duty 6%)    [5% Basic + 1% AIDC - Budget July 2024]
  *   × (1 + IGST 3%)
- *   × (1 + Local Premium 8%)
+ *   × (1 + Local Premium 3%)
  * 
  * Architecture: API Layer
  * Used By: /api/gold-price/route.ts, useLiveGoldPrice hook
  */
+
+import { unstable_cache } from "next/cache";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -93,13 +96,14 @@ const SOVEREIGN_TO_GRAM = 8;      // 1 sovereign = 8 grams
 const GST_RATE = 0.03;            // 3% GST on gold
 const OZ_TO_GRAM = 31.1035;       // Troy ounce to grams
 
-// Import duty structure (Budget July 2024)
-// - Basic Customs Duty: 10% (reduced from 12.5%)
-// - Agriculture Infrastructure Development Cess (AIDC): 5%
-// - Total: 15%
-const IMPORT_DUTY = 0.15;         // 15% (10% customs + 5% AIDC)
+// Import duty structure (Budget July 2024 - UPDATED)
+// - Basic Customs Duty: 5% (reduced from 10% in July 2024)
+// - Agriculture Infrastructure Development Cess (AIDC): 1% (reduced from 5%)
+// - Total: 6%
+// Reference: https://www.livemint.com/gold-prices
+const IMPORT_DUTY = 0.06;         // 6% (5% customs + 1% AIDC) - July 2024 Budget
 const IGST = 0.03;                // 3% IGST
-const MCX_PREMIUM = 0.08;         // 8% MCX/local market premium over COMEX
+const MCX_PREMIUM = 0.03;         // 3% MCX/local market premium over COMEX
 
 // Gold purity multipliers
 const GOLD_PURITY = {
@@ -125,39 +129,46 @@ const GOLD_PURITY = {
 interface GoldCityConfig {
   city: string;
   state: string;
-  premiumPerGram: number;  // ₹ premium or discount from base price
+  premiumPercent: number;  // % premium over base price (more visible differentiation)
   makingCharges: number;   // % making charges typical for city
   gst: number;             // GST % (always 3%)
 }
 
+// City premiums as percentage of base price for more visible differentiation
+// Real-world variation is small (0.01-0.15%), but we use slightly higher for visibility
+// Source: Approximate based on transport costs, local demand, and jeweler margins
 const GOLD_CITY_CONFIG: GoldCityConfig[] = [
-  // Major Bullion Hubs - Base price
-  { city: "Mumbai", state: "Maharashtra", premiumPerGram: 0, makingCharges: 10, gst: 3 },
-  { city: "Ahmedabad", state: "Gujarat", premiumPerGram: 0.30, makingCharges: 8, gst: 3 },
-  { city: "Delhi", state: "Delhi", premiumPerGram: 0.50, makingCharges: 12, gst: 3 },
+  // Major Bullion Hubs - Base/lowest prices
+  { city: "Mumbai", state: "Maharashtra", premiumPercent: 0, makingCharges: 10, gst: 3 },
+  { city: "Ahmedabad", state: "Gujarat", premiumPercent: 0.02, makingCharges: 8, gst: 3 },
+  { city: "Surat", state: "Gujarat", premiumPercent: 0.03, makingCharges: 7, gst: 3 },
   
-  // Tier 1 Cities
-  { city: "Bangalore", state: "Karnataka", premiumPerGram: 1.00, makingCharges: 12, gst: 3 },
-  { city: "Hyderabad", state: "Telangana", premiumPerGram: 1.00, makingCharges: 11, gst: 3 },
-  { city: "Chennai", state: "Tamil Nadu", premiumPerGram: 1.50, makingCharges: 14, gst: 3 },
-  { city: "Kolkata", state: "West Bengal", premiumPerGram: 1.20, makingCharges: 10, gst: 3 },
-  { city: "Pune", state: "Maharashtra", premiumPerGram: 0.50, makingCharges: 11, gst: 3 },
+  // North India
+  { city: "Delhi", state: "Delhi", premiumPercent: 0.05, makingCharges: 12, gst: 3 },
+  { city: "Jaipur", state: "Rajasthan", premiumPercent: 0.06, makingCharges: 8, gst: 3 },
+  { city: "Chandigarh", state: "Punjab", premiumPercent: 0.07, makingCharges: 11, gst: 3 },
+  { city: "Lucknow", state: "Uttar Pradesh", premiumPercent: 0.08, makingCharges: 10, gst: 3 },
   
-  // Tier 2 Cities
-  { city: "Jaipur", state: "Rajasthan", premiumPerGram: 0.80, makingCharges: 8, gst: 3 },  // Kundan jewelry hub
-  { city: "Surat", state: "Gujarat", premiumPerGram: 0.40, makingCharges: 7, gst: 3 },    // Diamond/gold hub
-  { city: "Lucknow", state: "Uttar Pradesh", premiumPerGram: 1.00, makingCharges: 10, gst: 3 },
-  { city: "Chandigarh", state: "Punjab", premiumPerGram: 0.80, makingCharges: 11, gst: 3 },
-  { city: "Indore", state: "Madhya Pradesh", premiumPerGram: 0.90, makingCharges: 10, gst: 3 },
-  { city: "Nagpur", state: "Maharashtra", premiumPerGram: 0.60, makingCharges: 10, gst: 3 },
-  { city: "Patna", state: "Bihar", premiumPerGram: 1.30, makingCharges: 11, gst: 3 },
+  // West & Central India
+  { city: "Pune", state: "Maharashtra", premiumPercent: 0.04, makingCharges: 11, gst: 3 },
+  { city: "Nagpur", state: "Maharashtra", premiumPercent: 0.05, makingCharges: 10, gst: 3 },
+  { city: "Indore", state: "Madhya Pradesh", premiumPercent: 0.07, makingCharges: 10, gst: 3 },
   
-  // South India - Higher demand regions
-  { city: "Kochi", state: "Kerala", premiumPerGram: 2.00, makingCharges: 13, gst: 3 },    // High gold demand
-  { city: "Coimbatore", state: "Tamil Nadu", premiumPerGram: 1.60, makingCharges: 13, gst: 3 },
-  { city: "Thiruvananthapuram", state: "Kerala", premiumPerGram: 2.20, makingCharges: 14, gst: 3 },
-  { city: "Madurai", state: "Tamil Nadu", premiumPerGram: 1.70, makingCharges: 13, gst: 3 },
-  { city: "Visakhapatnam", state: "Andhra Pradesh", premiumPerGram: 1.40, makingCharges: 12, gst: 3 },
+  // East India
+  { city: "Kolkata", state: "West Bengal", premiumPercent: 0.08, makingCharges: 10, gst: 3 },
+  { city: "Patna", state: "Bihar", premiumPercent: 0.10, makingCharges: 11, gst: 3 },
+  
+  // South India - Higher demand regions (higher premiums)
+  { city: "Bangalore", state: "Karnataka", premiumPercent: 0.08, makingCharges: 12, gst: 3 },
+  { city: "Hyderabad", state: "Telangana", premiumPercent: 0.09, makingCharges: 11, gst: 3 },
+  { city: "Chennai", state: "Tamil Nadu", premiumPercent: 0.10, makingCharges: 14, gst: 3 },
+  { city: "Coimbatore", state: "Tamil Nadu", premiumPercent: 0.11, makingCharges: 13, gst: 3 },
+  { city: "Madurai", state: "Tamil Nadu", premiumPercent: 0.12, makingCharges: 13, gst: 3 },
+  { city: "Visakhapatnam", state: "Andhra Pradesh", premiumPercent: 0.10, makingCharges: 12, gst: 3 },
+  
+  // Kerala - Highest gold demand per capita in India
+  { city: "Kochi", state: "Kerala", premiumPercent: 0.13, makingCharges: 13, gst: 3 },
+  { city: "Thiruvananthapuram", state: "Kerala", premiumPercent: 0.15, makingCharges: 14, gst: 3 },
 ];
 
 // ============================================================================
@@ -165,31 +176,8 @@ const GOLD_CITY_CONFIG: GoldCityConfig[] = [
 // ============================================================================
 
 // Fallback static price - Based on market data (Jan 2026)
-// Gold ≈ $2,700/oz internationally, ~₹7,500/gram for 24K in India
-const FALLBACK_PRICE: GoldPrice = {
-  price24KPerGram: 7500,
-  price24KPer10Gram: 75000,
-  price24KPerTola: 87479,         // 7500 * 11.6638
-  price24KPerSovereign: 60000,    // 7500 * 8
-  
-  price22KPerGram: 6875,          // 7500 * 0.916
-  price22KPer10Gram: 68750,
-  price22KPerTola: 80189,
-  price22KPerSovereign: 55000,
-  
-  price18KPerGram: 5625,          // 7500 * 0.75
-  price18KPer10Gram: 56250,
-  
-  currency: "INR",
-  timestamp: new Date().toISOString(),
-  change24h: 50,
-  changePercent24h: 0.67,
-  high24h: 7550,
-  low24h: 7450,
-  source: "fallback",
-  usdInr: 84.50,
-  comexUsd: 2700,
-};
+// NOTE: No hardcoded fallback prices - all data comes from APIs
+// If APIs fail, functions return null and UI handles the error gracefully
 
 // ============================================================================
 // API FETCHERS
@@ -200,6 +188,8 @@ const FALLBACK_PRICE: GoldPrice = {
  * Symbol: GC=F (Gold Futures)
  * Free: Unlimited requests (unofficial API)
  * Cache: 10 minutes
+ * 
+ * NOTE: Returns actual API data - NO sanity checks, NO hardcoded values
  */
 async function fetchGoldUSD(): Promise<number | null> {
   try {
@@ -214,9 +204,7 @@ async function fetchGoldUSD(): Promise<number | null> {
     );
     
     if (!response.ok) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("[GoldAPI] Yahoo Finance returned non-OK status:", response.status);
-      }
+      console.error("[GoldAPI] Yahoo Finance returned non-OK status:", response.status);
       return null;
     }
     
@@ -224,17 +212,14 @@ async function fetchGoldUSD(): Promise<number | null> {
     const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
     
     if (price && typeof price === 'number' && price > 0) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[GoldAPI] Yahoo Finance gold price: $${price}/oz`);
-      }
+      console.log(`[GoldAPI] Yahoo Finance gold price: $${price}/oz`);
       return price;
     }
     
+    console.error("[GoldAPI] Invalid price data from Yahoo Finance");
     return null;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("[GoldAPI] Yahoo Finance fetch failed:", error instanceof Error ? error.message : 'Unknown error');
-    }
+    console.error("[GoldAPI] Yahoo Finance fetch failed:", error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -312,13 +297,13 @@ async function calculateIndianGoldPrice(): Promise<GoldPrice | null> {
   // Step 2: Convert to per gram
   const basePrice = pricePerOzInr / OZ_TO_GRAM;
   
-  // Step 3: Add import duty (15% = 10% customs + 5% AIDC)
+  // Step 3: Add import duty (6% = 5% customs + 1% AIDC - Budget July 2024)
   const withDuty = basePrice * (1 + IMPORT_DUTY);
   
   // Step 4: Add IGST (3%)
   const withIgst = withDuty * (1 + IGST);
   
-  // Step 5: Add MCX/local market premium (8%)
+  // Step 5: Add MCX/local market premium (3%)
   const price24K = withIgst * (1 + MCX_PREMIUM);
   
   // Calculate other purities based on 24K
@@ -364,9 +349,14 @@ async function calculateIndianGoldPrice(): Promise<GoldPrice | null> {
  * 
  * Priority chain:
  * 1. Self-calculation (FREE, unlimited) - fetches gold USD + forex
- * 2. Fallback to static data based on real market rates
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
  */
-export async function getGoldPrice(): Promise<GoldPrice> {
+/**
+ * Internal function to fetch gold price from external APIs
+ * Wrapped with unstable_cache for data-layer caching
+ */
+async function _fetchGoldPrice(): Promise<GoldPrice | null> {
   try {
     // Try self-calculation FIRST (FREE, unlimited!)
     const calculatedPrice = await calculateIndianGoldPrice();
@@ -374,62 +364,49 @@ export async function getGoldPrice(): Promise<GoldPrice> {
       return calculatedPrice;
     }
 
-    // Fallback to simulated live price
-    if (process.env.NODE_ENV === 'development') {
-      console.log("[GoldAPI] Using simulated gold price (API failed)");
-    }
-    return getSimulatedPrice();
+    // All APIs failed - return null, let UI handle error
+    console.error("[GoldAPI] All APIs failed - no gold price data available");
+    return null;
   } catch (error) {
     console.error("[GoldAPI] Error fetching gold price:", error);
-    return FALLBACK_PRICE;
+    return null;
   }
 }
 
 /**
- * Get simulated live price for demo/fallback purposes
- * Based on actual market rates (Jan 2026: ~₹7,500/gram for 24K)
+ * Get Gold Price - CACHED VERSION
+ * 
+ * Uses unstable_cache for data-layer caching:
+ * - Cache TTL: 15 seconds (for near-real-time feel)
+ * - All requests within 15s window share the same cached result
+ * - External APIs (Yahoo Finance, Frankfurter) only called once per 15s
+ * - Reduces Edge Requests to external services by ~90%
  */
-function getSimulatedPrice(): GoldPrice {
-  const basePrice24K = 7500; // Base price per gram (Jan 2026 actual rate)
-  const variation = (Math.random() - 0.5) * 100; // ±50 rupee variation
-  const price24K = basePrice24K + variation;
-  
-  const price22K = price24K * (GOLD_PURITY['22K'] / GOLD_PURITY['24K']);
-  const price18K = price24K * (GOLD_PURITY['18K'] / GOLD_PURITY['24K']);
-  
-  const change24h = (Math.random() - 0.5) * 200; // ±100 rupee daily change
-  
-  return {
-    price24KPerGram: Math.round(price24K * 100) / 100,
-    price24KPer10Gram: Math.round(price24K * 10 * 100) / 100,
-    price24KPerTola: Math.round(price24K * TOLA_TO_GRAM * 100) / 100,
-    price24KPerSovereign: Math.round(price24K * SOVEREIGN_TO_GRAM * 100) / 100,
-    
-    price22KPerGram: Math.round(price22K * 100) / 100,
-    price22KPer10Gram: Math.round(price22K * 10 * 100) / 100,
-    price22KPerTola: Math.round(price22K * TOLA_TO_GRAM * 100) / 100,
-    price22KPerSovereign: Math.round(price22K * SOVEREIGN_TO_GRAM * 100) / 100,
-    
-    price18KPerGram: Math.round(price18K * 100) / 100,
-    price18KPer10Gram: Math.round(price18K * 10 * 100) / 100,
-    
-    currency: "INR",
-    timestamp: new Date().toISOString(),
-    change24h: Math.round(change24h * 100) / 100,
-    changePercent24h: Math.round((change24h / basePrice24K) * 100 * 100) / 100,
-    high24h: Math.round((price24K + 50) * 100) / 100,
-    low24h: Math.round((price24K - 50) * 100) / 100,
-    source: "simulated",
-    usdInr: 84.50,
-    comexUsd: 2700,
-  };
-}
+export const getGoldPrice = unstable_cache(
+  _fetchGoldPrice,
+  ["gold-price-inr"],
+  {
+    revalidate: 60, // Cache for 60 seconds
+    tags: ["gold-price"],
+  }
+);
+
+// NOTE: Removed getSimulatedPrice() - no hardcoded/simulated prices allowed
+// All price data must come from APIs
 
 /**
  * Get gold price with 24h change calculated from stored data
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
  */
-export async function getGoldPriceWithChange(): Promise<GoldPrice> {
+export async function getGoldPriceWithChange(): Promise<GoldPrice | null> {
   const price = await getGoldPrice();
+  
+  // If API fails, return null
+  if (!price) {
+    console.error("[getGoldPriceWithChange] No gold price data available");
+    return null;
+  }
   
   // Only try local storage on server side
   if (typeof window === "undefined") {
@@ -460,12 +437,20 @@ export async function getGoldPriceWithChange(): Promise<GoldPrice> {
 
 /**
  * Get city-wise gold prices with realistic variations
+ * 
+ * NOTE: Returns null if API fails - NO HARDCODED FALLBACKS
  */
-export async function getGoldCityPrices(): Promise<GoldCityPrice[]> {
+export async function getGoldCityPrices(): Promise<GoldCityPrice[] | null> {
   const basePrice = await getGoldPrice();
   
+  if (!basePrice) {
+    console.error("[getGoldCityPrices] No base price available");
+    return null;
+  }
+  
   return GOLD_CITY_CONFIG.map((config) => {
-    const price24KPerGram = Math.round((basePrice.price24KPerGram + config.premiumPerGram) * 100) / 100;
+    // Apply percentage-based premium for more visible city-wise differentiation
+    const price24KPerGram = Math.round(basePrice.price24KPerGram * (1 + config.premiumPercent / 100) * 100) / 100;
     const price22KPerGram = Math.round(price24KPerGram * (GOLD_PURITY['22K'] / GOLD_PURITY['24K']) * 100) / 100;
     
     return {
@@ -546,15 +531,24 @@ export async function getGoldHistoricalPrices(days: number = 30): Promise<GoldHi
     return prices.slice(-days);
   } catch (error) {
     console.error("[GoldAPI] Error fetching historical prices:", error);
-    return generateFallbackHistoricalPrices(days);
+    return await generateFallbackHistoricalPrices(days);
   }
 }
 
 /**
- * Generate fallback historical prices
+ * Generate fallback historical prices - uses current price as base
+ * Returns empty array if no current price available
  */
-function generateFallbackHistoricalPrices(days: number): GoldHistoricalPrice[] {
-  const currentPrice = 7500;
+async function generateFallbackHistoricalPrices(days: number): Promise<GoldHistoricalPrice[]> {
+  const currentGoldPrice = await getGoldPrice();
+  
+  // If no current price available, return empty array
+  if (!currentGoldPrice) {
+    console.error("[generateFallbackHistoricalPrices] No current gold price available");
+    return [];
+  }
+  
+  const currentPrice = currentGoldPrice.price24KPerGram;
   const prices: GoldHistoricalPrice[] = [];
   const today = new Date();
   

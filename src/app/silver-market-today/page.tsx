@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 
   return {
-    title: `Silver Market Analysis - ${dateStr}`,
+    title: `Silver Market Analysis - ${dateStr} - SilverInfo.in`,
     description: `Today's silver price analysis for India. Live rates, market trends, COMEX & forex impact, and what's driving silver prices on ${dateStr}.`,
     keywords: [
       "silver market today",
@@ -55,10 +55,42 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SilverMarketTodayPage() {
-  const [price, historicalPrices] = await Promise.all([
+  const [priceData, historicalPrices] = await Promise.all([
     getSilverPriceWithChange(),
     getHistoricalPrices(30),
   ]);
+
+  // If API completely fails, show error page - NO FAKE DATA
+  if (!priceData) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Silver Market Today
+            </h1>
+            <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-lg mx-auto">
+              <p className="text-red-600 text-lg mb-4">
+                ⚠️ Unable to fetch live market data
+              </p>
+              <p className="text-gray-600 mb-4">
+                We&apos;re having trouble connecting to our price sources. Please refresh the page or try again later.
+              </p>
+              <a 
+                href="/silver-market-today"
+                className="inline-block px-6 py-2 bg-[#1e3a5f] text-white rounded-lg hover:bg-[#2a4a6f] transition-colors"
+              >
+                Refresh Page
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Use real API data only - no fallbacks
+  const price = priceData;
 
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-IN", {

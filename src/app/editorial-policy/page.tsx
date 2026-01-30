@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
+// Force static generation - this page rarely changes
+export const dynamic = "force-static";
+export const revalidate = 86400; // Revalidate once per day
+
 // Page content last reviewed date - now dynamic
 const LAST_UPDATED = new Date().toISOString().split('T')[0];
 
 export const metadata: Metadata = {
-  title: "Editorial Policy - SilverInfo.in",
+  title: "Editorial Policy - Content Standards & Guidelines - SilverInfo.in",
   description:
     "Our editorial policy outlines our commitment to accuracy, transparency, and reader trust. Learn how we create, review, and update our silver market content.",
   alternates: {
@@ -20,11 +24,35 @@ export default function EditorialPolicyPage() {
     { name: "Editorial Policy", url: "https://silverinfo.in/editorial-policy" },
   ]);
 
+  // WebPage Schema for editorial policy page (E-E-A-T signal)
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Editorial Policy - SilverInfo.in",
+    description: "Our editorial policy outlines our commitment to accuracy, transparency, and reader trust. Learn how we create, review, and update our silver market content.",
+    url: "https://silverinfo.in/editorial-policy",
+    dateModified: LAST_UPDATED,
+    publisher: {
+      "@type": "Organization",
+      name: "SilverInfo.in",
+      url: "https://silverinfo.in",
+    },
+    about: {
+      "@type": "Thing",
+      name: "Editorial Standards",
+      description: "Guidelines for content creation, fact-checking, and quality assurance",
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
       
       <div className="min-h-screen bg-gray-50">

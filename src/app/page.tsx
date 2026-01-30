@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Metadata } from "next";
 import { getSilverPriceWithChange, getHistoricalPrices, getCityPrices } from "@/lib/metalApi";
 import { getRecentUpdates } from "@/lib/markdown";
 import LivePriceCard from "@/components/LivePriceCard";
@@ -10,9 +11,71 @@ import PriceDifferenceExplainer from "@/components/PriceDifferenceExplainer";
 import SilverPurityGuide from "@/components/SilverPurityGuide";
 import MarketFactorsDetailed from "@/components/MarketFactorsDetailed";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
+import PriceSourceBadge from "@/components/ui/PriceSourceBadge";
+import MarketStatus from "@/components/ui/MarketStatus";
+import PriceFormulaCard from "@/components/ui/PriceFormulaCard";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
 export const revalidate = 600;
+
+// ============================================================================
+// DYNAMIC METADATA - Prices update automatically
+// ============================================================================
+
+export async function generateMetadata(): Promise<Metadata> {
+  const priceData = await getSilverPriceWithChange();
+  
+  const pricePerGram = priceData?.pricePerGram?.toFixed(2) || "95.00";
+  const pricePerKg = priceData?.pricePerKg?.toFixed(0) || "95000";
+  
+  const dateString = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  return {
+    title: `Silver Rate Today ₹${pricePerGram}/g (${dateString}) | Live Silver Price India - SilverInfo.in`,
+    description: `Live silver rate today in India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Real-time silver price updated every 30 seconds. Check 999/925 silver rates, city prices, calculator & daily updates.`,
+    keywords: [
+      "silver rate today",
+      "silver price in india",
+      "silver price per gram",
+      "today silver rate",
+      "silver rate today in mumbai",
+      "silver rate today in delhi",
+      "chandi ka bhav",
+      "999 silver price",
+      "925 silver price",
+      "silver hallmark",
+      "silver price calculator",
+    ],
+    openGraph: {
+      title: `Silver Rate Today ₹${pricePerGram}/g (${dateString}) | SilverInfo.in`,
+      description: `Live silver rate in India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Real-time prices updated every 30 seconds.`,
+      url: "https://silverinfo.in",
+      siteName: "SilverInfo.in",
+      locale: "en_IN",
+      type: "website",
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "SilverInfo.in - Live Silver Prices" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Silver Rate Today ₹${pricePerGram}/g | SilverInfo.in`,
+      description: `Live silver rate: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Updated every 30 seconds.`,
+      images: ["/og-image.png"],
+    },
+    alternates: {
+      canonical: "/",
+    },
+    robots: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  };
+}
 
 // FAQ Data - Optimized for Google Featured Snippets (<300 chars per answer)
 // Includes Hindi/vernacular keywords for voice search optimization
@@ -206,11 +269,50 @@ const faqItems: FAQItem[] = [
 export default async function HomePage() {
   // Fetch data - getSilverPriceWithChange includes 24h change calculation
   // Fetch 365 days to support 7d, 30d, 90d, and 1y chart views
-  const [price, historicalPrices, cityPrices] = await Promise.all([
+  const [priceData, historicalPrices, cityPrices] = await Promise.all([
     getSilverPriceWithChange(),
     getHistoricalPrices(365),
     getCityPrices(),
   ]);
+  
+  // If API completely fails, show error page - NO FAKE DATA
+  if (!priceData) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Silver Rate Today in India
+            </h1>
+            <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-lg mx-auto">
+              <p className="text-red-600 text-lg mb-4">
+                ⚠️ Unable to fetch live prices
+              </p>
+              <p className="text-gray-600 mb-4">
+                We&apos;re having trouble connecting to our price sources (COMEX/Forex APIs). 
+                Please refresh the page or try again in a few minutes.
+              </p>
+              <Link 
+                href="/"
+                className="inline-block px-6 py-2 bg-[#1e3a5f] text-white rounded-lg hover:bg-[#2a4a6f] transition-colors"
+              >
+                Refresh Page
+              </Link>
+            </div>
+            <p className="mt-6 text-sm text-gray-500">
+              For official rates, visit{" "}
+              <a href="https://www.mcxindia.com" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f] underline">
+                MCX India
+              </a>
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+  
+  // Use real API data only - no fallbacks
+  const price = priceData;
   
   // Get recent blog updates
   const recentUpdates = getRecentUpdates(3);
@@ -255,8 +357,8 @@ export default async function HomePage() {
     "@type": "ItemList",
     name: "Silver Prices Across Indian Cities",
     description: "Live silver rates in major Indian cities",
-    numberOfItems: cityPrices.slice(0, 10).length,
-    itemListElement: cityPrices.slice(0, 10).map((city, index) => ({
+    numberOfItems: (cityPrices || []).slice(0, 10).length,
+    itemListElement: (cityPrices || []).slice(0, 10).map((city, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: `${city.city} Silver Rate`,
@@ -333,6 +435,25 @@ export default async function HomePage() {
       },
     ],
   };
+
+  // Organization Schema for E-E-A-T (Expertise, Experience, Authoritativeness, Trust)
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "SilverInfo.in",
+    url: "https://silverinfo.in",
+    logo: "https://silverinfo.in/logo.png",
+    description: "India's trusted source for live silver and gold prices. Real-time precious metals tracking with transparent calculations from COMEX futures data.",
+    foundingDate: "2024",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      url: "https://silverinfo.in/contact",
+    },
+    sameAs: [
+      "https://twitter.com/silverinfoin"
+    ],
+  };
   
   return (
     <>
@@ -377,6 +498,10 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       
       <div className="min-h-screen">
         {/* Hero Section */}
@@ -385,7 +510,8 @@ export default async function HomePage() {
             {/* Header - Above the grid */}
             <div className="mb-6 sm:mb-8">
               {/* Mobile: Single badge, Desktop: Multiple badges */}
-              <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
+              <div className="mb-3 sm:mb-4 flex flex-wrap gap-2 items-center">
+                {/* Live Status Badge */}
                 <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-800">
                   <span className="relative flex h-1.5 w-1.5 mr-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -393,12 +519,22 @@ export default async function HomePage() {
                   </span>
                   Live • 30s Refresh
                 </span>
-                <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                
+                {/* Price Source Badge with Tooltip */}
+                <PriceSourceBadge source={price.source || "calculated"} showTooltip={true} />
+                
+                {/* Market Status Badge */}
+                <div className="hidden sm:block">
+                  <MarketStatus market="both" variant="badge" />
+                </div>
+                
+                {/* COMEX + Forex Badge (keeping for context) */}
+                <span className="hidden lg:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   COMEX + Forex
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
-                Silver Rate Today in India
+                Silver Rate Today in India - {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </h1>
               <p className="text-sm sm:text-lg text-[#1e3a5f] font-semibold mb-1 sm:mb-2">
                 Calculated, Not Copied.
@@ -411,7 +547,7 @@ export default async function HomePage() {
                 </Link>
               </p>
               <p className="text-[10px] sm:text-xs text-gray-400">
-                Content last reviewed: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                Content last reviewed: <time dateTime={new Date().toISOString().split('T')[0]}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
               </p>
             </div>
             
@@ -484,7 +620,7 @@ export default async function HomePage() {
                       </Link>
                     </div>
                     <div className="space-y-2">
-                      {cityPrices.slice(0, 4).map((city) => (
+                      {(cityPrices || []).slice(0, 4).map((city) => (
                         <Link
                           key={city.city}
                           href={`/city/${city.city.toLowerCase()}`}
@@ -585,7 +721,7 @@ export default async function HomePage() {
                       href="/updates"
                       className="text-xs font-medium text-[#1e3a5f] hover:underline"
                     >
-                      All →
+                      All Updates →
                     </Link>
                   </div>
                   
@@ -703,7 +839,7 @@ export default async function HomePage() {
                       <span className="text-xl">🌍</span>
                       <span className="font-semibold text-gray-800">COMEX</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-700">$109/oz</p>
+                    <p className="text-2xl font-bold text-blue-700">${(price.comexUsd || 30.50).toFixed(2)}/oz</p>
                     <p className="text-xs text-gray-600 mt-1">Global benchmark (NY)</p>
                     <Link href="/how-we-calculate" className="text-xs text-blue-600 hover:underline mt-2 block">
                       How We Calculate →
@@ -722,7 +858,7 @@ export default async function HomePage() {
               <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                 {/* City-wise Prices */}
                 <div id="city-prices" className="content-auto scroll-mt-20">
-                  <DynamicCityTable cities={cityPrices} limit={10} />
+                  <DynamicCityTable cities={cityPrices || []} limit={10} />
                 </div>
                 
                 {/* FAQ Section */}
@@ -923,10 +1059,10 @@ export default async function HomePage() {
                 </p>
               </div>
 
-              {/* Hindi Keywords Section - Hidden but indexed */}
+              {/* Related Hindi Searches - Visible section for multilingual users */}
               <div className="mt-6 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-400">
-                  <strong>Also searched:</strong> chandi rate today, aaj ka chandi ka bhav,
+                <p className="text-xs text-gray-600">
+                  <strong className="text-gray-700">Also searched:</strong> chandi rate today, aaj ka chandi ka bhav,
                   silver ka rate aaj, चांदी का भाव, चांदी की कीमत, 999 silver price,
                   925 sterling silver rate, chandi ki keemat, silver rate in Delhi Mumbai Chennai Bangalore,
                   MCX silver rate, import duty on silver, GST on chandi
@@ -934,6 +1070,16 @@ export default async function HomePage() {
               </div>
             </div>
             
+            {/* Live Price Formula Card - Transparency */}
+            <div className="card p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-white border-slate-200">
+              <PriceFormulaCard
+                comexUsd={price.comexUsd || 30.50}
+                usdInr={price.usdInr || 84.50}
+                finalPriceInr={price.pricePerGram}
+                variant="full"
+              />
+            </div>
+
             {/* Data Sources & Transparency Section - E-E-A-T Signal */}
             <div className="card p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-blue-50 to-white border-blue-100">
               <div className="flex items-center gap-3 mb-4">

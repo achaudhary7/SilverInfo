@@ -9,10 +9,11 @@ import React from 'react';
 
 interface FlagProps {
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 const sizeClasses = {
+  xs: 'w-3.5 h-2.5',
   sm: 'w-5 h-3.5',
   md: 'w-6 h-4',
   lg: 'w-8 h-6',

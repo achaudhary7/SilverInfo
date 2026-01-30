@@ -11,22 +11,31 @@ export const revalidate = 600;
 // Page last updated date
 const LAST_UPDATED = "2026-01-23";
 
-export const metadata: Metadata = {
-  title: "Silver Capital Gains Tax Calculator India - STCG & LTCG",
-  description:
-    "Free capital gains tax calculator for silver in India. Calculate STCG and LTCG on silver investments, jewellery, and ETFs. Understand tax implications before selling.",
-  keywords: [
-    "silver capital gains tax india",
-    "silver tax calculator",
-    "LTCG on silver india",
-    "STCG on silver",
-    "silver jewellery tax",
-    "silver investment tax",
-  ],
-  alternates: {
-    canonical: "/capital-gains-tax-calculator",
-  },
-};
+// Dynamic metadata with live price
+export async function generateMetadata(): Promise<Metadata> {
+  const price = await getSilverPriceWithChange();
+  const pricePerGram = price?.pricePerGram?.toFixed(2) || "95.00";
+  
+  return {
+    title: `Silver Capital Gains Tax Calculator India | Rate ₹${pricePerGram}/g - STCG & LTCG - SilverInfo.in`,
+    description: `Free capital gains tax calculator for silver in India. Current rate: ₹${pricePerGram}/gram. Calculate STCG (slab rate) and LTCG (12.5% flat) on silver investments and jewellery.`,
+    keywords: [
+      "silver capital gains tax india",
+      "silver tax calculator",
+      "LTCG on silver india",
+      "STCG on silver",
+      "silver jewellery tax",
+      "silver investment tax",
+    ],
+    alternates: {
+      canonical: "/capital-gains-tax-calculator",
+    },
+    openGraph: {
+      title: `Silver Tax Calculator | ₹${pricePerGram}/g - STCG & LTCG India`,
+      description: `Calculate capital gains tax on silver at ₹${pricePerGram}/gram. LTCG 12.5% flat, STCG at slab rate.`,
+    },
+  };
+}
 
 const faqItems: FAQItem[] = [
   {
@@ -58,6 +67,7 @@ const faqItems: FAQItem[] = [
 
 export default async function CapitalGainsTaxCalculatorPage() {
   const price = await getSilverPriceWithChange();
+  const currentPrice = price?.pricePerGram ?? 100;
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://silverinfo.in" },
@@ -171,7 +181,7 @@ export default async function CapitalGainsTaxCalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Calculator - 2 columns on Desktop */}
               <div className="lg:col-span-2 space-y-6">
-                <CapitalGainsTaxCalculator currentPrice={price.pricePerGram} />
+                <CapitalGainsTaxCalculator currentPrice={currentPrice} />
                 
                 {/* Tax Summary */}
                 <div className="card p-6">
@@ -213,7 +223,7 @@ export default async function CapitalGainsTaxCalculatorPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Live Silver Rate */}
-                <LiveRateCard price={price} showLink={false} />
+                {price ? <LiveRateCard price={price} showLink={false} /> : null}
 
                 {/* Tax Info */}
                 <div className="card p-6">

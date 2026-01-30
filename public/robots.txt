@@ -9,5 +9,5 @@ Sitemap: https://silverinfo.in/sitemap.xml
 Sitemap: https://silverinfo.in/news-sitemap.xml
 Sitemap: https://silverinfo.in/image-sitemap.xml
 
-# Crawl-delay
-Crawl-delay: 1
+# Note: Removed Crawl-delay as Google ignores it and it may slow down
+# other search engines like Bing. Rely on server-side rate limiting instead.
