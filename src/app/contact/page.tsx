@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { generateBreadcrumbSchema } from "@/lib/schema";
+import ContactForm from "@/components/ContactForm";
 
-// Force static generation - this page rarely changes
-export const dynamic = "force-static";
-export const revalidate = 86400; // Revalidate once per day
+// Revalidate daily
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Contact Us - SilverInfo.in",
@@ -75,87 +75,7 @@ export default function ContactPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Contact Form */}
-            <div className="card p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Send us a Message
-              </h2>
-              <form className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent"
-                    placeholder="Your name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent"
-                    placeholder="your@email.com"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Subject
-                  </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent"
-                  >
-                    <option>General Inquiry</option>
-                    <option>Price Accuracy</option>
-                    <option>Technical Issue</option>
-                    <option>Partnership</option>
-                    <option>Advertising</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-transparent"
-                    placeholder="Your message..."
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-[#1e3a5f] text-white rounded-lg font-medium hover:bg-[#2c5282] transition-colors"
-                >
-                  Send Message
-                </button>
-              </form>
-            </div>
+            <ContactForm />
 
             {/* Contact Info */}
             <div className="space-y-6">
