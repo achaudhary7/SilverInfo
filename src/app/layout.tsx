@@ -92,6 +92,20 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  // Icons configuration for favicon (Next.js 14+ metadata API)
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "mask-icon", url: "/favicon.ico" },
+    ],
+  },
   // Google Search Console verification - Set NEXT_PUBLIC_GOOGLE_VERIFICATION in .env.local
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || undefined,
@@ -153,10 +167,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
 
-        {/* Favicon & PWA */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        {/* Favicon & PWA - Multiple formats for maximum compatibility */}
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <link rel="manifest" href="/manifest.json" />
         {/* theme-color is now set via viewport export above */}
