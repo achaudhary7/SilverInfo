@@ -173,6 +173,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
         <link rel="dns-prefetch" href="https://api.frankfurter.app" />
         
+        {/* Preconnect for Google AdSense - faster ad loading */}
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+        
         {/* Google Analytics 4 (gtag.js) - Deferred loading to reduce Edge Requests */}
         {/* Using afterInteractive strategy equivalent via defer */}
         <script
@@ -214,6 +220,15 @@ export default function RootLayout({
               });
             `,
           }}
+        />
+        
+        {/* Google AdSense - Auto Ads */}
+        {/* Place on every page for automatic ad placement */}
+        {/* Ref: https://support.google.com/adsense/answer/9274516 */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7457883797698050"
+          crossOrigin="anonymous"
         />
       </head>
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>

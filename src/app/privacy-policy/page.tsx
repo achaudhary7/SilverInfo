@@ -125,19 +125,55 @@ export default function PrivacyPolicyPage() {
               </p>
 
               <h2>5. Third-Party Services</h2>
-              <p>We may use third-party services that collect information:</p>
+              <p>We use the following third-party services that collect information:</p>
               <ul>
                 <li>
-                  <strong>Google Analytics</strong> - For website analytics
+                  <strong>Google Analytics</strong> - For website analytics and traffic analysis.
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f] ml-1">
+                    Google Privacy Policy →
+                  </a>
                 </li>
                 <li>
-                  <strong>Advertising Partners</strong> - For displaying ads
+                  <strong>Google AdSense</strong> - For displaying personalized advertisements. 
+                  Google uses cookies to serve ads based on your prior visits to this website 
+                  and other sites. You can opt out of personalized advertising by visiting{" "}
+                  <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f]">
+                    Google Ads Settings
+                  </a>.
+                </li>
+                <li>
+                  <strong>Third-Party Ad Networks</strong> - Some ads may be served by 
+                  third-party vendors who use cookies. You can opt out of third-party 
+                  vendor cookies by visiting{" "}
+                  <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f]">
+                    www.aboutads.info/choices
+                  </a>.
                 </li>
               </ul>
               <p>
                 These third parties have their own privacy policies governing data
-                collection.
+                collection. We encourage you to review their policies.
               </p>
+              
+              <h3>Opt-Out Options</h3>
+              <p>You can opt out of personalized advertising through:</p>
+              <ul>
+                <li>
+                  <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f]">
+                    Google Ads Settings
+                  </a> - Manage Google ad personalization
+                </li>
+                <li>
+                  <a href="https://optout.aboutads.info/" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f]">
+                    DAA Opt-Out
+                  </a> - Digital Advertising Alliance opt-out
+                </li>
+                <li>
+                  <a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f]">
+                    NAI Opt-Out
+                  </a> - Network Advertising Initiative opt-out
+                </li>
+              </ul>
 
               <h2>6. Data Security</h2>
               <p>
