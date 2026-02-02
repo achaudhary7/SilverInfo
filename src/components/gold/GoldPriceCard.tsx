@@ -28,20 +28,6 @@ import ShareButtons from "@/components/ui/ShareButtons";
 // HELPER FUNCTIONS
 // ============================================================================
 
-function formatHighLowTime(isoTimestamp: string): string {
-  try {
-    const date = new Date(isoTimestamp);
-    return date.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: "Asia/Kolkata",
-    });
-  } catch {
-    return "";
-  }
-}
-
 function getMCXMarketStatus(): { isOpen: boolean; status: string; nextChange: string } {
   const now = new Date();
   const istOffset = 5.5 * 60 * 60 * 1000;
@@ -260,93 +246,6 @@ export function GoldPriceCard({ initialPrice }: GoldPriceCardProps) {
           </p>
         </div>
       </div>
-      
-      {/* Today's High/Low Section */}
-      {(() => {
-        const hasRealTracking = price.todayHigh && price.todayLow && price.todayHigh > price.todayLow;
-        const displayHigh = hasRealTracking ? price.todayHigh : price.high24h;
-        const displayLow = hasRealTracking ? price.todayLow : price.low24h;
-        const highTime = hasRealTracking ? price.todayHighTime : undefined;
-        const lowTime = hasRealTracking ? price.todayLowTime : undefined;
-        const isEstimated = !hasRealTracking;
-
-        if (!displayHigh || !displayLow || displayHigh <= displayLow) {
-          return null;
-        }
-
-        const currentPrice = price.price24KPerGram;
-        const dayRange = displayHigh - displayLow;
-        const dayRangePercent = (dayRange / displayLow) * 100;
-        const positionInDayRange = ((currentPrice - displayLow) / dayRange) * 100;
-
-        return (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="grid grid-cols-2 gap-2">
-              {/* Today's High */}
-              <div className="rounded-lg p-2 sm:p-3 bg-green-50 border border-green-100">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] sm:text-xs font-medium text-green-700 flex items-center gap-1">
-                    📈 Today&apos;s High
-                    {isEstimated && <span className="text-[8px] text-green-500">~</span>}
-                  </span>
-                  {highTime && (
-                    <span className="text-[9px] text-green-600">{formatHighLowTime(highTime)}</span>
-                  )}
-                </div>
-                <p className="text-base sm:text-lg font-bold text-green-700">
-                  {formatIndianGoldPrice(displayHigh)}
-                </p>
-                <p className="text-[9px] sm:text-[10px] text-green-600">
-                  +₹{(displayHigh - currentPrice).toFixed(0)} from current
-                </p>
-              </div>
-              
-              {/* Today's Low */}
-              <div className="rounded-lg p-2 sm:p-3 bg-red-50 border border-red-100">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] sm:text-xs font-medium text-red-700 flex items-center gap-1">
-                    📉 Today&apos;s Low
-                    {isEstimated && <span className="text-[8px] text-red-500">~</span>}
-                  </span>
-                  {lowTime && (
-                    <span className="text-[9px] text-red-600">{formatHighLowTime(lowTime)}</span>
-                  )}
-                </div>
-                <p className="text-base sm:text-lg font-bold text-red-700">
-                  {formatIndianGoldPrice(displayLow)}
-                </p>
-                <p className="text-[9px] sm:text-[10px] text-red-600">
-                  +₹{(currentPrice - displayLow).toFixed(0)} from current
-                </p>
-              </div>
-            </div>
-            
-            {/* Day Range Bar */}
-            <div className="mt-3 px-1">
-              <div className="flex justify-between text-[10px] mb-1 text-gray-500">
-                <span>Range: {formatIndianGoldPrice(dayRange)} ({dayRangePercent.toFixed(2)}%)</span>
-                <span>{positionInDayRange.toFixed(0)}% up</span>
-              </div>
-              <div className="relative h-1.5 rounded-full overflow-hidden bg-gray-200">
-                <div 
-                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full transform -translate-x-1/2 z-10 bg-amber-500 shadow-md"
-                  style={{
-                    left: `${Math.max(5, Math.min(95, positionInDayRange))}%`,
-                  }}
-                />
-                <div 
-                  className="absolute inset-0 rounded-full"
-                  style={{ background: "linear-gradient(to right, #fca5a5, #fde68a, #86efac)", opacity: 0.7 }}
-                />
-              </div>
-              <div className="flex justify-between text-[9px] text-gray-400 mt-1">
-                <span>Low ₹{displayLow.toFixed(0)}</span>
-                <span>High ₹{displayHigh.toFixed(0)}</span>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
       
       {/* Popular Cities Quick Links */}
       <div className="mt-4 pt-3 border-t border-gray-100">

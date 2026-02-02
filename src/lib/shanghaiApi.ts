@@ -68,6 +68,11 @@ export interface ShanghaiSilverPrice {
   // 24h change (estimated from COMEX)
   change24hPercent: number;
   change24hCny: number;
+  
+  // Estimation disclaimer
+  isEstimate: boolean;       // Always true - this is calculated, not live SGE
+  disclaimer: string;        // Clear disclaimer text
+  officialSgeUrl: string;    // Link to official SGE for verification
 }
 
 export interface ShanghaiHistoricalPrice {
@@ -85,16 +90,27 @@ const OZ_TO_GRAM = 31.1035;        // Troy ounce to grams
 const KG_TO_OZ = 32.1507;          // Kilograms to troy ounces
 const GRAM_PER_KG = 1000;
 
-// Shanghai premium over COMEX (typically 10-15% in current market - Jan 2026)
-// Premium is elevated due to:
-// - Strong Chinese industrial demand (solar, EVs)
-// - Import duties (0-11% depending on origin) + VAT (13%)
-// - Supply constraints, export restrictions, and arbitrage
-// Historical norm was 2-5%, but current market shows 10-15%+
-// NOTE: In extreme conditions (late 2025 export curbs), premium can reach 30%+
-// IMPORTANT: This is an ESTIMATE - actual SGE Ag(T+D) prices may differ
-const SHANGHAI_PREMIUM_BASE = 0.12;   // 12% base premium (current market estimate)
-const SHANGHAI_PREMIUM_VAR = 0.02;    // ±2% variation (actual range can be wider)
+// ============================================================================
+// SHANGHAI PREMIUM CALCULATION
+// ============================================================================
+// IMPORTANT: These are ESTIMATES based on historical patterns.
+// Actual SGE Ag(T+D) prices may differ significantly.
+// Official source: https://en.sge.com.cn/data_SilverBenchmarkPrice
+//
+// Premium factors:
+// - Chinese import duties (0-11% depending on origin)
+// - VAT (13% on physical delivery)
+// - Industrial demand (solar, EVs)
+// - Supply constraints
+//
+// Historical premium ranges:
+// - Normal market: 2-8%
+// - High demand: 8-15%
+// - Extreme (export curbs): 15-30%+
+//
+// We use a CONSERVATIVE estimate to avoid overstatement
+const SHANGHAI_PREMIUM_BASE = 0.04;   // 4% base premium (conservative estimate)
+const SHANGHAI_PREMIUM_VAR = 0.02;    // ±2% variation based on time of day
 
 // SGE (Shanghai Gold Exchange) trading hours (Beijing Time, UTC+8)
 // Day Session: 09:00 - 11:30, 13:30 - 15:30
@@ -156,14 +172,42 @@ function getSgeMarketStatus(): { status: 'open' | 'closed' | 'pre-market'; sessi
 
 /**
  * Calculate dynamic Shanghai premium based on market conditions
- * In reality, this would come from actual SGE data
- * We simulate realistic premium variation
+ * 
+ * IMPORTANT: This is an ESTIMATE, not actual SGE data.
+ * Premium varies based on:
+ * - Time of day (higher during Asian trading hours)
+ * - Day of week (slightly lower on weekends when markets closed)
+ * - Market conditions (we use conservative estimates)
+ * 
+ * For official SGE prices, visit: https://en.sge.com.cn/data_SilverBenchmarkPrice
  */
 function calculateShanghaiPremium(): number {
-  // Base premium + time-based variation
-  const hour = new Date().getHours();
-  const variation = Math.sin(hour * 0.5) * SHANGHAI_PREMIUM_VAR;
-  return SHANGHAI_PREMIUM_BASE + variation;
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  const day = now.getDay();
+  
+  // SGE trading hours in UTC: ~1:00-9:30 (day sessions), ~13:00-18:30 (night session)
+  const isAsianTradingHours = (utcHour >= 1 && utcHour <= 10) || (utcHour >= 13 && utcHour <= 19);
+  
+  // Base premium adjustment
+  let premium = SHANGHAI_PREMIUM_BASE;
+  
+  // Slightly higher premium during Asian hours (more demand)
+  if (isAsianTradingHours) {
+    premium += 0.01; // +1% during Asian hours
+  }
+  
+  // Weekend adjustment (markets closed, use average)
+  if (day === 0 || day === 6) {
+    premium = SHANGHAI_PREMIUM_BASE; // Use base on weekends
+  }
+  
+  // Small time-based variation for realism (±1%)
+  const hourVariation = Math.sin(utcHour * 0.3) * 0.01;
+  premium += hourVariation;
+  
+  // Ensure premium stays within reasonable bounds (2-8%)
+  return Math.max(0.02, Math.min(0.08, premium));
 }
 
 // ============================================================================
@@ -442,11 +486,16 @@ async function _calculateShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
       marketStatus: marketInfo.status,
       marketSession: marketInfo.session,
       timestamp: new Date().toISOString(),
-      source: 'COMEX API + Exchange Rate APIs', // All data from real APIs
+      source: 'Calculated from COMEX + estimated premium',
       
       // 24h change (from COMEX data)
       change24hPercent: Math.round(change24hFromApi * 100) / 100,
       change24hCny: Math.round(pricePerKgCny * change24hFromApi / 100),
+      
+      // Estimation disclaimer - IMPORTANT for transparency
+      isEstimate: true,
+      disclaimer: 'Estimated price based on COMEX + calculated premium. Actual SGE Ag(T+D) prices may differ.',
+      officialSgeUrl: 'https://en.sge.com.cn/data_SilverBenchmarkPrice',
     };
   } catch (error) {
     console.error("Error calculating Shanghai silver price:", error);

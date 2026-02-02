@@ -36,7 +36,7 @@
 import { Metadata } from "next";
 import { getShanghaiSilverPrice, getShanghaiHistoricalPrices, formatCnyPrice, formatUsdPrice } from "@/lib/shanghaiApi";
 import ShanghaiPriceCard from "@/components/shanghai/ShanghaiPriceCard";
-import { USFlag, ChinaFlag, UKFlag, IndiaFlag, AustraliaFlag, GermanyFlag } from "@/components/Flags";
+import { USFlag, ChinaFlag, UKFlag, IndiaFlag, AustraliaFlag } from "@/components/Flags";
 import { LiveTimeDisplay, LiveDateDisplay } from "@/components/shanghai/LiveTimeDisplay";
 import ShareButtons from "@/components/ui/ShareButtons";
 import Link from "next/link";
@@ -55,15 +55,17 @@ export async function generateMetadata(): Promise<Metadata> {
   
   // Fetch real price for dynamic metadata
   const price = await getShanghaiSilverPrice();
-  const priceUsd = price?.pricePerOzUsd?.toFixed(0) || "115";
-  const priceCny = price?.pricePerKgCny?.toFixed(0) || "27000";
-  const premium = price?.premiumPercent?.toFixed(0) || "12";
+  const priceUsd = price?.pricePerOzUsd?.toFixed(0) || "102";
+  const priceCny = price?.pricePerKgCny?.toFixed(0) || "22000";
+  const premium = price?.premiumPercent?.toFixed(0) || "4";
+  const comexUsd = price?.comexUsd?.toFixed(0) || "98";
+  const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   
   return {
-    // Title optimized for CTR - "vs COMEX" queries have 46% CTR in GSC
-    title: `Shanghai Silver Price Today $${priceUsd}/oz | SGE vs COMEX +${premium}% Premium - SilverInfo.in`,
-    // Description with VAT info (77+ impressions), prices, and clear CTA
-    description: `Live Shanghai silver price: ¥${priceCny}/kg ($${priceUsd}/oz). SGE vs COMEX premium +${premium}%. ✓ Prices exclude 13% VAT. ✓ Updates every 30 sec. ✓ CNY, USD & INR. Compare now →`,
+    // Title: Answer-first with price and date, optimized for CTR
+    title: `Shanghai Silver Price Today ${todayStr} - $${priceUsd}/oz | +${premium}% Premium`,
+    // Description: Answer-first, unique value, clear CTA
+    description: `Shanghai Silver: $${priceUsd}/oz (¥${priceCny}/kg) vs COMEX $${comexUsd}/oz. Premium +${premium}%. Live 60s updates, 7-day chart, trading hours tracker. Excludes 13% VAT. Compare SGE vs COMEX now.`,
     keywords: [
       // Primary keywords
       "shanghai silver price",
@@ -135,9 +137,14 @@ export async function generateMetadata(): Promise<Metadata> {
       // German keywords (26 impressions!)
       "silberpreis shanghai live",
       "shanghai gold exchange silberpreis",
+      "silberpreis shanghai in dollar",
+      "silberpreis shanghai",
+      // Polish keywords (38+ impressions)
+      "kurs srebra szanghaj",
       // Common misspellings (captures typos)
       "sangai silver price",
       "sangai silver rate",
+      "singhai silver price",
       // More variations
       "shanghai silver price per ounce in usd",
       "shanghai silver price per gram",
@@ -147,10 +154,30 @@ export async function generateMetadata(): Promise<Metadata> {
       "sge silver price today usd",
       "shfe silver price today",
       "shanghai silver premium over comex",
+      // High-impression keywords
+      "shanghai silver price live",
+      "shanghai silver spot price",
+      "shanghai silver premium",
+      "shanghai silver rate",
+      "shanghai silver price right now",
+      "shanghai spot silver price in usd",
+      "shanghai silver price in indian rupees",
+      "shanghai physical silver price",
+      "comex vs shanghai silver price",
+      "shanghai vs comex silver price",
+      "shanghai comex silver price",
+      "shanghai silver vs comex",
+      "silver rate in shanghai",
+      "silver rate in shanghai exchange",
+      "silver price in shanghai exchange",
+      "shanghai exchange silver price today",
+      "shanghai live silver price today",
+      "shanghai silver price live usd",
+      "china silver price today shanghai premium",
     ],
     openGraph: {
-      title: `Shanghai Silver Price $${priceUsd}/oz | SGE vs COMEX +${premium}% Premium`,
-      description: `Live Shanghai silver: ¥${priceCny}/kg ($${priceUsd}/oz). Compare SGE vs COMEX premium +${premium}%. VAT excluded. Real-time CNY, USD & INR prices.`,
+      title: `Shanghai Silver $${priceUsd}/oz | COMEX $${comexUsd} +${premium}% Premium`,
+      description: `Shanghai Silver: $${priceUsd}/oz vs COMEX $${comexUsd}/oz (+${premium}% premium). Live prices, 7-day chart, trading hours. VAT excluded.`,
       type: "website",
       locale: "en_US",
       siteName: "SilverInfo.in",
@@ -159,14 +186,14 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "/og-image.png",
           width: 1200,
           height: 630,
-          alt: `Shanghai Silver Price $${priceUsd}/oz vs COMEX - Live SGE Rates ${dateString}`,
+          alt: `Shanghai Silver Price $${priceUsd}/oz vs COMEX $${comexUsd}/oz - ${dateString}`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `Shanghai Silver $${priceUsd}/oz | +${premium}% vs COMEX 📈`,
-      description: `Live SGE price: ¥${priceCny}/kg. Compare Shanghai vs COMEX premium. VAT excluded. Updates every 30 sec.`,
+      title: `Shanghai Silver $${priceUsd}/oz vs COMEX $${comexUsd}/oz`,
+      description: `Premium +${premium}%. Live SGE price: ¥${priceCny}/kg. Compare with COMEX. 60s updates.`,
     },
     alternates: {
       canonical: "/shanghai-silver-price",
@@ -235,7 +262,7 @@ const faqItems: FAQItem[] = [
   },
   {
     question: "How accurate is Shanghai silver price data on SilverInfo?",
-    answer: "Our Shanghai silver prices are sourced from official Shanghai Gold Exchange (SGE) data feeds and updated every 30 seconds during market hours. Prices are calculated using real-time COMEX futures + live USD/CNY exchange rates + historical SGE premium analysis (8-12%). 100% API-driven with no manual adjustments."
+    answer: "Our Shanghai silver prices are ESTIMATES calculated from COMEX futures + live USD/CNY exchange rates + an estimated premium (2-8%). For official SGE Ag(T+D) prices, visit en.sge.com.cn. We update every 60 seconds. 100% API-driven with no manual adjustments."
   },
   {
     question: "Can I buy silver at Shanghai price in India or USA?",
@@ -271,7 +298,7 @@ const faqItems: FAQItem[] = [
   },
   {
     question: "How is Shanghai silver price calculated?",
-    answer: "Shanghai silver price = (COMEX Silver USD/oz × USD/CNY exchange rate × 32.1507 oz/kg) × (1 + Shanghai Premium). The premium typically ranges from 10-15% above COMEX, but can reach 20-30%+ during high demand periods. This is due to Chinese industrial demand, import duties (0-11%), VAT (13%), and supply constraints."
+    answer: "Shanghai silver price = (COMEX Silver USD/oz × USD/CNY exchange rate × 32.1507 oz/kg) × (1 + Shanghai Premium). We estimate the premium at 2-8% based on market conditions. Actual SGE premium can vary (historical range: 2-30%+) based on Chinese demand, import duties, and VAT. Visit en.sge.com.cn for official prices."
   },
   {
     question: "What is the China silver price today in yuan?",
@@ -287,7 +314,7 @@ const faqItems: FAQItem[] = [
   },
   {
     question: "Shanghai silver price vs London silver price - what's the difference?",
-    answer: "London (LBMA) sets the global silver benchmark in USD/oz, while Shanghai (SGE) trades in CNY/kg with a premium. London is for international wholesale, Shanghai serves Chinese domestic market. The Shanghai premium (typically 10-15%, but can reach 30%+) reflects Chinese demand dynamics and import costs."
+    answer: "London (LBMA) sets the global silver benchmark in USD/oz, while Shanghai (SGE) trades in CNY/kg with a premium. London is for international wholesale, Shanghai serves Chinese domestic market. The Shanghai premium (typically 2-8%, but can reach 30%+ during high demand) reflects Chinese demand dynamics and import costs."
   },
   {
     question: "Can foreigners buy silver on Shanghai Gold Exchange?",
@@ -554,1442 +581,824 @@ export default async function ShanghaiSilverPricePage() {
       />
 
       <div className="min-h-screen">
-        {/* Hero Section - Matching Home Page Style */}
-        <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-8 lg:py-12">
+        {/* Hero Section - Compact for more above-fold content */}
+        <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-3 sm:py-4 lg:py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Header - Above the grid */}
-            <div className="mb-6 sm:mb-8">
-              {/* Status Badges - Matching Home Page */}
-              <div className="mb-3 sm:mb-4 flex flex-wrap gap-2 items-center">
-                {/* Live Status Badge */}
-                <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-xs font-medium bg-green-100 text-green-800">
-                  <span className="relative flex h-1.5 w-1.5 mr-1.5">
+            {/* Header - Compact */}
+            <div className="mb-3 sm:mb-4">
+              {/* Status Badges + Title in same row on desktop */}
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900" suppressHydrationWarning>
+                  Shanghai Silver Price Today - {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </h1>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
+                  <span className="relative flex h-1.5 w-1.5 mr-1">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
                   </span>
-                  Live • 30s Refresh
+                  Live
                 </span>
-                
-                {/* SGE + COMEX Badge */}
-                <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-xs font-medium bg-blue-100 text-blue-800">
-                  SGE + COMEX
-                </span>
-                
-                {/* Market Status Badges */}
-                <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${marketStatus.isOpen ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
+                <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${marketStatus.isOpen ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
                   🇨🇳 SGE {marketStatus.isOpen ? 'Open' : 'Closed'}
                 </span>
-                <span className={`hidden lg:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${comexStatus.isOpen ? 'bg-cyan-100 text-cyan-800' : 'bg-gray-100 text-gray-600'}`}>
+                <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${comexStatus.isOpen ? 'bg-cyan-100 text-cyan-800' : 'bg-gray-100 text-gray-600'}`}>
                   🇺🇸 COMEX {comexStatus.isOpen ? 'Open' : 'Closed'}
                 </span>
               </div>
               
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3" suppressHydrationWarning>
-                Shanghai Silver Price Today - {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </h1>
-              <p className="text-sm sm:text-lg text-[#1e3a5f] font-semibold mb-1 sm:mb-2">
-                Calculated, Not Copied.
-              </p>
-              <p className="text-xs sm:text-base text-gray-600 max-w-3xl mb-2 sm:mb-3">
-                Live SGE silver rate in CNY &amp; USD • Shanghai vs COMEX premium • Updated every 30 seconds
-              </p>
-              <p className="text-xs sm:text-xs text-gray-500 mb-1">
-                🏆 Asia&apos;s Most Comprehensive Shanghai Silver Tracker
-              </p>
-              <p className="text-xs sm:text-xs text-gray-400">
-                Current SGE/SHFE silver price (CNY per kg): <span className="font-semibold text-amber-700">¥{price?.pricePerKgCny?.toLocaleString() || "29,110"}</span> • 
-                <Link href="/how-we-calculate" className="text-[#1e3a5f] font-medium hover:underline ml-1">
-                  See Our Formula →
-                </Link>
+              <p className="text-xs sm:text-sm text-gray-600">
+                <span className="text-[#1e3a5f] font-semibold">Calculated, Not Copied.</span> Live SGE rate • Shanghai vs COMEX premium • 30s updates • 
+                <span className="font-semibold text-amber-700">¥{price?.pricePerKgCny?.toLocaleString()}/kg</span>
               </p>
             </div>
 
-            {/* Hero Grid - 2 columns like Home Page */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              {/* Left: Main Price Comparison Card */}
-              <div className="card p-0 overflow-visible" id="comparison">
-              {/* Header */}
-              <div className="px-4 py-3 border-b border-gray-300 bg-gray-50">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            {/* Hero Section - Two Column Layout (side by side on md+) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+              {/* Left: Shanghai vs COMEX Comparison */}
+              <div className="card p-0 overflow-visible flex flex-col" id="comparison">
+              {/* Header - Matching ShanghaiPriceCard style */}
+              <div 
+                className="px-4 py-3 flex items-center justify-between rounded-t-lg"
+                style={{ background: "linear-gradient(90deg, #1e293b 0%, #334155 100%)" }}
+              >
+                <div className="flex items-center gap-2">
+                  {/* Both flags for comparison */}
+                  <div className="flex -space-x-1">
+                    <USFlag size="sm" />
+                    <ChinaFlag size="sm" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-white">Shanghai vs COMEX Silver</h2>
+                    <p className="text-[11px] text-white/70">Real-time comparison • Premium tracker</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  {/* Market Status Badges */}
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${marketStatus.isOpen ? 'bg-emerald-500/90 text-white' : 'bg-white/30 text-white'}`}>
+                    SGE {marketStatus.isOpen ? '●' : '○'}
                   </span>
-                  <h2 className="text-sm font-bold text-gray-900">
-                    Shanghai vs COMEX Silver (Live)
-                  </h2>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${comexStatus.isOpen ? 'bg-emerald-500/90 text-white' : 'bg-white/30 text-white'}`}>
+                    CMX {comexStatus.isOpen ? '●' : '○'}
+                  </span>
+                  
+                  {/* Live indicator */}
+                  <span className="px-2 py-0.5 rounded text-[11px] font-medium flex items-center gap-1 bg-white/20 text-white">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400"></span>
+                    </span>
+                    LIVE
+                  </span>
                 </div>
               </div>
               
-              <div className="p-3 sm:p-4">
-                {/* Main Comparison Grid */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 items-stretch">
-                  {/* COMEX Card - Lighter border */}
-                  <div className="group relative text-center p-2 sm:p-3 rounded-xl bg-cyan-50 border border-cyan-100 hover:border-cyan-200 hover:bg-cyan-100 transition-all cursor-help">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <USFlag size="sm" />
-                      <span className="text-xs text-cyan-700 font-semibold">COMEX</span>
+              <div className="p-4 flex-1 flex flex-col">
+                {/* Main Comparison Grid - Cleaner Style */}
+                <div className="grid grid-cols-3 gap-3 items-stretch">
+                  {/* COMEX Card */}
+                  <div className="group relative text-center p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+                    <div className="flex items-center justify-center gap-1 mb-2">
+                      <span className="text-lg">🇺🇸</span>
+                      <span className="text-sm font-semibold text-gray-800">COMEX</span>
                     </div>
-                    <div className="text-xl sm:text-2xl font-bold text-gray-900">
-                      ${price?.comexUsd?.toFixed(2) || "116.84"}
+                    <div className="text-2xl font-bold text-blue-700">
+                      ${price?.comexUsd?.toFixed(2) || "77.11"}
                     </div>
                     <div className="text-xs text-gray-500">/oz</div>
-                    {price?.change24hPercent !== undefined && price?.change24hPercent !== 0 ? (
-                      <div className={`text-xs font-medium ${price.change24hPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {price?.change24hPercent !== undefined && Math.abs(price.change24hPercent) > 0.01 ? (
+                      <div className={`text-xs font-medium mt-1 ${price.change24hPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {price.change24hPercent >= 0 ? '▲' : '▼'} {Math.abs(price.change24hPercent).toFixed(2)}%
                       </div>
                     ) : null}
-                    <div className={`text-xs px-2 py-0.5 rounded-full inline-block mt-1 ${comexStatus.isOpen ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-300'}`}>
-                      {comexStatus.isOpen ? '● Open' : '○ Closed'}
-                    </div>
-                    {/* COMEX Tooltip - Appears below */}
+                    <p className="text-xs text-gray-500 mt-2">Global benchmark (NY)</p>
+                    {/* Tooltip */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-52 pointer-events-none">
                       <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900"></span>
-                        <p className="font-bold text-cyan-400 mb-1">🇺🇸 COMEX Silver (New York)</p>
-                        <p className="text-xs">Global silver benchmark from CME Group. Most liquid futures contract. Trading Sunday 6PM - Friday 5PM ET.</p>
+                        <p className="font-bold text-blue-400 mb-1">🇺🇸 COMEX Silver</p>
+                        <p>Global benchmark from CME Group. Most liquid futures contract.</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Premium Arrow - Lighter border */}
-                  <div className="group relative flex flex-col items-center justify-center p-2 rounded-xl bg-green-50 border border-green-100 hover:border-green-200 hover:bg-green-100 transition-all cursor-help">
-                    <div className="text-xl sm:text-2xl text-green-600">→</div>
-                    <div className="text-lg sm:text-xl font-bold text-green-700">
-                      +{price?.premiumPercent?.toFixed(1) || "12.4"}%
+                  {/* Premium Arrow */}
+                  <div className="group relative flex flex-col items-center justify-center p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
+                    <div className="text-2xl text-green-600 mb-1">→</div>
+                    <div className="text-xl font-bold text-green-700">
+                      +{price?.premiumPercent?.toFixed(1) || "5.9"}%
                     </div>
-                    <div className="text-xs sm:text-xs text-green-600 font-medium">
-                      +${price?.premiumUsd?.toFixed(2) || "14.52"}/oz
+                    <div className="text-xs text-green-600 font-medium">
+                      +${price?.premiumUsd?.toFixed(2) || "4.57"}/oz
                     </div>
-                    <div className="text-xs text-gray-500">premium</div>
-                    {/* Premium Tooltip - Appears to the right */}
-                    <div className="absolute top-0 left-full ml-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-48 pointer-events-none">
+                    <p className="text-xs text-gray-500 mt-1">Shanghai Premium</p>
+                    {/* Tooltip */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-48 pointer-events-none">
                       <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                        <span className="absolute top-3 right-full border-4 border-transparent border-r-gray-900"></span>
-                        <p className="font-bold text-green-400 mb-1">📈 Shanghai Premium</p>
-                        <p className="text-xs mb-1">Shanghai trades HIGHER due to:</p>
-                        <ul className="text-xs list-disc list-inside space-y-0.5">
-                          <li>Import duties (0-11%)</li>
-                          <li>13% VAT on silver</li>
-                          <li>Strong demand</li>
-                        </ul>
-                        <p className="text-xs mt-1 text-gray-400">Premium: 10-30%+</p>
+                        <p className="font-bold text-green-400 mb-1">📈 Premium Factors</p>
+                        <p>Import duties + 13% VAT + strong demand = 2-8% premium</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Shanghai Card - Lighter border */}
-                  <div className="group relative text-center p-2 sm:p-3 rounded-xl bg-rose-50 border border-rose-100 hover:border-rose-200 hover:bg-rose-100 transition-all cursor-help">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <ChinaFlag size="sm" />
-                      <span className="text-xs text-rose-700 font-semibold">Shanghai</span>
+                  {/* Shanghai Card */}
+                  <div className="group relative text-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <div className="flex items-center justify-center gap-1 mb-2">
+                      <span className="text-lg">🇨🇳</span>
+                      <span className="text-sm font-semibold text-gray-800">Shanghai</span>
                     </div>
-                    <div className="text-xl sm:text-2xl font-bold text-gray-900">
-                      ${price?.pricePerOzUsd?.toFixed(2) || "131.36"}
+                    <div className="text-2xl font-bold text-red-700">
+                      ${price?.pricePerOzUsd?.toFixed(2) || "81.68"}
                     </div>
                     <div className="text-xs text-gray-500">/oz</div>
-                    <div className={`text-xs px-2 py-0.5 rounded-full inline-block mt-1 ${marketStatus.isOpen ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-300'}`}>
-                      {marketStatus.isOpen ? '● Open' : '○ Closed'}
-                    </div>
-                    {/* Shanghai Tooltip - Appears to the left (since it's on right edge) */}
-                    <div className="absolute top-0 right-full mr-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-48 pointer-events-none">
+                    <p className="text-xs text-gray-500 mt-2">+{price?.premiumPercent?.toFixed(0) || "6"}% premium (SGE)</p>
+                    {/* Tooltip */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-48 pointer-events-none">
                       <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                        <span className="absolute top-3 left-full border-4 border-transparent border-l-gray-900"></span>
-                        <p className="font-bold text-rose-400 mb-1">🇨🇳 Shanghai SGE</p>
-                        <p className="text-xs">Calculated from COMEX + premium. Ag(T+D) contract.</p>
-                        <p className="text-xs mt-1 text-gray-400">Note: Estimate, not live SGE.</p>
+                        <p className="font-bold text-red-400 mb-1">🇨🇳 Shanghai SGE</p>
+                        <p>Calculated from COMEX + estimated premium. Ag(T+D) contract.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Live Shanghai Prices Section */}
-                <div className="mt-3 pt-3 border-t border-gray-300">
-                  {/* Section Header */}
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                    </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Multi-Currency Prices</span>
-                  </div>
-                  
-                  {/* Stats Grid - With flag components and fixed tooltips */}
-                  <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
-                    {/* CNY/kg - Amber accent */}
-                    <div className="group relative rounded-lg p-1.5 sm:p-2 bg-amber-50 border border-amber-100 hover:border-amber-200 hover:bg-amber-100 transition-all cursor-help">
-                      <div className="flex items-center justify-center gap-1 mb-0.5">
-                        <ChinaFlag size="xs" />
-                        <span className="text-[11px] sm:text-xs uppercase font-semibold tracking-wide text-amber-700">CNY/kg</span>
-                      </div>
-                      <p className="text-sm sm:text-base font-bold text-amber-900">¥{price?.pricePerKgCny?.toFixed(0) || "29,335"}</p>
-                      {/* Tooltip - Appears below */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-44 sm:w-48 pointer-events-none">
-                        <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900"></span>
-                          <p className="font-bold text-amber-400 mb-1">SGE Ag(T+D) Price</p>
-                          <p>Shanghai Gold Exchange silver in Chinese Yuan per kilogram. China&apos;s benchmark.</p>
-                        </div>
-                      </div>
+                {/* Key Prices Summary - Cleaner */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="grid grid-cols-4 gap-2 text-center">
+                    <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-500">CNY/kg</p>
+                      <p className="text-sm font-bold text-gray-800">¥{price?.pricePerKgCny?.toLocaleString() || "22,000"}</p>
                     </div>
-                    
-                    {/* USD/g - Green accent */}
-                    <div className="group relative rounded-lg p-1.5 sm:p-2 bg-green-50 border border-green-100 hover:border-green-200 hover:bg-green-100 transition-all cursor-help">
-                      <div className="flex items-center justify-center gap-1 mb-0.5">
-                        <USFlag size="xs" />
-                        <span className="text-[11px] sm:text-xs uppercase font-semibold tracking-wide text-green-700">USD/g</span>
-                      </div>
-                      <p className="text-sm sm:text-base font-bold text-green-900">${price?.pricePerGramUsd?.toFixed(2) || "4.22"}</p>
-                      {/* Tooltip - Appears below */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-44 sm:w-48 pointer-events-none">
-                        <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900"></span>
-                          <p className="font-bold text-green-400 mb-1">USD Price per Gram</p>
-                          <p>Shanghai silver in US Dollars per gram for international comparison.</p>
-                        </div>
-                      </div>
+                    <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-500">USD/g</p>
+                      <p className="text-sm font-bold text-gray-800">${price?.pricePerGramUsd?.toFixed(2) || "2.63"}</p>
                     </div>
-                    
-                    {/* INR/g - Orange accent */}
-                    <div className="group relative rounded-lg p-1.5 sm:p-2 bg-orange-50 border border-orange-100 hover:border-orange-200 hover:bg-orange-100 transition-all cursor-help">
-                      <div className="flex items-center justify-center gap-1 mb-0.5">
-                        <IndiaFlag size="xs" />
-                        <span className="text-[11px] sm:text-xs uppercase font-semibold tracking-wide text-orange-700">INR/g</span>
-                      </div>
-                      <p className="text-sm sm:text-base font-bold text-orange-900">₹{price?.pricePerGramInr?.toFixed(0) || "388"}</p>
-                      {/* Tooltip - Appears to the left */}
-                      <div className="absolute top-0 right-full mr-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-44 pointer-events-none">
-                        <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                          <span className="absolute top-2 left-full border-4 border-transparent border-l-gray-900"></span>
-                          <p className="font-bold text-orange-400 mb-1">Shanghai in INR</p>
-                          <p>LOWER than India market - excludes duty (10%) + GST (3%).</p>
-                        </div>
-                      </div>
+                    <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-500">INR/g</p>
+                      <p className="text-sm font-bold text-gray-800">₹{price?.pricePerGramInr?.toFixed(0) || "241"}</p>
                     </div>
-                    
-                    {/* USD/CNY - Blue accent */}
-                    <div className="group relative rounded-lg p-1.5 sm:p-2 bg-blue-50 border border-blue-100 hover:border-blue-200 hover:bg-blue-100 transition-all cursor-help">
-                      <div className="flex items-center justify-center gap-1 mb-0.5">
-                        <span className="text-xs">💱</span>
-                        <span className="text-[11px] sm:text-xs uppercase font-semibold tracking-wide text-blue-700">USD/CNY</span>
-                      </div>
-                      <p className="text-sm sm:text-base font-bold text-blue-900">{price?.usdCny?.toFixed(2) || "6.95"}</p>
-                      {/* Tooltip - Appears to the left (since it's on right edge) */}
-                      <div className="absolute top-0 right-full mr-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-40 pointer-events-none">
-                        <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
-                          <span className="absolute top-2 left-full border-4 border-transparent border-l-gray-900"></span>
-                          <p className="font-bold text-blue-400 mb-1">Exchange Rate</p>
-                          <p>USD to CNY rate for conversion.</p>
-                        </div>
-                      </div>
+                    <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-xs text-gray-500">USD/CNY</p>
+                      <p className="text-sm font-bold text-blue-700">{price?.usdCny?.toFixed(2) || "7.25"}</p>
                     </div>
                   </div>
-                  
                 </div>
                 
-                {/* Share Buttons - Compact icons only */}
-                <div className="mt-3 pt-3 border-t border-gray-300">
+                {/* Important Disclaimer Banner */}
+                <div className="mt-3 p-2 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-[11px] text-amber-800 text-center">
+                    <span className="font-semibold">⚠️ Estimated Price:</span> Calculated from COMEX + {price?.premiumPercent?.toFixed(0) || "4"}% premium. 
+                    <a 
+                      href="https://en.sge.com.cn/data_SilverBenchmarkPrice" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="font-medium underline hover:text-amber-900 ml-1"
+                    >
+                      Official SGE prices →
+                    </a>
+                  </p>
+                </div>
+                
+                {/* Share Buttons - Compact (mt-auto pushes to bottom) */}
+                <div className="mt-auto pt-3 border-t border-gray-200">
                   <p className="text-xs text-gray-400 mb-2 text-center">Share:</p>
                   <ShareButtons 
                     url="https://silverinfo.in/shanghai-silver-price" 
-                    title={`🇨🇳 Shanghai Silver: $${price?.pricePerOzUsd?.toFixed(2) || "131"}/oz (+${price?.premiumPercent?.toFixed(1) || "12"}% premium) | Live rates at SilverInfo.in`}
+                    title={`Shanghai Silver: $${price?.pricePerOzUsd?.toFixed(2) || "102"}/oz (+${price?.premiumPercent?.toFixed(1) || "4"}% vs COMEX) | SilverInfo.in`}
                     variant="light"
                     size="compact"
                   />
                 </div>
               </div>
-            </div>
-              
-              {/* Right: Quick Links Card */}
-              <div className="card p-4">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">🔗 Quick Navigation</h2>
-                <div className="grid grid-cols-2 gap-2">
-                  <a href="#live-price" className="flex items-center gap-2 p-2 rounded bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <span>💰</span>
-                    <span className="text-xs text-gray-700">Live Price Card</span>
-                  </a>
-                  <a href="#historical" className="flex items-center gap-2 p-2 rounded bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <span>📈</span>
-                    <span className="text-xs text-gray-700">7-Day Chart</span>
-                  </a>
-                  <a href="#trading-hours" className="flex items-center gap-2 p-2 rounded bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <span>⏰</span>
-                    <span className="text-xs text-gray-700">Trading Hours</span>
-                  </a>
-                  <a href="#faq" className="flex items-center gap-2 p-2 rounded bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <span>❓</span>
-                    <span className="text-xs text-gray-700">FAQ</span>
-                  </a>
-                </div>
-                <div className="mt-3 pt-3 border-t border-gray-300">
-                  <p className="text-xs text-gray-500 text-center" suppressHydrationWarning>
-                    {currentDate}
-                  </p>
-                </div>
               </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Features Bar - Matching Home Page */}
-        <section className="bg-[#1e3a5f] py-3 sm:py-4 hidden sm:block">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-center text-white">
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                <span>🇨🇳</span>
-                <span className="text-xs sm:text-sm">Shanghai SGE</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                <span>🇺🇸</span>
-                <span className="text-xs sm:text-sm">COMEX Comparison</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                <span>📊</span>
-                <span className="text-xs sm:text-sm">Premium Tracker</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                <span>💱</span>
-                <span className="text-xs sm:text-sm">Multi-Currency</span>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Main Content Section */}
-        <section className="py-6 sm:py-8 lg:py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            
-            {/* Jump Links - Matching Home Page Style */}
-            <nav className="flex flex-wrap gap-2 mb-6 p-3 bg-gray-50 rounded-lg" aria-label="Jump to section">
-              <span className="text-xs text-gray-500 font-medium self-center">Jump to:</span>
-              <a href="#us-investors" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">🇺🇸 US Investors</a>
-              <a href="#india-investors" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">🇮🇳 India</a>
-              <a href="#vat-tax" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">VAT/Tax</a>
-              <a href="#live-price" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">Live Price</a>
-              <a href="#historical" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">7-Day Chart</a>
-              <a href="#converter" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">Converter</a>
-              <a href="#faq" className="text-xs text-[#1e3a5f] hover:underline px-2 py-1 bg-white rounded border border-gray-300 hover:border-[#1e3a5f] transition-colors">FAQ</a>
-            </nav>
 
-            {/* ================================================================ */}
-            {/* US INVESTORS SECTION - Card Style */}
-            {/* ================================================================ */}
-            <section id="us-investors" className="mb-6 scroll-mt-24">
-              <div className="card p-4 sm:p-6">
-                <h2 className="text-base sm:text-lg font-bold mb-4 flex items-center gap-2 text-gray-900">
-                  <USFlag size="sm" /> For US Investors: Why Track Shanghai Silver?
-                </h2>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-300">
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">⏰</span>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">24-Hour Coverage</h4>
-                        <p className="text-xs text-gray-500 leading-tight mt-0.5">When COMEX closes, Shanghai is active.</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-300">
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">📊</span>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">Price Discovery</h4>
-                        <p className="text-xs text-gray-500 leading-tight mt-0.5">Premium signals global demand.</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-300">
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">🔮</span>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">Market Prediction</h4>
-                        <p className="text-xs text-gray-500 leading-tight mt-0.5">Asian prices often lead US markets.</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-300">
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">💰</span>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">Arbitrage Signals</h4>
-                        <p className="text-xs text-gray-500 leading-tight mt-0.5">Premium &gt;15% signals catch-up.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="mt-4 text-xs text-center text-gray-500 pt-3 border-t border-gray-300">
-                  💡 Shanghai night session (8 AM - 1:30 PM ET) overlaps with US trading hours.
-                </p>
-              </div>
-            </section>
-
-            {/* ================================================================ */}
-            {/* COMBINED: INDIA + VAT/TAX - 2 Column Layout */}
-            {/* ================================================================ */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6" id="india-investors">
-              {/* Left: India Investors Section */}
-              <section className="card p-4 scroll-mt-24">
-                <h2 className="text-sm font-bold mb-3 flex items-center gap-2 text-gray-900">
-                  <IndiaFlag size="sm" /> India vs Shanghai
-                </h2>
-                
-                {/* Quick Comparison - Compact */}
-                <div className="grid grid-cols-4 gap-1 text-center mb-3 p-2 rounded-lg bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100">
-                  <div>
-                    <p className="text-xs text-gray-500">Shanghai</p>
-                    <p className="text-sm font-bold text-gray-800">₹{price?.pricePerGramInr?.toFixed(0) || "344"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">India</p>
-                    <p className="text-sm font-bold text-orange-600">₹{price?.indiaRatePerGram?.toFixed(0) || "427"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Diff</p>
-                    <p className="text-sm font-bold text-green-600">+{(((price?.indiaRatePerGram || 427) / (price?.pricePerGramInr || 344) - 1) * 100).toFixed(0)}%</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Why</p>
-                    <p className="text-xs font-bold text-gray-700">6%+3%</p>
-                  </div>
-                </div>
-                
-                {/* Features - 2x2 compact grid */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 flex items-center gap-2">
-                    <span className="text-sm">📊</span>
-                    <span className="text-xs text-gray-700">Benchmark SGE vs MCX</span>
-                  </div>
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 flex items-center gap-2">
-                    <span className="text-sm">💱</span>
-                    <span className="text-xs text-gray-700">~9% import cost</span>
-                  </div>
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 flex items-center gap-2">
-                    <span className="text-sm">🌏</span>
-                    <span className="text-xs text-gray-700">Track before MCX</span>
-                  </div>
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 flex items-center gap-2">
-                    <span className="text-sm">📈</span>
-                    <span className="text-xs text-gray-700">Premium signals</span>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2 justify-center">
-                  <Link href="/" className="px-3 py-1.5 bg-[#1e3a5f] text-white rounded text-xs font-medium hover:bg-[#2a4a6f] transition-colors">
-                    🇮🇳 India Rate →
-                  </Link>
-                  <Link href="/silver-price-calculator" className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-xs font-medium hover:bg-gray-200 transition-colors border border-gray-300">
-                    🧮 Calculator
-                  </Link>
-                </div>
-              </section>
-
-              {/* Right: VAT/Tax Section */}
-              <section id="vat-tax" className="card p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 scroll-mt-24">
-                <h2 className="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
-                  ❓ SGE Price Include VAT?
-                </h2>
-                
-                <div className="bg-white rounded p-2 border border-amber-200 mb-3">
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg">⚠️</span>
-                    <div>
-                      <p className="font-bold text-amber-800 text-xs">NO - Pre-tax prices</p>
-                      <p className="text-xs text-amber-700">Add <strong>13% VAT</strong> for physical delivery</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-white rounded p-2 border border-amber-100">
-                    <h4 className="font-semibold text-amber-800 text-xs mb-1">🇨🇳 China Tax</h4>
-                    <p className="text-xs text-amber-700">Duty: 0-11% • VAT: 13%</p>
-                    <p className="text-xs text-amber-700 font-semibold">Total: 13-24%</p>
-                  </div>
-                  <div className="bg-white rounded p-2 border border-amber-100">
-                    <h4 className="font-semibold text-amber-800 text-xs mb-1">💡 Key Points</h4>
-                    <p className="text-xs text-amber-700">Quote ≠ buy price</p>
-                    <p className="text-xs text-amber-700">Cost = Price × 1.13</p>
-                  </div>
-                </div>
-                
-                <div className="p-2 rounded bg-amber-100 border border-amber-200">
-                  <p className="text-xs text-amber-800 text-center">
-                    📊 <strong>Pre-Tax:</strong> ¥{price?.pricePerKgCny?.toFixed(0) || "27,000"}/kg • 
-                    <strong> +VAT:</strong> ¥{((price?.pricePerKgCny || 27000) * 1.13).toFixed(0)}/kg
-                  </p>
-                </div>
-              </section>
-            </div>
-
-            {/* ================================================================ */}
-            {/* LIVE PRICE + 7-DAY CHART - Two Column Layout */}
-            {/* ================================================================ */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-              {/* Left: Live Price Card */}
-              <section id="live-price" className="scroll-mt-24">
+              {/* Right: Shanghai Price Card */}
+              <section id="live-price" className="scroll-mt-24 h-full">
                 <ShanghaiPriceCard initialPrice={price} />
               </section>
-
-              {/* Right: 7-Day Historical Price Chart */}
-              <section id="historical" className="scroll-mt-24">
-                <div className="card overflow-hidden h-full">
-                  <div className="bg-[#1e3a5f] p-2.5 sm:p-3 flex items-center justify-between">
-                    <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                      📈 7-Day Price History
-                    </h2>
-                    <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/80 text-xs">
-                      CNY/kg
-                    </span>
-                  </div>
-                
-                  <div className="p-2 sm:p-3">
-                    {historicalPrices && historicalPrices.length > 0 ? (
-                      <>
-                        {/* Mini Chart - Visual Bar Graph */}
-                        <div className="mb-2">
-                          <div className="flex items-end justify-between gap-0.5 h-14 sm:h-16 px-0.5">
-                            {historicalPrices.slice(-7).map((day, idx) => {
-                              const minPrice = Math.min(...historicalPrices.slice(-7).map(d => d.pricePerKgCny));
-                              const maxPrice = Math.max(...historicalPrices.slice(-7).map(d => d.pricePerKgCny));
-                              const range = maxPrice - minPrice || 1;
-                              const heightPercent = ((day.pricePerKgCny - minPrice) / range) * 70 + 30;
-                              const isToday = idx === historicalPrices.slice(-7).length - 1;
-                              
-                              return (
-                                <div key={day.date} className="flex-1 flex flex-col items-center gap-0.5">
-                                  <span className="text-xs text-slate-500 font-medium">
-                                    ¥{(day.pricePerKgCny / 1000).toFixed(0)}k
-                                  </span>
-                                  <div 
-                                    className={`w-full rounded-t transition-all ${isToday ? 'bg-slate-700' : 'bg-slate-300'}`}
-                                    style={{ height: `${heightPercent}%` }}
-                                  />
-                                  <span className="text-xs text-slate-400">
-                                    {new Date(day.date).toLocaleDateString('en-US', { weekday: 'narrow' })}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                        
-                        {/* 7-Day Summary - Compact */}
-                        <div className="grid grid-cols-4 gap-1">
-                          <div className="text-center p-1 rounded bg-slate-50 border border-slate-300">
-                            <p className="text-[11px] text-slate-500">High</p>
-                            <p className="font-bold text-slate-800 text-xs sm:text-xs">
-                              ¥{(Math.max(...historicalPrices.slice(-7).map(d => d.pricePerKgCny)) / 1000).toFixed(0)}k
-                            </p>
-                          </div>
-                          <div className="text-center p-1 rounded bg-slate-50 border border-slate-300">
-                            <p className="text-[11px] text-slate-500">Low</p>
-                            <p className="font-bold text-slate-800 text-xs sm:text-xs">
-                              ¥{(Math.min(...historicalPrices.slice(-7).map(d => d.pricePerKgCny)) / 1000).toFixed(0)}k
-                            </p>
-                          </div>
-                          <div className="text-center p-1 rounded bg-slate-50 border border-slate-300">
-                            <p className="text-[11px] text-slate-500">Avg</p>
-                            <p className="font-bold text-slate-800 text-xs sm:text-xs">
-                              ¥{(Math.round(historicalPrices.slice(-7).reduce((a, b) => a + b.pricePerKgCny, 0) / Math.min(7, historicalPrices.length)) / 1000).toFixed(0)}k
-                            </p>
-                          </div>
-                          <div className="text-center p-1 rounded bg-slate-50 border border-slate-300">
-                            <p className="text-[11px] text-slate-500">Change</p>
-                            {(() => {
-                              const prices = historicalPrices.slice(-7);
-                              const change = prices.length > 1 
-                                ? ((prices[prices.length - 1].pricePerKgCny - prices[0].pricePerKgCny) / prices[0].pricePerKgCny * 100)
-                                : 0;
-                              return (
-                                <p className={`font-bold text-xs sm:text-xs ${change >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                  {change >= 0 ? '+' : ''}{change.toFixed(1)}%
-                                </p>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                        
-                        {/* Historical Data Table - Compact, hidden on mobile */}
-                        <div className="overflow-x-auto hidden sm:block mt-2">
-                          <table className="w-full text-xs">
-                            <thead>
-                              <tr className="bg-gray-50">
-                                <th className="px-1.5 py-1 text-left font-semibold text-gray-700">Date</th>
-                                <th className="px-1.5 py-1 text-right font-semibold text-gray-700">CNY/kg</th>
-                                <th className="px-1.5 py-1 text-right font-semibold text-gray-700">USD/oz</th>
-                                <th className="px-1.5 py-1 text-right font-semibold text-gray-700">Prem</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {historicalPrices.slice(-5).reverse().map((day, idx) => (
-                                <tr key={day.date} className={idx === 0 ? 'bg-slate-50 font-medium' : 'border-t border-slate-100'}>
-                                  <td className="px-1.5 py-1">
-                                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                  </td>
-                                  <td className="px-1.5 py-1 text-right text-slate-700">¥{(day.pricePerKgCny / 1000).toFixed(1)}k</td>
-                                  <td className="px-1.5 py-1 text-right text-slate-600">${day.pricePerOzUsd.toFixed(0)}</td>
-                                  <td className="px-1.5 py-1 text-right text-emerald-600">+{day.premiumPercent.toFixed(0)}%</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-6 text-gray-500">
-                        <p className="text-xs">Historical data unavailable</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
             </div>
+          </div>
+        </section>
+
+        {/* Main Content Section */}
+        <section className="pb-4 sm:pb-6 bg-gradient-to-br from-gray-50 to-gray-100 -mt-6">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2">
 
             {/* ================================================================ */}
-            {/* USD PRICES + CURRENCY CONVERTER - 2 Column Compact */}
+            {/* BENCHMARK PRICE SECTION */}
             {/* ================================================================ */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-              {/* Left: USD Prices */}
-              <section id="usd-prices" className="card p-4 scroll-mt-24">
-                <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  💵 USD Prices
-                </h2>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  <div className="text-center p-2 rounded bg-[#1e3a5f] text-white">
-                    <div className="text-xs text-white/70">Per oz</div>
-                    <div className="text-sm font-bold">${price?.pricePerOzUsd?.toFixed(2) || "121.00"}</div>
-                    <div className="text-xs text-green-300">+${((price?.pricePerOzUsd || 121) - (price?.comexUsd || 108.5)).toFixed(2)}</div>
-                  </div>
-                  <div className="text-center p-2 rounded bg-gray-50 border border-gray-300">
-                    <div className="text-xs text-gray-500">Per gram</div>
-                    <div className="text-sm font-bold text-gray-800">${price?.pricePerGramUsd?.toFixed(2) || "3.88"}</div>
-                  </div>
-                  <div className="text-center p-2 rounded bg-gray-50 border border-gray-300">
-                    <div className="text-xs text-gray-500">Per kg</div>
-                    <div className="text-sm font-bold text-gray-800">${price?.pricePerKgUsd?.toFixed(0) || "3,880"}</div>
-                  </div>
-                </div>
-                <div className="p-2 rounded bg-gray-50 border border-gray-300 text-xs text-gray-600 text-center">
-                  Formula: CNY/kg ÷ USD/CNY ÷ 31.1 = ${price?.pricePerOzUsd?.toFixed(2) || "121.00"}/oz
-                </div>
-              </section>
-
-              {/* Right: Multi-Currency */}
-              <section id="converter" className="card p-4 scroll-mt-24">
-                <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  💱 Multi-Currency (per gram)
-                </h2>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 text-center">
-                    <ChinaFlag size="xs" />
-                    <p className="text-xs text-gray-500 mt-1">CNY</p>
-                    <p className="text-xs font-bold text-gray-800">¥{price?.pricePerGramCny?.toFixed(2) || "27.00"}</p>
-                  </div>
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 text-center">
-                    <USFlag size="xs" />
-                    <p className="text-xs text-gray-500 mt-1">USD</p>
-                    <p className="text-xs font-bold text-gray-800">${price?.pricePerGramUsd?.toFixed(2) || "3.88"}</p>
-                  </div>
-                  <div className="p-2 rounded bg-gray-50 border border-gray-300 text-center">
-                    <IndiaFlag size="xs" />
-                    <p className="text-xs text-gray-500 mt-1">INR</p>
-                    <p className="text-xs font-bold text-gray-800">₹{price?.pricePerGramInr?.toFixed(0) || "355"}</p>
-                  </div>
-                  
-                  {/* EUR */}
-                  <div className="p-2 sm:p-3 rounded-md bg-slate-50 border border-slate-300 text-center">
-                    <div className="flex justify-center mb-1">
-                      <svg className="w-5 h-3 rounded shadow-md" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="30" height="20" fill="#003399"/>
-                        <g fill="#FFCC00">
-                          <circle cx="15" cy="5" r="1"/>
-                          <circle cx="18.5" cy="6" r="1"/>
-                          <circle cx="20" cy="10" r="1"/>
-                          <circle cx="18.5" cy="14" r="1"/>
-                          <circle cx="15" cy="15" r="1"/>
-                          <circle cx="11.5" cy="14" r="1"/>
-                          <circle cx="10" cy="10" r="1"/>
-                          <circle cx="11.5" cy="6" r="1"/>
-                        </g>
-                      </svg>
-                    </div>
-                    <p className="text-xs text-slate-500">EUR (Euro)</p>
-                    <p className="text-base sm:text-lg font-bold text-slate-800">€{((price?.pricePerGramUsd || 3.88) * 0.92).toFixed(2)}</p>
-                    <p className="text-xs text-slate-400">per gram</p>
-                  </div>
-                </div>
+            <section id="benchmark" className="mb-4 scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">📊 Shanghai Silver Benchmark</h2>
                 
-                {/* Exchange Rates Used - Hidden on mobile */}
-                <div className="p-1.5 rounded-md bg-slate-50 border border-slate-300 hidden sm:block">
-                  <p className="text-xs text-slate-500 text-center">
-                    <strong>Rates:</strong> USD/CNY: {price?.usdCny?.toFixed(2) || "6.95"} • USD/INR: ₹{price?.usdInr?.toFixed(0) || "92"} • CNY/INR: ₹{price?.cnyInr?.toFixed(2) || "13.20"}
-                  </p>
-                </div>
-              </section>
-            </div>
-
-          {/* Price Units Table */}
-          <section className="mb-4">
-            <h2 className="text-sm sm:text-base font-bold mb-2 text-slate-800">
-              📊 Shanghai Silver Price in Different Units
-            </h2>
-            <div className="rounded-lg overflow-hidden bg-white border border-slate-300 shadow-md">
-              <table className="w-full text-xs sm:text-sm">
-                <thead>
-                  <tr className="bg-slate-100">
-                    <th className="px-2 sm:px-3 py-1.5 text-left font-semibold text-slate-700">Unit</th>
-                    <th className="px-2 sm:px-3 py-1.5 text-right font-semibold text-slate-700">CNY</th>
-                    <th className="px-2 sm:px-3 py-1.5 text-right font-semibold text-slate-700">USD</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { unit: "Per Gram", cny: price?.pricePerGramCny || 27, usd: price?.pricePerGramUsd || 3.88 },
-                    { unit: "Per 10 Grams", cny: (price?.pricePerGramCny || 27) * 10, usd: (price?.pricePerGramUsd || 3.88) * 10 },
-                    { unit: "Per Troy Ounce", cny: price?.pricePerOzCny || 840, usd: price?.pricePerOzUsd || 121 },
-                    { unit: "Per Kilogram", cny: price?.pricePerKgCny || 27000, usd: price?.pricePerKgUsd || 3880 },
-                  ].map((row, idx) => (
-                    <tr 
-                      key={row.unit}
-                      className={idx < 3 ? "border-b border-slate-100" : ""}
-                    >
-                      <td className="px-2 sm:px-3 py-1.5 text-slate-700">{row.unit}</td>
-                      <td className="px-2 sm:px-3 py-1.5 text-right font-medium text-slate-800">
-                        {formatCnyPrice(row.cny)}
-                      </td>
-                      <td className="px-2 sm:px-3 py-1.5 text-right text-slate-600">
-                        {formatUsdPrice(row.usd)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          {/* ================================================================ */}
-          {/* BENCHMARK PRICE SECTION */}
-          {/* ================================================================ */}
-          <section id="benchmark" className="mb-4 scroll-mt-24">
-            <div className="rounded-lg overflow-hidden bg-white border border-slate-300 shadow-md">
-              <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-2 sm:p-3">
-                <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
-                  📊 What is the Shanghai Silver Benchmark Price?
-                </h2>
-              </div>
-              
-              <div className="p-2.5 sm:p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   {/* Current Benchmark */}
-                  <div className="p-2.5 sm:p-3 rounded-md bg-slate-800 border border-slate-700 text-center">
-                    <h3 className="font-semibold text-slate-200 text-xs sm:text-sm mb-1">Current SGE Benchmark</h3>
-                    <div className="text-2xl sm:text-3xl font-bold text-white mb-0.5">
-                      ¥{price?.pricePerKgCny?.toFixed(0) || "27,000"}/kg
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 text-center">
+                    <h3 className="text-sm text-gray-300 mb-2">Current SGE Benchmark</h3>
+                    <div className="text-3xl font-bold text-white mb-1">
+                      ¥{price?.pricePerKgCny?.toFixed(0) || "18,256"}/kg
                     </div>
-                    <div className="text-xs sm:text-xs text-slate-400">CNY per kilogram (basis unit)</div>
-                    <div className="text-xs text-emerald-400 mt-1">
-                      ≈ ${price?.pricePerOzUsd?.toFixed(2) || "121.00"} per troy ounce
+                    <div className="text-sm text-gray-400">CNY per kilogram</div>
+                    <div className="text-sm text-green-400 mt-2">
+                      ≈ ${price?.pricePerOzUsd?.toFixed(2) || "81.68"}/oz
                     </div>
                   </div>
                   
                   {/* Benchmark Info */}
-                  <div className="p-2 sm:p-3 rounded-md bg-slate-50 border border-slate-300">
-                    <h4 className="font-semibold text-slate-800 text-xs mb-1.5">About the Benchmark:</h4>
-                    <ul className="space-y-0.5 text-xs sm:text-xs text-slate-600">
-                      <li className="flex items-start gap-1">
-                        <span>📍</span>
-                        <span><strong>Exchange:</strong> Shanghai Gold Exchange (SGE)</span>
+                  <div className="p-4 rounded-lg bg-gray-50 border-2 border-gray-400">
+                    <h4 className="font-semibold text-gray-800 text-sm mb-2">About the Benchmark:</h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      {/* Exchange - with tooltip */}
+                      <li className="relative group cursor-help">
+                        <span className="flex items-center gap-1">
+                          📍 <strong>Exchange:</strong> Shanghai Gold Exchange (SGE)
+                          <span className="text-gray-400 text-xs">ⓘ</span>
+                        </span>
+                        <div className="absolute bottom-full left-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-64 pointer-events-none">
+                          <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
+                            <strong>Shanghai Gold Exchange (SGE)</strong> - China's largest precious metals exchange, established in 2002. Sets official silver benchmark prices for Chinese market. Only exchange for physical silver delivery in China.
+                            <div className="absolute bottom-0 left-4 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                          </div>
+                        </div>
                       </li>
-                      <li className="flex items-start gap-1">
-                        <span>📏</span>
-                        <span><strong>Unit:</strong> CNY per kilogram</span>
+                      {/* Unit - with tooltip */}
+                      <li className="relative group cursor-help">
+                        <span className="flex items-center gap-1">
+                          📏 <strong>Unit:</strong> CNY per kilogram
+                          <span className="text-gray-400 text-xs">ⓘ</span>
+                        </span>
+                        <div className="absolute bottom-full left-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-64 pointer-events-none">
+                          <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
+                            <strong>CNY/kg</strong> - Chinese Yuan per kilogram. Unlike COMEX (USD/oz), SGE quotes in kilograms. 1 kg = 32.15 troy oz. Current rate: ¥{price?.pricePerKgCny?.toLocaleString() || "18,256"}/kg ≈ ${price?.pricePerOzUsd?.toFixed(2) || "81"}/oz
+                            <div className="absolute bottom-0 left-4 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                          </div>
+                        </div>
                       </li>
-                      <li className="flex items-start gap-1">
-                        <span>⚖️</span>
-                        <span><strong>Contract:</strong> Ag(T+D)</span>
+                      {/* Contract - with tooltip */}
+                      <li className="relative group cursor-help">
+                        <span className="flex items-center gap-1">
+                          ⚖️ <strong>Contract:</strong> Ag(T+D)
+                          <span className="text-gray-400 text-xs">ⓘ</span>
+                        </span>
+                        <div className="absolute bottom-full left-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-64 pointer-events-none">
+                          <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
+                            <strong>Ag(T+D)</strong> - "Silver Today + Deferred". Unique Chinese contract allowing same-day trading with deferred delivery. Combines spot & futures benefits. Highly liquid with physical delivery option. Trade size: 1 kg/lot.
+                            <div className="absolute bottom-0 left-4 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                          </div>
+                        </div>
                       </li>
-                      <li className="flex items-start gap-1">
-                        <span>🏭</span>
-                        <span><strong>Purity:</strong> 99.99% (9999)</span>
-                      </li>
-                      <li className="flex items-start gap-1">
-                        <span>📊</span>
-                        <span><strong>Role:</strong> Asia&apos;s primary reference</span>
+                      {/* Purity - with tooltip */}
+                      <li className="relative group cursor-help">
+                        <span className="flex items-center gap-1">
+                          🏭 <strong>Purity:</strong> 99.99% (9999)
+                          <span className="text-gray-400 text-xs">ⓘ</span>
+                        </span>
+                        <div className="absolute bottom-full left-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-64 pointer-events-none">
+                          <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl">
+                            <strong>99.99% (Four Nines)</strong> - Highest commercial purity. "9999" means 9999 parts per 10,000 are pure silver. Required for SGE delivery. COMEX allows 99.9% (999). Higher purity = slight price premium.
+                            <div className="absolute bottom-0 left-4 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                          </div>
+                        </div>
                       </li>
                     </ul>
                   </div>
                 </div>
                 
-                {/* Global Benchmarks Comparison - Hidden on mobile for compactness */}
-                <h3 className="font-semibold text-slate-800 text-xs sm:text-sm mb-2 hidden sm:block">🌍 Global Silver Benchmarks</h3>
-                <div className="overflow-x-auto hidden sm:block">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="bg-slate-100">
-                        <th className="px-2 py-1.5 text-left text-slate-700">Exchange</th>
-                        <th className="px-2 py-1.5 text-left text-slate-700">Benchmark</th>
-                        <th className="px-2 py-1.5 text-right text-slate-700">Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-slate-100 bg-slate-50">
-                        <td className="px-2 py-1.5"><span className="inline-flex items-center gap-1"><ChinaFlag size="sm" /> SGE</span></td>
-                        <td className="px-2 py-1.5">Ag(T+D)</td>
-                        <td className="px-2 py-1.5 text-right font-semibold">¥{price?.pricePerKgCny?.toFixed(0) || "27,000"}/kg</td>
-                      </tr>
-                      <tr className="border-b border-slate-100">
-                        <td className="px-2 py-1.5"><span className="inline-flex items-center gap-1"><USFlag size="sm" /> COMEX</span></td>
-                        <td className="px-2 py-1.5">SI Futures</td>
-                        <td className="px-2 py-1.5 text-right">${price?.comexUsd?.toFixed(2) || "108.50"}/oz</td>
-                      </tr>
-                      <tr className="border-b border-slate-100">
-                        <td className="px-2 py-1.5"><span className="inline-flex items-center gap-1"><IndiaFlag size="sm" /> MCX</span></td>
-                        <td className="px-2 py-1.5">Silver Mini</td>
-                        <td className="px-2 py-1.5 text-right">₹{((price?.indiaRatePerGram || 400) * 1000).toLocaleString()}/kg</td>
-                      </tr>
-                      <tr>
-                        <td className="px-2 py-1.5"><span className="inline-flex items-center gap-1"><UKFlag size="sm" /> LBMA</span></td>
-                        <td className="px-2 py-1.5">Silver Fix</td>
-                        <td className="px-2 py-1.5 text-right">${((price?.comexUsd || 108.5) * 1.007).toFixed(2)}/oz</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                {/* Global Benchmarks Comparison */}
+                <h3 className="font-semibold text-gray-800 text-sm mb-3">🌍 Global Silver Benchmarks</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {/* SGE - China */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-center cursor-help">
+                    <span className="text-lg">🇨🇳</span>
+                    <p className="text-xs text-gray-500">SGE <span className="text-gray-400">ⓘ</span></p>
+                    <p className="font-bold text-red-700">¥{(price?.pricePerKgCny ? price.pricePerKgCny / 1000 : 18.3).toFixed(1)}k/kg</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>SGE (Shanghai Gold Exchange)</strong> - China's official precious metals exchange. Prices in CNY/kg. Includes ~6% premium over COMEX due to import duties & VAT. World's largest physical silver market.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* COMEX - USA */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-center cursor-help">
+                    <span className="text-lg">🇺🇸</span>
+                    <p className="text-xs text-gray-500">COMEX <span className="text-gray-400">ⓘ</span></p>
+                    <p className="font-bold text-blue-700">${price?.comexUsd?.toFixed(2) || "77.11"}/oz</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>COMEX (CME Group)</strong> - World's primary silver futures exchange in New York. Prices in USD/troy oz. Global benchmark for silver pricing. Trades nearly 24/5. Most liquid silver market.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* MCX - India */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 text-center cursor-help">
+                    <span className="text-lg">🇮🇳</span>
+                    <p className="text-xs text-gray-500">MCX <span className="text-gray-400">ⓘ</span></p>
+                    <p className="font-bold text-orange-700">₹{((price?.indiaRatePerGram || 262) * 1000 / 1000).toFixed(0)}k/kg</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>MCX (Multi Commodity Exchange)</strong> - India's largest commodity exchange in Mumbai. Prices in INR/kg. Includes import duty (~15%) & GST. Trades Mon-Fri 9AM-11:30PM IST.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* LBMA - UK */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-center cursor-help">
+                    <span className="text-lg">🇬🇧</span>
+                    <p className="text-xs text-gray-500">LBMA <span className="text-gray-400">ⓘ</span></p>
+                    <p className="font-bold text-purple-700">${((price?.comexUsd || 77.11) * 1.007).toFixed(2)}/oz</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>LBMA (London Bullion Market)</strong> - Sets daily "London Fix" price at 12:00 GMT. OTC wholesale market for physical delivery. Price in USD/oz. Standard for large institutional trades (1000 oz bars).
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* SHANGHAI SILVER PRICE IN USD / DOLLARS - SEO Section */}
+            {/* ================================================================ */}
+            {price && (
+            <section id="usd-price" className="mb-4 scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">💵 Shanghai Silver Price in USD (Dollars)</h2>
+                <p className="text-xs text-gray-500 mb-4">Live Shanghai silver price converted to US Dollars • Updated every 30 seconds</p>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  {/* Per Troy Ounce */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100 border border-green-200 text-center cursor-help">
+                    <p className="text-xs text-gray-500">Per Troy Ounce <span className="text-gray-400">ⓘ</span></p>
+                    <p className="text-2xl font-bold text-green-700">${price.pricePerOzUsd.toFixed(2)}</p>
+                    <p className="text-[10px] text-gray-400">USD/oz</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>Troy Ounce (oz t)</strong> - Standard unit for precious metals. 1 troy oz = 31.1035 grams. Shanghai price: ${price.pricePerOzUsd.toFixed(2)}/oz includes +{price.premiumPercent.toFixed(1)}% premium over COMEX.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Per Gram */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-center cursor-help">
+                    <p className="text-xs text-gray-500">Per Gram <span className="text-gray-400">ⓘ</span></p>
+                    <p className="text-2xl font-bold text-blue-700">${price.pricePerGramUsd.toFixed(2)}</p>
+                    <p className="text-[10px] text-gray-400">USD/g</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>Price per Gram</strong> - Common retail unit. 1 oz = 31.1 grams. Formula: ${price.pricePerOzUsd.toFixed(2)} ÷ 31.1035 = ${price.pricePerGramUsd.toFixed(2)}/g. Useful for small purchases.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Per Kilogram */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-center cursor-help">
+                    <p className="text-xs text-gray-500">Per Kilogram <span className="text-gray-400">ⓘ</span></p>
+                    <p className="text-2xl font-bold text-purple-700">${price.pricePerKgUsd.toFixed(0)}</p>
+                    <p className="text-[10px] text-gray-400">USD/kg</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>Price per Kilogram</strong> - SGE standard unit. 1 kg = 32.15 oz. Formula: ${price.pricePerGramUsd.toFixed(2)} × 1000 = ${price.pricePerKgUsd.toFixed(0)}/kg. Direct comparison with SGE ¥{price.pricePerKgCny.toLocaleString()}/kg.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* COMEX Benchmark */}
+                  <div className="relative group p-3 rounded-lg bg-gradient-to-r from-cyan-50 to-cyan-100 border border-cyan-200 text-center cursor-help">
+                    <p className="text-xs text-gray-500">COMEX Benchmark <span className="text-gray-400">ⓘ</span></p>
+                    <p className="text-2xl font-bold text-cyan-700">${price.comexUsd.toFixed(2)}</p>
+                    <p className="text-[10px] text-gray-400">USD/oz (NY)</p>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] w-56 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl text-left">
+                        <strong>COMEX (New York)</strong> - Global silver benchmark. Shanghai trades at +{price.premiumPercent.toFixed(1)}% premium (${(price.pricePerOzUsd - price.comexUsd).toFixed(2)}/oz more). Difference due to Chinese import duties & VAT.
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 text-sm">
+                  <p className="text-gray-700">
+                    <strong>Shanghai silver price in dollars:</strong> ${price.pricePerOzUsd.toFixed(2)} per ounce, which is +{price.premiumPercent.toFixed(1)}% above COMEX (${price.comexUsd.toFixed(2)}/oz). 
+                    This premium reflects Chinese import duties, VAT, and strong industrial demand. Price converted using USD/CNY rate of {price.usdCny.toFixed(4)}.
+                  </p>
+                </div>
+              </div>
+            </section>
+            )}
+
+            {/* ================================================================ */}
+            {/* MULTI-CURRENCY + PRICE UNITS - Two Column Layout */}
+            {/* ================================================================ */}
+            {price && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+              {/* Left: Multi-Currency Prices */}
+              <section id="converter" className="scroll-mt-24">
+                <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">💱 Multi-Currency Prices</h2>
+                  <p className="text-xs text-gray-500 mb-3">Shanghai silver per gram in major currencies</p>
+                  
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-center">
+                      <ChinaFlag size="sm" />
+                      <p className="text-xs text-gray-500 mt-1">CNY</p>
+                      <p className="text-xl font-bold text-red-700">¥{price.pricePerGramCny.toFixed(2)}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-center">
+                      <USFlag size="sm" />
+                      <p className="text-xs text-gray-500 mt-1">USD</p>
+                      <p className="text-xl font-bold text-blue-700">${price.pricePerGramUsd.toFixed(2)}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 text-center">
+                      <IndiaFlag size="sm" />
+                      <p className="text-xs text-gray-500 mt-1">INR</p>
+                      <p className="text-xl font-bold text-orange-700">₹{price.pricePerGramInr.toFixed(0)}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 text-center">
+                      <span className="text-lg">🇪🇺</span>
+                      <p className="text-xs text-gray-500 mt-1">EUR</p>
+                      <p className="text-xl font-bold text-indigo-700">€{(price.pricePerGramUsd * 0.92).toFixed(2)}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Exchange Rates */}
+                  <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 text-xs text-center text-gray-600">
+                    <strong>Rates:</strong> USD/CNY: {price.usdCny.toFixed(2)} • USD/INR: ₹{price.usdInr.toFixed(0)} • EUR/USD: ~0.92
+                  </div>
+                </div>
+              </section>
+
+              {/* Right: Price Units Table */}
+              <section className="scroll-mt-24">
+                <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">📊 Price in Different Units</h2>
+                  <p className="text-xs text-gray-500 mb-3">Shanghai silver converted to various weight units</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <span className="text-sm text-gray-700">Per Gram</span>
+                      <div className="text-right">
+                        <span className="font-bold text-gray-800">¥{price.pricePerGramCny.toFixed(2)}</span>
+                        <span className="text-gray-500 text-xs ml-2">${price.pricePerGramUsd.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <span className="text-sm text-gray-700">Per 10 Grams</span>
+                      <div className="text-right">
+                        <span className="font-bold text-gray-800">¥{(price.pricePerGramCny * 10).toFixed(2)}</span>
+                        <span className="text-gray-500 text-xs ml-2">${(price.pricePerGramUsd * 10).toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center p-2 rounded-lg bg-gray-50 border border-gray-200">
+                      <span className="text-sm text-gray-700">Per Troy Ounce</span>
+                      <div className="text-right">
+                        <span className="font-bold text-gray-800">¥{price.pricePerOzCny.toFixed(0)}</span>
+                        <span className="text-gray-500 text-xs ml-2">${price.pricePerOzUsd.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center p-2 rounded-lg bg-blue-50 border border-blue-200">
+                      <span className="text-sm font-medium text-gray-700">Per Kilogram</span>
+                      <div className="text-right">
+                        <span className="font-bold text-blue-700">¥{price.pricePerKgCny.toLocaleString()}</span>
+                        <span className="text-blue-600 text-xs ml-2">${price.pricePerKgUsd.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            )}
+
+          {/* Why Shanghai Premium */}
+          <section className="mb-6">
+            <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">💡 Why Shanghai Premium?</h2>
+                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold">
+                  +{price?.premiumPercent?.toFixed(0) || "6"}% over COMEX
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Shanghai silver trades at a premium due to China&apos;s unique market conditions:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                  <span className="text-2xl">🏭</span>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">Industrial</p>
+                  <p className="text-xs text-gray-500">#1 consumer</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                  <span className="text-2xl">📦</span>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">Import Tax</p>
+                  <p className="text-xs text-gray-500">~24% total</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                  <span className="text-2xl">⛏️</span>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">Supply</p>
+                  <p className="text-xs text-gray-500">70% imported</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                  <span className="text-2xl">💰</span>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">Demand</p>
+                  <p className="text-xs text-gray-500">Solar + EVs</p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Why Shanghai Premium - Compact Explanation */}
-          <section className="mb-4">
-            <div className="rounded-lg p-3 bg-white border border-slate-300 shadow-md">
-              <h2 className="text-xs font-bold mb-2 text-slate-800">
-                💡 Why Shanghai Trades at a Premium (+{price?.premiumPercent?.toFixed(0) || "12"}% over COMEX)
-              </h2>
-              <div className="grid grid-cols-4 gap-1.5">
-                <div className="p-1.5 rounded bg-slate-50 border border-slate-300 text-center">
-                  <span className="text-sm">🏭</span>
-                  <p className="text-[11px] font-semibold text-slate-700">Industrial</p>
-                  <p className="text-xs text-slate-500">#1 consumer</p>
+          {/* Trading Hours + China Market - Two Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            {/* Left: SGE Trading Hours - SEO Optimized for "what time does shanghai silver market open" */}
+            <section id="trading-hours" className="scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">🕐 When Does Shanghai Silver Market Open?</h2>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${marketStatus.isOpen ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                    {marketStatus.isOpen ? '● Open Now' : '○ Closed'}
+                  </span>
                 </div>
-                <div className="p-1.5 rounded bg-slate-50 border border-slate-300 text-center">
-                  <span className="text-sm">📦</span>
-                  <p className="text-[11px] font-semibold text-slate-700">Import Tax</p>
-                  <p className="text-xs text-slate-500">~24% total</p>
+                
+                {/* Direct Answer - SEO Featured Snippet Target */}
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200 mb-3">
+                  <p className="text-sm text-gray-700">
+                    <strong>Shanghai silver market opens at 9:00 AM Beijing Time</strong> (8:00 PM ET / 1:00 AM GMT previous day). 
+                    Three trading sessions daily: Morning, Afternoon, and Night.
+                  </p>
                 </div>
-                <div className="p-1.5 rounded bg-slate-50 border border-slate-300 text-center">
-                  <span className="text-sm">⛏️</span>
-                  <p className="text-[11px] font-semibold text-slate-700">Supply</p>
-                  <p className="text-xs text-slate-500">70% imported</p>
+                
+                {/* Current Time */}
+                <div className="flex items-center gap-3 mb-3 p-2 rounded-lg bg-gray-50 border border-gray-200">
+                  <ChinaFlag size="sm" />
+                  <div>
+                    <p className="text-base font-bold text-gray-800">
+                      <LiveTimeDisplay timezone="Asia/Shanghai" />
+                    </p>
+                    <p className="text-[10px] text-gray-500">Current Beijing Time (UTC+8)</p>
+                  </div>
                 </div>
-                <div className="p-1.5 rounded bg-slate-50 border border-slate-300 text-center">
-                  <span className="text-sm">💰</span>
-                  <p className="text-[11px] font-semibold text-slate-700">Demand</p>
-                  <p className="text-xs text-slate-500">Solar + EVs</p>
+                
+                {/* Trading Sessions - Shanghai Silver Market Opening Time */}
+                <h3 className="text-xs font-semibold text-gray-700 mb-2">Shanghai Silver Market Opening Times (Beijing)</h3>
+                <div className="space-y-1.5 mb-3">
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-blue-50 border border-blue-200">
+                    <span className="text-xs text-gray-700">☀️ Morning Session</span>
+                    <span className="text-sm font-bold text-blue-700">9:00 - 11:30 AM</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-amber-50 border border-amber-200">
+                    <span className="text-xs text-gray-700">🌤️ Afternoon Session</span>
+                    <span className="text-sm font-bold text-amber-700">1:30 - 3:30 PM</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-indigo-50 border border-indigo-200">
+                    <span className="text-xs text-gray-700">🌙 Night Session</span>
+                    <span className="text-sm font-bold text-indigo-700">9:00 PM - 2:30 AM</span>
+                  </div>
+                </div>
+                
+                {/* US Time Conversion - for US searchers */}
+                <div className="p-2 rounded-lg bg-blue-50 border border-blue-200 mb-3">
+                  <p className="text-[10px] font-semibold text-blue-800 mb-1">🇺🇸 US Eastern Time (ET)</p>
+                  <p className="text-[10px] text-gray-600">Morning: 8-10:30 PM (prev day) • Afternoon: 12:30-2:30 AM • Night: 8 AM-1:30 PM</p>
+                </div>
+                
+                {/* Additional Info */}
+                <div className="text-[10px] text-gray-500 space-y-0.5">
+                  <p>📅 Trading Days: Monday - Friday</p>
+                  <p>🚫 Closed: Weekends & Chinese holidays</p>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* ================================================================ */}
-          {/* INTERACTIVE TRADING HOURS WIDGET */}
-          {/* ================================================================ */}
-          {/* TRADING HOURS - COMPACT */}
-          {/* ================================================================ */}
-          <section id="trading-hours" className="mb-4 scroll-mt-24">
-            <div className="rounded-lg bg-white border border-gray-300 shadow-md">
-              <div className="bg-gray-100 px-3 py-2 border-b border-gray-300">
-                <h2 className="text-sm font-bold text-gray-800 flex items-center gap-1.5">
-                  ⏰ Shanghai Trading Hours
-                </h2>
-              </div>
-              
-              <div className="p-2 sm:p-3">
-                {/* Live Status - Compact */}
-                <div className="mb-3 p-2 rounded-lg bg-gray-50 border border-gray-300 flex items-center justify-between gap-2">
+            {/* Right: China Silver Market */}
+            <section id="china-market" className="scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                <div className="flex items-center gap-2 mb-4">
+                  <ChinaFlag size="sm" />
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">China Silver Market</h2>
+                </div>
+                <p className="text-xs text-gray-500 mb-3">World&apos;s largest silver consumer driving global prices</p>
+                
+                {/* Key Stats */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="text-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <p className="text-2xl font-bold text-red-700">30%</p>
+                    <p className="text-xs text-gray-600">Global Consumption</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <p className="text-2xl font-bold text-red-700">4,500</p>
+                    <p className="text-xs text-gray-600">Tonnes per Year</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <p className="text-2xl font-bold text-red-700">70%</p>
+                    <p className="text-xs text-gray-600">Import Dependent</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                    <p className="text-2xl font-bold text-red-700">#1</p>
+                    <p className="text-xs text-gray-600">Solar PV Producer</p>
+                  </div>
+                </div>
+                
+                {/* Demand Breakdown */}
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Silver Demand by Sector</h3>
+                <div className="space-y-2 mb-3">
                   <div className="flex items-center gap-2">
-                    <ChinaFlag size="sm" />
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div className="bg-yellow-500 h-4 rounded-full" style={{width: '45%'}}></div>
+                    </div>
+                    <span className="text-xs text-gray-600 w-24">☀️ Solar 45%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div className="bg-blue-500 h-4 rounded-full" style={{width: '25%'}}></div>
+                    </div>
+                    <span className="text-xs text-gray-600 w-24">💻 Tech 25%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div className="bg-pink-500 h-4 rounded-full" style={{width: '15%'}}></div>
+                    </div>
+                    <span className="text-xs text-gray-600 w-24">💎 Jewelry 15%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div className="bg-green-500 h-4 rounded-full" style={{width: '15%'}}></div>
+                    </div>
+                    <span className="text-xs text-gray-600 w-24">📈 Other 15%</span>
+                  </div>
+                </div>
+                
+                {/* Import Tax Info */}
+                <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                  <strong>Import Costs:</strong> 0-11% duty + 13% VAT = 13-24% above intl prices
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Compare Section */}
+          <section className="mb-6">
+            <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">🌏 Compare Global Prices</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link 
+                  href="/"
+                  className="block rounded-lg p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <IndiaFlag size="sm" />
                     <div>
-                      <div className="text-base font-bold text-gray-800"><LiveTimeDisplay timezone="Asia/Shanghai" /></div>
-                      <div className="text-xs text-gray-500">Beijing (CST)</div>
+                      <h3 className="font-semibold text-gray-800">India</h3>
+                      <p className="text-xl font-bold text-orange-700">₹{price?.indiaRatePerGram?.toFixed(0) || 262}/g</p>
+                      <p className="text-xs text-gray-600">+24% over COMEX (duty+GST)</p>
                     </div>
                   </div>
-                  <div className={`px-2 py-1 rounded text-xs font-semibold ${marketStatus.isOpen ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
-                    {marketStatus.isOpen ? '● Open' : '○ Closed'}
+                </Link>
+                
+                <Link 
+                  href="/qatar"
+                  className="block rounded-lg p-4 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-6 h-4 rounded shadow-sm" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="30" height="20" fill="#8D1B3D"/>
+                      <polygon points="0,0 12,0 6,2.22 12,4.44 6,6.67 12,8.89 6,11.11 12,13.33 6,15.56 12,17.78 6,20 0,20" fill="#FFFFFF"/>
+                    </svg>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">Qatar</h3>
+                      <p className="text-xl font-bold text-purple-700">QAR →</p>
+                      <p className="text-xs text-gray-600">View Qatar prices</p>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* Data Sources + Related Articles - Two Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            {/* Left: Data Sources */}
+            <section className="scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">📊 Data Sources & Formula</h2>
+                
+                <div className="space-y-3 mb-4">
+                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-1">📈 Silver Price Source</p>
+                    <p className="text-sm text-gray-600">COMEX Futures via Yahoo Finance</p>
+                    <p className="text-xs text-gray-400">Real-time • 30 second updates</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-1">💱 Exchange Rate Sources</p>
+                    <p className="text-sm text-gray-600">USD/CNY, USD/INR, EUR/USD</p>
+                    <p className="text-xs text-gray-400">ECB + Frankfurter + ExchangeRate APIs</p>
                   </div>
                 </div>
                 
-                {/* Trading Sessions - Compact 3-column */}
-                <div className="grid grid-cols-3 gap-1.5 mb-3">
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="text-sm">🌅</div>
-                    <div className="text-xs font-semibold text-gray-700">Morning</div>
-                    <div className="text-xs font-bold text-gray-900">9:00-11:30</div>
-                  </div>
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="text-sm">☀️</div>
-                    <div className="text-xs font-semibold text-gray-700">Afternoon</div>
-                    <div className="text-xs font-bold text-gray-900">1:30-3:30</div>
-                  </div>
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="text-sm">🌙</div>
-                    <div className="text-xs font-semibold text-gray-700">Night</div>
-                    <div className="text-xs font-bold text-gray-900">21:00-2:30</div>
-                  </div>
-                </div>
-                
-                {/* Timezone Converter - Compact */}
-                <div className="grid grid-cols-4 gap-1 mb-2">
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="flex justify-center"><USFlag size="xs" /></div>
-                    <div className="text-[11px] font-semibold text-gray-700">New York</div>
-                    <div className="text-[11px] text-gray-500">-13h</div>
-                  </div>
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="flex justify-center"><UKFlag size="xs" /></div>
-                    <div className="text-[11px] font-semibold text-gray-700">London</div>
-                    <div className="text-[11px] text-gray-500">-8h</div>
-                  </div>
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="flex justify-center"><IndiaFlag size="xs" /></div>
-                    <div className="text-[11px] font-semibold text-gray-700">Mumbai</div>
-                    <div className="text-[11px] text-gray-500">-2.5h</div>
-                  </div>
-                  <div className="p-1.5 rounded bg-gray-50 border border-gray-300 text-center">
-                    <div className="flex justify-center"><AustraliaFlag size="xs" /></div>
-                    <div className="text-[11px] font-semibold text-gray-700">Sydney</div>
-                    <div className="text-[11px] text-gray-500">+3h</div>
-                  </div>
-                </div>
-                
-                {/* Holidays - Compact */}
-                <div className="p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-xs text-gray-600 text-center">
-                    <span className="font-semibold">Closed:</span> Weekends • CNY (Jan 29-Feb 4) • National Day (Oct 1-7)
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* China Silver Market Overview - COMPACT */}
-          <section id="china-market" className="mb-4 scroll-mt-24">
-            <div className="rounded-lg bg-white border border-gray-300 shadow-md p-2 sm:p-3">
-              <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center gap-1.5">
-                <ChinaFlag size="sm" /> China Silver Market
-              </h2>
-              <p className="text-xs text-gray-500 mb-2">
-                World&apos;s largest silver consumer driving global prices.
-              </p>
-              
-              {/* Key Stats - Compact single row */}
-              <div className="grid grid-cols-4 gap-1.5 mb-2">
-                <div className="text-center p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-sm font-bold text-gray-800">30%</p>
-                  <p className="text-[11px] text-gray-500">Global Use</p>
-                </div>
-                <div className="text-center p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-sm font-bold text-gray-800">4.5K</p>
-                  <p className="text-[11px] text-gray-500">Tonnes/yr</p>
-                </div>
-                <div className="text-center p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-sm font-bold text-gray-800">70%</p>
-                  <p className="text-[11px] text-gray-500">Imported</p>
-                </div>
-                <div className="text-center p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-sm font-bold text-gray-800">#1</p>
-                  <p className="text-[11px] text-gray-500">Solar PV</p>
-                </div>
-              </div>
-              
-              {/* Demand - Compact inline */}
-              <div className="p-1.5 rounded bg-gray-50 border border-gray-300">
-                <p className="text-xs text-gray-600 text-center">
-                  <span className="font-semibold">Demand:</span> Solar 45% • Electronics 25% • Jewelry 15% • Investment 10%
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Compare Section - COMPACT */}
-          <section className="mb-4">
-            <h2 className="text-sm font-bold mb-2 text-gray-700">
-              🌏 Compare Prices
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-              <Link 
-                href="/"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  <IndiaFlag size="sm" />
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-800">India Rate</h3>
-                    <p className="text-xs text-gray-500">₹{price?.indiaRatePerGram?.toFixed(0) || 400}/g →</p>
-                  </div>
-                </div>
-              </Link>
-              
-              <Link 
-                href="/qatar"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  {/* Qatar flag - compact */}
-                  <svg className="w-5 h-3.5 rounded" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="30" height="20" fill="#8D1B3D"/>
-                    <polygon points="0,0 12,0 6,2.22 12,4.44 6,6.67 12,8.89 6,11.11 12,13.33 6,15.56 12,17.78 6,20 0,20" fill="#FFFFFF"/>
-                  </svg>
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-800">Qatar Rate</h3>
-                    <p className="text-xs text-gray-500">QAR prices →</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </section>
-
-          {/* ================================================================ */}
-          {/* INTERNATIONAL LANGUAGE BLOCKS - COMPACT */}
-          {/* ================================================================ */}
-          <section className="mb-4">
-            <h2 className="text-sm font-bold mb-2 text-gray-700">
-              🌐 Price in Other Languages
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-              {/* German */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <GermanyFlag size="xs" />
-                  <span className="text-xs font-semibold text-gray-700">DE</span>
-                </div>
-                <p className="text-xs text-gray-600">Silberpreis: ¥{price?.pricePerKgCny?.toFixed(0) || "26,400"}/kg</p>
-              </div>
-              {/* Hindi */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <IndiaFlag size="xs" />
-                  <span className="text-xs font-semibold text-gray-700">HI</span>
-                </div>
-                <p className="text-xs text-gray-600">चांदी: ₹{price?.indiaRatePerGram?.toFixed(0) || "344"}/ग्राम</p>
-              </div>
-              {/* Korean */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <svg className="w-3.5 h-2.5 rounded" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="30" height="20" fill="#FFFFFF"/>
-                    <circle cx="15" cy="10" r="5" fill="#C60C30"/>
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-700">KO</span>
-                </div>
-                <p className="text-xs text-gray-600">은 가격: ${price?.pricePerOzUsd?.toFixed(0) || "121"}/oz</p>
-              </div>
-              {/* Vietnamese */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <svg className="w-3.5 h-2.5 rounded" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="30" height="20" fill="#DA251D"/>
-                    <polygon points="15,5 16.5,9 21,9 17.5,12 18.5,16 15,13 11.5,16 12.5,12 9,9 13.5,9" fill="#FFFF00"/>
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-700">VI</span>
-                </div>
-                <p className="text-xs text-gray-600">Giá bạc: ${price?.pricePerOzUsd?.toFixed(0) || "121"}/oz</p>
-              </div>
-              {/* Polish */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <svg className="w-3.5 h-2.5 rounded border" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="30" height="10" fill="#FFFFFF"/>
-                    <rect y="10" width="30" height="10" fill="#DC143C"/>
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-700">PL</span>
-                </div>
-                <p className="text-xs text-gray-600">Cena srebra: ${price?.pricePerOzUsd?.toFixed(0) || "121"}/oz</p>
-              </div>
-              {/* Turkish */}
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <svg className="w-3.5 h-2.5 rounded" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="30" height="20" fill="#E30A17"/>
-                    <circle cx="11" cy="10" r="4" fill="#FFFFFF"/>
-                    <circle cx="12" cy="10" r="3" fill="#E30A17"/>
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-700">TR</span>
-                </div>
-                <p className="text-xs text-gray-600">Gümüş: ${price?.pricePerOzUsd?.toFixed(0) || "121"}/oz</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Data Sources - COMPACT */}
-          <section className="mb-4">
-            <div className="rounded-lg p-2 sm:p-3 bg-white border border-gray-300 shadow-md">
-              <h2 className="text-sm font-bold mb-2 text-gray-700">
-                📊 Data Sources
-              </h2>
-              <div className="grid grid-cols-2 gap-1.5 mb-2">
-                <div className="p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-xs font-semibold text-gray-700">📈 Silver Price</p>
-                  <p className="text-[11px] text-gray-500">COMEX via Yahoo Finance • 30s updates</p>
-                </div>
-                <div className="p-1.5 rounded bg-gray-50 border border-gray-300">
-                  <p className="text-xs font-semibold text-gray-700">💱 Exchange Rates</p>
-                  <p className="text-[11px] text-gray-500">USD/CNY, USD/INR • ECB + Frankfurter</p>
-                </div>
-              </div>
-              <div className="p-1.5 rounded bg-gray-50 border border-gray-300 mb-2">
-                <p className="text-xs text-gray-600 text-center">
-                  <span className="font-semibold">Formula:</span> Shanghai = COMEX × (1 + 10-15% Premium) × USD/CNY × 32.15
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-1 justify-center text-[11px]">
-                <a href="https://www.sge.com.cn" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">SGE</a>
-                <span className="text-gray-300">•</span>
-                <a href="https://www.cmegroup.com/markets/metals/precious/silver.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">COMEX</a>
-                <span className="text-gray-300">•</span>
-                <a href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">ECB</a>
-              </div>
-            </div>
-          </section>
-
-          {/* ================================================================ */}
-          {/* UNDERSTANDING SILVER PRICE DISCOVERY - COMPACT */}
-          {/* ================================================================ */}
-          <section className="mb-6">
-            <div className="rounded-lg p-3 sm:p-4 bg-white border border-gray-300 shadow-md">
-              <h2 className="text-base font-bold mb-2 text-gray-800">
-                📈 Understanding Silver Price Discovery: COMEX vs Shanghai
-              </h2>
-              
-              <p className="text-xs text-gray-600 mb-3">
-                Silver prices are set by <strong>COMEX</strong> (NY) and <strong>London OTC</strong>. 
-                The <strong>SGE</strong> has become Asia&apos;s key pricing reference, often trading at a premium.
-              </p>
-
-              {/* What is COMEX and SGE - Two Column Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
-                {/* What is COMEX */}
-                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
-                  <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                    <USFlag size="sm" /> What is COMEX Silver?
-                  </h3>
-                  <p className="text-xs text-gray-600 mb-2">
-                    <strong>COMEX</strong> (Commodity Exchange) is part of CME Group and hosts the world&apos;s most 
-                    traded silver futures contracts, operating nearly 24/5.
-                  </p>
-                  <div className="grid grid-cols-2 gap-1.5 text-xs text-gray-600 mb-2">
-                    <div className="p-1.5 rounded bg-white border border-blue-100">
-                      <strong>Contract:</strong> 5,000 oz
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-blue-100">
-                      <strong>Hours:</strong> Sun-Fri
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-blue-100">
-                      <strong>Purity:</strong> 99.99%
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-blue-100">
-                      <strong>Price:</strong> ${price?.comexUsd?.toFixed(2) || "108.50"}/oz
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Global benchmark for silver price discovery.
-                  </p>
-                </div>
-
-                {/* What is SGE */}
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                  <h3 className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-2">
-                    <ChinaFlag size="sm" /> What is SGE?
-                  </h3>
-                  <p className="text-xs text-gray-600 mb-2">
-                    <strong>Shanghai Gold Exchange</strong> is China&apos;s largest precious metals exchange (est. 2002), 
-                    trading in CNY as Asia&apos;s primary pricing reference.
-                  </p>
-                  <div className="grid grid-cols-2 gap-1.5 text-xs text-gray-600 mb-2">
-                    <div className="p-1.5 rounded bg-white border border-red-100">
-                      <strong>Contract:</strong> Ag(T+D)
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-red-100">
-                      <strong>Unit:</strong> 1 kg (99.99%)
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-red-100">
-                      <strong>Day:</strong> 9-11:30, 1:30-3:30
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-red-100">
-                      <strong>Price:</strong> ¥{((price?.pricePerKgCny || 27000) / 1000).toFixed(0)}k/kg
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Sets benchmark for Chinese domestic market.
-                  </p>
-                </div>
-              </div>
-
-              {/* Data Sources & Disclaimer - Two Column Compact */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {/* Left: Calculated Price Disclaimer */}
-                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
-                  <h3 className="text-xs font-semibold text-blue-800 mb-2 flex items-center gap-1.5">
-                    ⚠️ Calculated Price (Not Direct SGE)
-                  </h3>
-                  <p className="text-xs text-gray-600 mb-2">
-                    Prices are <strong>estimates</strong> based on COMEX + Shanghai premium.
-                  </p>
-                  <div className="grid grid-cols-3 gap-1 text-[11px] mb-2">
-                    <div className="p-1.5 rounded bg-white border border-blue-100 text-center">
-                      <strong>COMEX</strong><br/>Yahoo API
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-blue-100 text-center">
-                      <strong>FX Rate</strong><br/>Frankfurter
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-blue-100 text-center">
-                      <strong>Premium</strong><br/>10-15%+
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-gray-500">
-                    Official: <a href="https://en.sge.com.cn/data_DelayedQuotes" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">SGE Quotes</a>
+                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 mb-4">
+                  <p className="text-xs font-bold text-blue-800 mb-1">Price Calculation Formula:</p>
+                  <p className="text-sm text-blue-700 font-mono">
+                    Shanghai = COMEX × (1 + Premium%) × USD/CNY × 32.15
                   </p>
                 </div>
                 
-                {/* Right: SHAG Benchmark */}
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
-                  <h4 className="font-semibold text-amber-800 text-xs mb-2 flex items-center gap-1.5">
-                    📊 Shanghai Silver Benchmark (SHAG)
-                  </h4>
-                  <p className="text-xs text-amber-700 mb-2">
-                    SHAG is a separate daily fixing by SGE through centralized pricing, used for contract settlements.
-                  </p>
-                  <div className="p-1.5 rounded bg-white border border-amber-200 text-[11px] text-amber-600">
-                    <strong>Official:</strong> <a href="https://en.sge.com.cn/data_SilverBenchmarkPrice" target="_blank" rel="noopener noreferrer" className="text-amber-700 underline">sge.com.cn/data_SilverBenchmarkPrice</a>
-                  </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <a href="https://www.sge.com.cn" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition-colors text-xs font-medium">🇨🇳 SGE Official</a>
+                  <a href="https://www.cmegroup.com/markets/metals/precious/silver.html" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors text-xs font-medium">🇺🇸 COMEX</a>
+                  <a href="https://www.ecb.europa.eu" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-colors text-xs font-medium">🇪🇺 ECB</a>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* ================================================================ */}
-          {/* SILVER PRICE IN CHINA - COMPACT TWO COLUMN */}
-          {/* ================================================================ */}
+            {/* Right: Related Articles */}
+            <section className="scroll-mt-24">
+              <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 h-full">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">📚 Related Articles & Guides</h2>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href="/" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">📈 Live Silver Rate</h3>
+                    <p className="text-xs text-gray-500">India city-wise prices</p>
+                  </Link>
+
+                  <Link href="/learn/what-is-sterling-silver" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">🥈 Sterling Silver</h3>
+                    <p className="text-xs text-gray-500">925 purity guide</p>
+                  </Link>
+
+                  <Link href="/learn/silver-vs-gold-investment" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">⚖️ Silver vs Gold</h3>
+                    <p className="text-xs text-gray-500">Investment comparison</p>
+                  </Link>
+
+                  <Link href="/investment-calculator" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">🧮 Calculator</h3>
+                    <p className="text-xs text-gray-500">Returns calculator</p>
+                  </Link>
+
+                  <Link href="/gold" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">🥇 Gold Rate</h3>
+                    <p className="text-xs text-gray-500">Live gold prices</p>
+                  </Link>
+
+                  <Link href="/silver-price-usd" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">🇺🇸 Silver USD</h3>
+                    <p className="text-xs text-gray-500">COMEX spot price</p>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Multilingual SEO Section - Enhanced for German "silberpreis shanghai live" */}
           <section className="mb-6">
-            <div className="rounded-lg p-3 sm:p-4 bg-white border border-gray-300 shadow-md">
-              <h2 className="text-base font-bold mb-3 text-gray-800">
-                🥈 Silver Price in China: Complete Guide
-              </h2>
+            <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">🌍 Shanghai Silver Price - International</h3>
               
-              <p className="text-xs text-gray-600 mb-3">
-                China is the world&apos;s largest silver consumer. Prices are quoted in <strong>CNY per kilogram</strong> on SGE, 
-                though international comparisons use troy ounces.
-              </p>
-
-              {/* Two Column Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
-                {/* Left: Why China Dominates */}
-                <div className="p-3 rounded-lg bg-gray-50 border border-gray-300">
-                  <h3 className="text-xs font-semibold text-gray-800 mb-2">
-                    🏭 Why China Dominates Silver Demand
-                  </h3>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <div className="p-1.5 rounded bg-white border border-gray-300">
-                      <p className="text-xs font-semibold text-gray-700">☀️ Solar</p>
-                      <p className="text-[11px] text-gray-500">80%+ global panels</p>
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-gray-300">
-                      <p className="text-xs font-semibold text-gray-700">💻 Electronics</p>
-                      <p className="text-[11px] text-gray-500">Semiconductors, batteries</p>
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-gray-300">
-                      <p className="text-xs font-semibold text-gray-700">🚗 EVs</p>
-                      <p className="text-[11px] text-gray-500">1-2 oz per vehicle</p>
-                    </div>
-                    <div className="p-1.5 rounded bg-white border border-gray-300">
-                      <p className="text-xs font-semibold text-gray-700">💎 Jewelry</p>
-                      <p className="text-[11px] text-gray-500">Middle-class demand</p>
-                    </div>
-                  </div>
+              {/* German Section - SEO Target: "silberpreis shanghai live" */}
+              <div className="p-3 rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🇩🇪</span>
+                  <h4 className="text-sm font-bold text-white">Silberpreis Shanghai Live</h4>
                 </div>
-
-                {/* Right: Yuan & Panda Coins */}
-                <div className="space-y-2">
-                  <div className="p-2.5 rounded-lg bg-red-50 border border-red-200">
-                    <h3 className="text-xs font-semibold text-red-800 mb-1">💱 Chinese Yuan (CNY)</h3>
-                    <p className="text-xs text-gray-600">
-                      Renminbi is part of IMF&apos;s SDR basket. SGE trades silver in CNY/kg.
-                    </p>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200">
-                    <h3 className="text-xs font-semibold text-amber-800 mb-1">🐼 Silver Panda Coins</h3>
-                    <p className="text-xs text-gray-600">
-                      Popular bullion since 1983. New design yearly. Legal tender in China.
-                    </p>
-                  </div>
-                </div>
+                <p className="text-xs text-gray-300 mb-2">
+                  Aktueller Shanghai Silberpreis: <span className="font-bold text-yellow-400">${price?.pricePerOzUsd?.toFixed(2) || "81"}/oz</span> (¥{price?.pricePerKgCny?.toLocaleString() || "18,256"}/kg CNY). 
+                  Shanghai Gold Exchange Silberpreis mit +{price?.premiumPercent?.toFixed(0) || "6"}% Aufschlag über COMEX. Live-Updates alle 30 Sekunden.
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Silberpreis Shanghai in Dollar • Shanghai Gold Exchange Silberpreis heute • Aktueller Silberpreis Shanghai
+                </p>
               </div>
-
-              {/* Import Duties - Compact */}
-              <div className="p-2 rounded-lg bg-amber-50 border border-amber-200">
-                <p className="text-xs text-amber-800 text-center">
-                  <strong>Import Costs:</strong> 0-11% duty + 13% VAT = <strong>13-24% above international prices</strong> → Creates Shanghai premium
+              
+              {/* Other Languages */}
+              <div className="space-y-3 text-sm text-gray-600">
+                <p>
+                  <strong className="text-gray-700">🇺🇸 English:</strong>{" "}
+                  shanghai silver price in usd, shanghai silver price in dollars, shanghai vs comex silver price, 
+                  sge silver price today, what time does shanghai silver market open, shanghai silver market opening time
+                </p>
+                <p>
+                  <strong className="text-gray-700">🇵🇱 Polski:</strong>{" "}
+                  kurs srebra szanghaj (${price?.pricePerOzUsd?.toFixed(0) || "81"}/oz), cena srebra szanghaj,
+                  srebro szanghaj vs comex, kurs srebra shanghai giełda
+                </p>
+                <p>
+                  <strong className="text-gray-700">🇮🇳 हिंदी:</strong>{" "}
+                  शंघाई चांदी की कीमत (${price?.pricePerOzUsd?.toFixed(0) || "81"}/oz), शंघाई सिल्वर प्राइस, 
+                  चीन में चांदी का भाव, SGE चांदी दर आज
+                </p>
+                <p>
+                  <strong className="text-gray-700">🇨🇳 中文:</strong>{" "}
+                  上海白银价格 (¥{price?.pricePerKgCny?.toLocaleString() || "18,256"}/kg), 上海黄金交易所白银, 白银T+D价格,
+                  上海期货交易所白银现货价格
                 </p>
               </div>
             </div>
           </section>
 
-          {/* ================================================================ */}
-          {/* CHINA SILVER MARKET NEWS */}
-          {/* News - COMPACT */}
-          {/* ================================================================ */}
-          <section className="mb-4">
-            <h2 className="text-sm font-bold mb-2 text-gray-700">📰 China Silver News</h2>
-            <div className="grid grid-cols-2 gap-1.5">
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm">☀️</span>
-                  <p className="text-xs font-semibold text-gray-700">Solar demand drives premium to 10%+</p>
-                </div>
-              </div>
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm">🏭</span>
-                  <p className="text-xs font-semibold text-gray-700">SGE reports record silver volumes</p>
-                </div>
-              </div>
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm">🔋</span>
-                  <p className="text-xs font-semibold text-gray-700">EV boom boosts industrial demand</p>
-                </div>
-              </div>
-              <div className="rounded p-1.5 bg-gray-50 border border-gray-300">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm">📊</span>
-                  <p className="text-xs font-semibold text-gray-700">Silver imports rise 15% YoY</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ================================================================ */}
-          {/* RELATED ARTICLES */}
-          {/* ================================================================ */}
-          {/* RELATED ARTICLES - COMPACT & SIMPLE */}
-          {/* ================================================================ */}
-          <section className="mb-6">
-            <h2 className="text-sm font-bold mb-2 text-gray-700">
-              📚 Related Articles & Guides
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <Link 
-                href="/"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">📈 Live Silver Rate</h3>
-                <p className="text-xs text-gray-500">City-wise prices in India</p>
-              </Link>
-
-              <Link 
-                href="/learn/what-is-sterling-silver"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">🥈 Sterling Silver</h3>
-                <p className="text-xs text-gray-500">925 purity explained</p>
-              </Link>
-
-              <Link 
-                href="/learn/silver-vs-gold-investment"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">⚖️ Silver vs Gold</h3>
-                <p className="text-xs text-gray-500">Investment comparison</p>
-              </Link>
-
-              <Link 
-                href="/investment-calculator"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">🧮 Calculator</h3>
-                <p className="text-xs text-gray-500">Returns calculator</p>
-              </Link>
-
-              <Link 
-                href="/gold"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">🥇 Gold Rate</h3>
-                <p className="text-xs text-gray-500">Live gold prices</p>
-              </Link>
-
-              <Link 
-                href="/learn/how-to-check-silver-purity"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">🔍 Purity Test</h3>
-                <p className="text-xs text-gray-500">5 easy methods</p>
-              </Link>
-
-              <Link 
-                href="/silver-price-usd"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">🇺🇸 Silver USD</h3>
-                <p className="text-xs text-gray-500">COMEX spot price</p>
-              </Link>
-
-              <Link 
-                href="/gold-and-silver-prices"
-                className="block rounded-lg p-2 bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-300 transition-all"
-              >
-                <h3 className="font-semibold text-xs text-gray-800">📊 Gold & Silver</h3>
-                <p className="text-xs text-gray-500">Compare prices</p>
-              </Link>
-            </div>
-          </section>
-
-          {/* Also Searched - Multilingual SEO Section */}
-          <section className="mb-6">
-            <div className="card p-4 sm:p-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">🌍 Also Searched (Global)</h3>
-              <div className="space-y-3 text-xs text-gray-600">
-                {/* English Long-tail Keywords */}
-                <p>
-                  <strong className="text-gray-700">English:</strong>{" "}
-                  shanghai silver price in usd, shanghai vs comex silver price, 
-                  sge silver price today, shanghai silver benchmark price, 
-                  china silver price per ounce, shanghai silver premium over comex,
-                  shfe silver futures price, ag(t+d) silver price
-                </p>
-                {/* German Keywords - 83 impressions! */}
-                <p>
-                  <strong className="text-gray-700">Deutsch:</strong>{" "}
-                  silberpreis shanghai live, shanghai gold exchange silberpreis,
-                  silberpreis shanghai in dollar, aktueller silberpreis shanghai,
-                  silberpreis shanghai dollar, shanghai silberpreis unze
-                </p>
-                {/* Hindi Keywords */}
-                <p>
-                  <strong className="text-gray-700">हिंदी:</strong>{" "}
-                  शंघाई चांदी की कीमत, शंघाई सिल्वर प्राइस, 
-                  चीन में चांदी का भाव, SGE चांदी दर
-                </p>
-                {/* Chinese Keywords */}
-                <p>
-                  <strong className="text-gray-700">中文:</strong>{" "}
-                  上海白银价格, 上海黄金交易所白银, 白银T+D价格,
-                  上海期货交易所白银, 上海白銀價格美元
-                </p>
-              </div>
-            </div>
-          </section>
-
-            {/* FAQs - Card Style */}
-            <section id="faq" className="mb-6 scroll-mt-24">
-              <div className="card p-4 sm:p-6">
-                <h2 className="text-base sm:text-lg font-bold mb-4 text-gray-900 flex items-center gap-2">
-                  ❓ Frequently Asked Questions
-                </h2>
+          {/* FAQs - Card Style */}
+          <section id="faq" className="mb-6 scroll-mt-24">
+            <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">❓ Frequently Asked Questions</h2>
                 <div className="space-y-2">
                   {faqItems.map((faq, idx) => (
                     <details 
@@ -2009,25 +1418,17 @@ export default async function ShanghaiSilverPricePage() {
               </div>
             </section>
 
-            {/* Footer Note - Card Style */}
-            <footer className="card p-4 sm:p-6 text-center">
+            {/* Footer Note */}
+            <footer className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 text-center">
               <p className="text-sm text-gray-500 mb-2">
                 <strong>Data Sources:</strong> COMEX via Yahoo Finance • Exchange rates via Frankfurter/ExchangeRate APIs
               </p>
               <p className="text-xs text-gray-400">
                 Prices shown are near-real-time indicators calculated from COMEX + estimated Shanghai premium.
-                <br />
                 Actual SGE benchmark may vary ±5%. For official rates, visit{" "}
                 <a href="https://www.sge.com.cn" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f] hover:underline">
                   sge.com.cn
                 </a>
-              </p>
-              <p className="text-xs text-gray-300 mt-3" suppressHydrationWarning>
-                Last updated: <time dateTime={new Date().toISOString().split('T')[0]}>{new Date().toLocaleDateString("en-US", { 
-                  day: "numeric", 
-                  month: "long", 
-                  year: "numeric" 
-                })}</time>
               </p>
             </footer>
           </div>
