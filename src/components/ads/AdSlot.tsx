@@ -180,49 +180,76 @@ export function AdSlot({
   }, [showAds]);
 
   // ========================================================================
-  // ADSENSE INITIALIZATION - Wait for container to have width
+  // ADSENSE INITIALIZATION - Wait for ins element to be in DOM with proper width
   // ========================================================================
   useEffect(() => {
     if (!isVisible || !showAds || testMode || isLoaded) return;
-    if (!containerRef.current) return;
 
-    // Wait for container to have actual width (avoid "availableWidth=0" error)
+    // Wait for next frame to ensure DOM is updated
     const checkAndPush = () => {
+      const insElement = adRef.current;
       const container = containerRef.current;
-      if (!container) return false;
       
+      // Verify ins element exists in DOM
+      if (!insElement || !container) {
+        return false;
+      }
+      
+      // Check if ins element is actually in the document
+      if (!document.body.contains(insElement)) {
+        return false;
+      }
+      
+      // Check container has width
       const width = container.getBoundingClientRect().width;
       if (width < 50) {
-        // Container too narrow, wait and retry
         return false;
+      }
+      
+      // Check if this ad slot was already processed (has iframe child)
+      if (insElement.querySelector('iframe')) {
+        setIsLoaded(true);
+        return true;
       }
 
       try {
         // Push ad to AdSense
-        ((window as unknown as { adsbygoogle: unknown[] }).adsbygoogle =
-          (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle || []).push({});
-        setIsLoaded(true);
-        return true;
-      } catch (error) {
-        console.error("[AdSlot] Error loading ad:", error);
+        const adsbygoogle = (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle;
+        if (adsbygoogle && typeof adsbygoogle.push === 'function') {
+          adsbygoogle.push({});
+          setIsLoaded(true);
+          return true;
+        }
         return false;
+      } catch (error) {
+        // Silently fail - AdSense errors are common and expected sometimes
+        setIsLoaded(true); // Mark as loaded to prevent retries
+        return true;
       }
     };
 
-    // Try immediately
-    if (checkAndPush()) return;
-
-    // Retry a few times with delay
+    // Use requestAnimationFrame to ensure DOM is painted
+    let rafId: number;
     let retries = 0;
-    const maxRetries = 5;
-    const interval = setInterval(() => {
-      retries++;
-      if (checkAndPush() || retries >= maxRetries) {
-        clearInterval(interval);
-      }
-    }, 200);
+    const maxRetries = 10;
+    
+    const attemptPush = () => {
+      rafId = requestAnimationFrame(() => {
+        if (checkAndPush()) return;
+        
+        retries++;
+        if (retries < maxRetries) {
+          // Wait 100ms and retry
+          setTimeout(attemptPush, 100);
+        }
+      });
+    };
+    
+    attemptPush();
 
-    return () => clearInterval(interval);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [isVisible, showAds, testMode, isLoaded]);
 
   // ========================================================================
