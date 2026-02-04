@@ -254,42 +254,36 @@ function setToCache<T>(key: string, data: T): void {
 // ============================================================================
 
 /**
+ * List of CORS proxies to try (in order of reliability)
+ */
+const CORS_PROXIES = [
+  // corsproxy.io - reliable and fast
+  (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  // cors.sh - another option
+  (url: string) => `https://cors.sh/${url}`,
+  // thingproxy - backup
+  (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+/**
  * Fetch commodity price from Yahoo Finance
- * Uses CORS proxy for browser compatibility
+ * Uses multiple CORS proxies for browser compatibility
  */
 async function fetchYahooPrice(symbol: string): Promise<number | null> {
-  try {
-    // Try direct fetch first (works on some browsers)
-    const response = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`,
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0',
-        },
-      }
-    );
-    
-    if (!response.ok) {
-      throw new Error('Direct fetch failed');
-    }
-    
-    const data = await response.json();
-    const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-    
-    if (price && typeof price === 'number' && price > 0) {
-      return price;
-    }
-    
-    return null;
-  } catch {
-    // If direct fetch fails due to CORS, try with a proxy
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+  
+  // Try each CORS proxy until one works
+  for (const proxyFn of CORS_PROXIES) {
     try {
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`
-      )}`;
+      const proxyUrl = proxyFn(yahooUrl);
       
-      const response = await fetch(proxyUrl);
-      if (!response.ok) return null;
+      const response = await fetch(proxyUrl, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) continue;
       
       const data = await response.json();
       const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
@@ -297,12 +291,15 @@ async function fetchYahooPrice(symbol: string): Promise<number | null> {
       if (price && typeof price === 'number' && price > 0) {
         return price;
       }
-      
-      return null;
     } catch {
-      return null;
+      // Try next proxy
+      continue;
     }
   }
+  
+  // All proxies failed
+  console.error('[fetchYahooPrice] All CORS proxies failed for', symbol);
+  return null;
 }
 
 /**

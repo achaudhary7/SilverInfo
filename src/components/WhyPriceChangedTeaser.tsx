@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchSilverPrice } from "@/lib/clientPriceApi";
 
 interface MarketData {
   pricePerGram: number;
@@ -39,13 +40,16 @@ export default function WhyPriceChangedTeaser() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch from API - server-side caching handles freshness
-        // Note: `next: { revalidate }` doesn't work in client components
-        // Edge caching via Cache-Control headers in API route handles this
-        const response = await fetch("/api/price");
-        if (response.ok) {
-          const data = await response.json();
-          setMarketData(data);
+        // Fetch from client-side API (uses CORS proxy)
+        const priceData = await fetchSilverPrice();
+        if (priceData) {
+          setMarketData({
+            pricePerGram: priceData.pricePerGram,
+            change24h: priceData.change24h,
+            changePercent24h: priceData.changePercent24h,
+            usdInr: priceData.usdInr || 84,
+            comexUsd: priceData.comexUsd || 30,
+          });
         }
       } catch (error) {
         console.error("Error fetching market data:", error);

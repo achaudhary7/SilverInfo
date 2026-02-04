@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
+import { fetchSilverPrice } from "@/lib/clientPriceApi";
 
 interface PriceDriver {
   factor: string;
@@ -40,16 +41,22 @@ export default function WhyPriceChanged() {
     try {
       setIsLoading(true);
       
-      // Fetch current price data from our API
-      // Edge caching via Cache-Control headers in API route handles this
-      // Note: `next: { revalidate }` doesn't work in client components
-      const response = await fetch("/api/price");
+      // Fetch current price data from client-side API
+      const priceData = await fetchSilverPrice();
       
-      if (!response.ok) {
+      if (!priceData) {
         throw new Error("Failed to fetch price data");
       }
       
-      const data = await response.json();
+      const data: MarketData = {
+        pricePerGram: priceData.pricePerGram,
+        change24h: priceData.change24h,
+        changePercent24h: priceData.changePercent24h,
+        usdInr: priceData.usdInr || 84,
+        comexUsd: priceData.comexUsd || 30,
+        timestamp: priceData.timestamp,
+      };
+      
       setMarketData(data);
       
       // Generate drivers based on REAL data

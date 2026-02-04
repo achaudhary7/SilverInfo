@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
+import { fetchSilverPrice } from "@/lib/clientPriceApi";
 
 interface PriceData {
   pricePerGram: number;
@@ -24,12 +25,17 @@ export default function LivePriceWidget() {
   const [price, setPrice] = useState<PriceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchPrice = useCallback(async () => {
+  const fetchPriceData = useCallback(async () => {
     try {
-      const response = await fetch("/api/price");
-      if (response.ok) {
-        const data = await response.json();
-        setPrice(data);
+      const priceData = await fetchSilverPrice();
+      if (priceData) {
+        setPrice({
+          pricePerGram: priceData.pricePerGram,
+          pricePerKg: priceData.pricePerKg,
+          change24h: priceData.change24h,
+          changePercent24h: priceData.changePercent24h,
+          lastUpdated: priceData.timestamp,
+        });
       }
     } catch (error) {
       console.error("Error fetching price:", error);
@@ -41,7 +47,7 @@ export default function LivePriceWidget() {
   // Use visibility-aware polling - pauses when tab is hidden
   // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
   useVisibilityAwarePolling({
-    callback: fetchPrice,
+    callback: fetchPriceData,
     interval: DEFAULT_POLL_INTERVAL, // 6 hours
     enabled: true,
     fetchOnMount: true,
