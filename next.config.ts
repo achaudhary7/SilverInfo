@@ -48,11 +48,15 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://news.google.com",
+              // Scripts: self + Google Analytics + AdSense + DoubleClick
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://news.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.google.com https://tpc.googlesyndication.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://query1.finance.yahoo.com https://api.frankfurter.app https://www.google-analytics.com https://api.metalpriceapi.com https://www.goldapi.io",
+              // Connect: APIs + Analytics + AdSense
+              "connect-src 'self' https://query1.finance.yahoo.com https://api.frankfurter.app https://www.google-analytics.com https://api.metalpriceapi.com https://www.goldapi.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
+              // Frame-src: Allow AdSense ad iframes
+              "frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://pagead2.googlesyndication.com",
               "frame-ancestors 'none'",
             ].join("; "),
           },
