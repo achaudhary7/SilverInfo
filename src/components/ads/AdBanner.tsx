@@ -261,6 +261,22 @@ function VerticalAd({ className = "", testMode }: BannerProps) {
 }
 
 // ============================================================================
+// NAMED EXPORTS (Alternative pattern for Next.js compatibility)
+// ============================================================================
+
+export {
+  HeaderBanner as AdHeader,
+  FooterBanner as AdFooter,
+  InContentBanner as AdInContent,
+  SidebarAd as AdSidebar,
+  MobileAnchorAd as AdMobileAnchor,
+  ArticleAd as AdArticle,
+  ArticleAd2 as AdArticle2,
+  MultiplexAd as AdMultiplex,
+  VerticalAd as AdVertical,
+};
+
+// ============================================================================
 // EXPORT COMPOUND COMPONENT
 // ============================================================================
 

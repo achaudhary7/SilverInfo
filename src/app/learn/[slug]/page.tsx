@@ -10,7 +10,7 @@ import {
 } from "@/lib/markdown";
 import { LivePriceWidget } from "@/components/price";
 import AuthorBio, { ReviewedByBadge } from "@/components/AuthorBio";
-import { AdBanner } from "@/components/ads";
+import { AdArticle, AdSidebar, AdFooter } from "@/components/ads";
 
 // ISR: Revalidate articles every day (content rarely changes after publish)
 export const revalidate = 86400;
@@ -192,7 +192,7 @@ export default async function LearnArticlePage({
                 </div>
 
                 {/* Ad: In-Article */}
-                <AdBanner.Article />
+                <AdArticle />
                 
                 {article.tags && article.tags.length > 0 && (
                   <div className="mt-8 pt-6 border-t border-gray-200">
@@ -289,13 +289,13 @@ export default async function LearnArticlePage({
               </div>
               
               {/* Ad: Sidebar */}
-              <AdBanner.Sidebar />
+              <AdSidebar />
             </div>
           </div>
         </div>
         
         {/* Ad: Footer */}
-        <AdBanner.Footer />
+        <AdFooter />
       </div>
     </>
   );

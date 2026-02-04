@@ -255,15 +255,26 @@ function setToCache<T>(key: string, data: T): void {
 
 /**
  * List of CORS proxies to try (in order of reliability)
+ * Note: Free CORS proxies can be unreliable. Consider:
+ * 1. Self-hosted CORS proxy on Cloudflare Workers (recommended)
+ * 2. Using server-side API routes instead
  */
 const CORS_PROXIES = [
-  // corsproxy.io - reliable and fast
+  // allorigins - generally reliable
+  (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  // corsproxy.io - fast when working
   (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  // cors.sh - another option
-  (url: string) => `https://cors.sh/${url}`,
+  // cors-anywhere (herokuapp) - may have rate limits
+  (url: string) => `https://cors-anywhere.herokuapp.com/${url}`,
   // thingproxy - backup
   (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
 ];
+
+// Fallback prices when all APIs fail (updated periodically)
+const FALLBACK_PRICES = {
+  'SI=F': 30.50,  // Silver USD per oz (approximate)
+  'GC=F': 2050.00, // Gold USD per oz (approximate)
+};
 
 /**
  * Fetch commodity price from Yahoo Finance
@@ -281,6 +292,8 @@ async function fetchYahooPrice(symbol: string): Promise<number | null> {
         headers: {
           'Accept': 'application/json',
         },
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(5000),
       });
       
       if (!response.ok) continue;
@@ -297,10 +310,16 @@ async function fetchYahooPrice(symbol: string): Promise<number | null> {
     }
   }
   
-  // All proxies failed
-  console.error('[fetchYahooPrice] All CORS proxies failed for', symbol);
-  return null;
+  // All proxies failed - return fallback price
+  console.warn('[fetchYahooPrice] All CORS proxies failed for', symbol, '- using fallback price');
+  return FALLBACK_PRICES[symbol as keyof typeof FALLBACK_PRICES] || null;
 }
+
+// Fallback exchange rates (updated periodically)
+const FALLBACK_RATES = {
+  usdInr: 83.50,
+  usdCny: 7.25,
+};
 
 /**
  * Fetch exchange rates from Frankfurter API
@@ -308,10 +327,14 @@ async function fetchYahooPrice(symbol: string): Promise<number | null> {
 async function fetchExchangeRates(): Promise<{ usdInr: number; usdCny: number } | null> {
   try {
     const response = await fetch(
-      'https://api.frankfurter.app/latest?from=USD&to=INR,CNY'
+      'https://api.frankfurter.app/latest?from=USD&to=INR,CNY',
+      { signal: AbortSignal.timeout(5000) }
     );
     
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn('[fetchExchangeRates] API returned', response.status, '- using fallback rates');
+      return FALLBACK_RATES;
+    }
     
     const data = await response.json();
     const inr = data.rates?.INR;
@@ -321,9 +344,10 @@ async function fetchExchangeRates(): Promise<{ usdInr: number; usdCny: number } 
       return { usdInr: inr, usdCny: cny };
     }
     
-    return null;
-  } catch {
-    return null;
+    return FALLBACK_RATES;
+  } catch (error) {
+    console.warn('[fetchExchangeRates] Failed to fetch rates:', error, '- using fallback');
+    return FALLBACK_RATES;
   }
 }
 

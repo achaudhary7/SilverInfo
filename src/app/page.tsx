@@ -13,7 +13,7 @@ import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib
 import PriceSourceBadge from "@/components/ui/PriceSourceBadge";
 import MarketStatus from "@/components/ui/MarketStatus";
 import PriceFormulaCard from "@/components/ui/PriceFormulaCard";
-import { AdBanner } from "@/components/ads";
+import { AdHeader, AdFooter, AdInContent, AdSidebar } from "@/components/ads";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
 export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness, SSR provides initial data)
@@ -589,7 +589,7 @@ export default async function HomePage() {
         </section>
         
         {/* Ad: After Hero Section - Horizontal Banner */}
-        <AdBanner.Header className="border-b border-gray-200" />
+        <AdHeader className="border-b border-gray-200" />
         
         {/* Features Bar - Hidden on very small screens, visible on larger mobiles */}
         <section className="bg-[#1e3a5f] py-3 sm:py-4 hidden sm:block">
@@ -737,7 +737,7 @@ export default async function HomePage() {
             </div>
             
             {/* Ad: In-Content - Between Updates/Calculator and Market Factors */}
-            <AdBanner.InContent />
+            <AdInContent />
             
             {/* Why Price Changed - Full Width Section */}
             <div id="market-factors" className="mb-6 sm:mb-8 scroll-mt-20">
@@ -930,14 +930,14 @@ export default async function HomePage() {
                 </div>
                 
                 {/* Ad: Sidebar - Square Ad */}
-                <AdBanner.Sidebar />
+                <AdSidebar />
               </div>
             </div>
           </div>
         </section>
         
         {/* Ad: Before Educational Content - Full Width */}
-        <AdBanner.InContent className="bg-white py-4" />
+        <AdInContent className="bg-white py-4" />
         
         {/* Educational Content Sections */}
         <section className="py-6 sm:py-12 bg-gray-50">
@@ -1121,7 +1121,7 @@ export default async function HomePage() {
         </section>
         
         {/* Ad: Footer Banner - Before Footer */}
-        <AdBanner.Footer />
+        <AdFooter />
       </div>
     </>
   );

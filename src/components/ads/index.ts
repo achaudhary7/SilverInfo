@@ -90,3 +90,16 @@ export type { AdSlotProps, AdFormat, AdLayoutKey } from "./AdSlot";
 
 // Pre-configured banner components
 export { AdBanner } from "./AdBanner";
+
+// Named exports for Next.js SSG compatibility
+export { 
+  AdHeader, 
+  AdFooter, 
+  AdInContent, 
+  AdSidebar, 
+  AdMobileAnchor, 
+  AdArticle, 
+  AdArticle2, 
+  AdMultiplex, 
+  AdVertical 
+} from "./AdBanner";
