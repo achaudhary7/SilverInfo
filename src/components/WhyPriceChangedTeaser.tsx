@@ -39,10 +39,10 @@ export default function WhyPriceChangedTeaser() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Use Edge cache to reduce requests
-        const response = await fetch("/api/price", {
-          next: { revalidate: 15 },
-        });
+        // Fetch from API - server-side caching handles freshness
+        // Note: `next: { revalidate }` doesn't work in client components
+        // Edge caching via Cache-Control headers in API route handles this
+        const response = await fetch("/api/price");
         if (response.ok) {
           const data = await response.json();
           setMarketData(data);

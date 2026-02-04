@@ -45,7 +45,7 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = 600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
 
 export default async function CityPage({
   params,

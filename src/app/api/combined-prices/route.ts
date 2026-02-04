@@ -10,8 +10,8 @@
 import { NextResponse } from "next/server";
 import { getCombinedMetalPrices } from "@/lib/metalApi";
 
-// Cache for 60 seconds (balances freshness vs Edge Request reduction)
-export const revalidate = 60;
+// Cache for 1 hour (maximized to reduce ISR writes - client polling handles freshness)
+export const revalidate = 3600;
 
 export async function GET() {
   try {
@@ -30,7 +30,7 @@ export async function GET() {
 
     return NextResponse.json(prices, {
       headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
       },
     });
   } catch (error) {

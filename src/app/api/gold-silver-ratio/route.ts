@@ -10,8 +10,8 @@
 import { NextResponse } from "next/server";
 import { calculateGoldSilverRatio } from "@/lib/metalApi";
 
-// Cache for 5 minutes (ISR)
-export const revalidate = 300;
+// Cache for 1 hour (maximized to reduce ISR writes)
+export const revalidate = 3600;
 
 export async function GET() {
   try {
@@ -29,7 +29,7 @@ export async function GET() {
 
     return NextResponse.json(ratio, {
       headers: {
-        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
       },
     });
   } catch (error) {

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getShanghaiSilverPrice } from "@/lib/shanghaiApi";
 
-// ISR: Cache for 60 seconds, revalidate in background
-// This reduces Edge Requests by ~95% while keeping data fresh
-export const revalidate = 60;
+// ISR: Cache for 1 hour (maximized to reduce ISR writes)
+// Client-side polling handles freshness, server cache prevents redundant computation
+export const revalidate = 3600;
 
 /**
  * GET /api/shanghai-price
@@ -28,9 +28,9 @@ export async function GET() {
     
     return NextResponse.json(price, {
       headers: {
-        // Cache at Edge for 60s, serve stale while revalidating for up to 120s
-        // This provides near-real-time data while reducing Edge Requests by ~95%
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        // Cache at Edge for 1 hour, serve stale while revalidating for up to 2 hours
+        // Maximized caching to reduce ISR writes - client polling handles freshness
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
       },
     });
   } catch (error) {

@@ -196,7 +196,7 @@ async function fetchGoldUSD(): Promise<number | null> {
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1d',
       { 
-        next: { revalidate: 600 }, // Cache for 10 minutes
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -377,16 +377,16 @@ async function _fetchGoldPrice(): Promise<GoldPrice | null> {
  * Get Gold Price - CACHED VERSION
  * 
  * Uses unstable_cache for data-layer caching:
- * - Cache TTL: 15 seconds (for near-real-time feel)
- * - All requests within 15s window share the same cached result
- * - External APIs (Yahoo Finance, Frankfurter) only called once per 15s
- * - Reduces Edge Requests to external services by ~90%
+ * - Cache TTL: 1 hour (maximized to reduce ISR writes)
+ * - All requests within 1 hour window share the same cached result
+ * - External APIs (Yahoo Finance, Frankfurter) only called once per hour
+ * - Client-side polling with visibility-awareness handles freshness
  */
 export const getGoldPrice = unstable_cache(
   _fetchGoldPrice,
   ["gold-price-inr"],
   {
-    revalidate: 60, // Cache for 60 seconds
+    revalidate: 3600, // Cache for 1 hour (maximized to reduce ISR writes)
     tags: ["gold-price"],
   }
 );

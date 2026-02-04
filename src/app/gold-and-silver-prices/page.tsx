@@ -128,7 +128,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // PAGE CONFIG
 // ============================================================================
 
-export const revalidate = 60; // ISR: Revalidate every 1 minute
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness, SSR provides initial data)
 
 // ============================================================================
 // FAQ DATA (Expanded for better SEO)

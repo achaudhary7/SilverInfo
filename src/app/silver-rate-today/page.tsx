@@ -11,7 +11,7 @@ import SeasonalComparison from "@/components/SeasonalComparison";
 import BookmarkCity from "@/components/BookmarkCity";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
-export const revalidate = 600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
 
 // Page content last reviewed date - now dynamic
 const LAST_UPDATED = new Date().toISOString().split('T')[0];

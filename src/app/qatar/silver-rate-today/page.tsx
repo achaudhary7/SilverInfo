@@ -5,7 +5,7 @@ import { DynamicPriceChart } from "@/components/DynamicChart";
 import FAQ from "@/components/FAQ";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
-export const revalidate = 600; // ISR: revalidate every 10 minutes
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
 
 // Dynamic metadata with date for freshness signal (SEO best practice)
 export async function generateMetadata(): Promise<Metadata> {

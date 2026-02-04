@@ -14,7 +14,7 @@
 import { getAllUpdates } from "@/lib/markdown";
 
 // ISR: Revalidate every hour (news articles don't change that frequently)
-export const revalidate = 3600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours
 
 export async function GET() {
   const baseUrl = "https://silverinfo.in";

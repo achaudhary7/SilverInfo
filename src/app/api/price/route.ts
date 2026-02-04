@@ -14,10 +14,11 @@ import { updateDailyExtremes, type DailyExtremes } from "@/lib/priceStorage";
 // 2. OR create a separate lightweight API that only fetches fresh prices
 // ============================================================================
 
-// ISR: Cache for 60 seconds at Edge
+// ISR: Cache for 1 hour at Edge (maximized to reduce ISR writes)
 // Data-layer caching via unstable_cache handles external API calls
 // Daily extremes tracking still works on cache misses
-export const revalidate = 60;
+// Client-side polling with visibility-awareness handles freshness
+export const revalidate = 3600;
 
 // Extended response type with daily extremes
 interface PriceResponse {
@@ -80,10 +81,10 @@ export async function GET() {
     
     return NextResponse.json(response, {
       headers: {
-        // Cache at Edge for 60s, serve stale while revalidating for up to 120s
-        // This provides near-real-time data while reducing Edge Requests by ~95%
+        // Cache at Edge for 1 hour, serve stale while revalidating for up to 2 hours
+        // Maximized caching to reduce ISR writes - client polling handles freshness
         // Note: Daily extremes tracking still works via updateDailyExtremes() call above
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
       },
     });
   } catch (error) {

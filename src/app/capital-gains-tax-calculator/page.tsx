@@ -6,7 +6,7 @@ import CapitalGainsTaxCalculator from "@/components/CapitalGainsTaxCalculator";
 import FAQ from "@/components/FAQ";
 import { LiveRateCard } from "@/components/price";
 
-export const revalidate = 600;
+export const revalidate = 86400; // ISR: Revalidate once per day (calculators use client-side price)
 
 // Page last updated date
 const LAST_UPDATED = "2026-01-23";

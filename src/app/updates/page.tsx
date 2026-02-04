@@ -5,7 +5,7 @@ import { getAllUpdates, formatDate } from "@/lib/markdown";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 
 // ISR: Revalidate every hour for fresh article list
-export const revalidate = 3600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (content doesn't change frequently)
 
 export const metadata: Metadata = {
   title: "Silver Market Updates - Daily Price News & Analysis - SilverInfo.in",

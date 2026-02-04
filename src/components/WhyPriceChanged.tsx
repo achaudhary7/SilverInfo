@@ -41,10 +41,9 @@ export default function WhyPriceChanged() {
       setIsLoading(true);
       
       // Fetch current price data from our API
-      // Use Edge cache to reduce requests
-      const response = await fetch("/api/price", {
-        next: { revalidate: 15 },
-      });
+      // Edge caching via Cache-Control headers in API route handles this
+      // Note: `next: { revalidate }` doesn't work in client components
+      const response = await fetch("/api/price");
       
       if (!response.ok) {
         throw new Error("Failed to fetch price data");

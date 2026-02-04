@@ -90,18 +90,19 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Edge caching for SSR pages with stale-while-revalidate
+      // Edge caching for SSR pages - maximized to 8 hours to reduce ISR writes
+      // Client-side polling with visibility-awareness handles freshness
       // Per Vercel docs: s-maxage for CDN cache, stale-while-revalidate for async updates
       {
         source: "/silver-price-usd",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
           {
             key: "CDN-Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
         ],
       },
@@ -110,11 +111,11 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
           {
             key: "CDN-Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
         ],
       },
@@ -123,39 +124,39 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
           {
             key: "CDN-Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
         ],
       },
-      // Home page - slightly longer cache since it's high traffic
+      // Home page - maximized caching, client polling handles freshness
       {
         source: "/",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
           {
             key: "CDN-Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
         ],
       },
-      // Gold page - high-volume keywords (Delhi, Chennai, Coimbatore, Punjab)
+      // Gold page - maximized caching
       {
         source: "/gold",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
           {
             key: "CDN-Cache-Control",
-            value: "public, s-maxage=60, stale-while-revalidate=300",
+            value: "public, s-maxage=28800, stale-while-revalidate=86400",
           },
         ],
       },

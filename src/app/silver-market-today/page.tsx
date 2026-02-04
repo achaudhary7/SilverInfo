@@ -6,7 +6,7 @@ import LivePriceCard from "@/components/LivePriceCard";
 import { DynamicMiniChart } from "@/components/DynamicChart";
 
 // Revalidate frequently for fresh content - important for Discover
-export const revalidate = 300; // 5 minutes
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
 
 // Dynamic metadata for today's date
 export async function generateMetadata(): Promise<Metadata> {

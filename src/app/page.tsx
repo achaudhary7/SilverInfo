@@ -16,7 +16,7 @@ import MarketStatus from "@/components/ui/MarketStatus";
 import PriceFormulaCard from "@/components/ui/PriceFormulaCard";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
-export const revalidate = 600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness, SSR provides initial data)
 
 // ============================================================================
 // DYNAMIC METADATA - Prices update automatically

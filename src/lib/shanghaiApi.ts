@@ -223,7 +223,7 @@ async function fetchComexSilverUsd(): Promise<{ price: number; change24h: number
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=2d',
       { 
-        next: { revalidate: 60 }, // Cache for 1 minute
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -262,7 +262,7 @@ async function fetchUsdCnyRate(): Promise<number | null> {
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/CNY=X?interval=1d&range=1d',
       { 
-        next: { revalidate: 300 }, // Cache for 5 minutes
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -368,7 +368,7 @@ async function fetchUsdInrRate(): Promise<number | null> {
     const yahooResponse = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/INR=X?interval=1d&range=1d',
       { 
-        next: { revalidate: 300 },
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -507,16 +507,16 @@ async function _calculateShanghaiSilverPrice(): Promise<ShanghaiSilverPrice | nu
  * Get Shanghai Silver Price - CACHED VERSION
  * 
  * Uses unstable_cache for data-layer caching:
- * - Cache TTL: 30 seconds
- * - All requests within 30s window share the same cached result
- * - External APIs (Yahoo Finance, Frankfurter) only called once per 30s
- * - Reduces Edge Requests by ~95% for high-traffic scenarios
+ * - Cache TTL: 1 hour (maximized to reduce ISR writes)
+ * - All requests within 1 hour window share the same cached result
+ * - External APIs (Yahoo Finance, Frankfurter) only called once per hour
+ * - Client-side polling with visibility-awareness handles freshness
  */
 export const getShanghaiSilverPrice = unstable_cache(
   _calculateShanghaiSilverPrice,
   ["shanghai-silver-price"],
   {
-    revalidate: 60, // Cache for 60 seconds
+    revalidate: 3600, // Cache for 1 hour (maximized to reduce ISR writes)
     tags: ["shanghai-price"],
   }
 );

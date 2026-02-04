@@ -137,7 +137,7 @@ async function fetchSilverUSD(): Promise<number | null> {
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=1d',
       { 
-        next: { revalidate: 600 }, // Cache for 10 minutes
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -378,16 +378,16 @@ async function _fetchSilverPrice(): Promise<SilverPrice | null> {
  * Get Silver Price - CACHED VERSION
  * 
  * Uses unstable_cache for data-layer caching:
- * - Cache TTL: 15 seconds (for near-real-time feel)
- * - All requests within 15s window share the same cached result
- * - External APIs (Yahoo Finance, Frankfurter) only called once per 15s
- * - Reduces Edge Requests to external services by ~90%
+ * - Cache TTL: 1 hour (maximized to reduce ISR writes)
+ * - All requests within 1 hour window share the same cached result
+ * - External APIs (Yahoo Finance, Frankfurter) only called once per hour
+ * - Client-side polling with visibility-awareness handles freshness
  */
 export const getSilverPrice = unstable_cache(
   _fetchSilverPrice,
   ["silver-price-inr"],
   {
-    revalidate: 60, // Cache for 60 seconds
+    revalidate: 3600, // Cache for 1 hour (maximized to reduce ISR writes)
     tags: ["silver-price"],
   }
 );
@@ -399,7 +399,7 @@ async function fetchFromMetalpriceAPI(apiKey: string): Promise<SilverPrice | nul
   try {
     const response = await fetch(
       `https://api.metalpriceapi.com/v1/latest?api_key=${apiKey}&base=XAG&currencies=INR`,
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 3600 } }
     );
     
     if (response.ok) {
@@ -432,7 +432,7 @@ async function fetchFromGoldAPI(apiKey: string): Promise<SilverPrice | null> {
           'x-access-token': apiKey,
           'Content-Type': 'application/json'
         },
-        next: { revalidate: 300 }
+        next: { revalidate: 3600 } // Cache for 1 hour (maximized)
       }
     );
     
@@ -1085,7 +1085,7 @@ async function fetchGoldUSD(): Promise<number | null> {
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1d',
       {
-        next: { revalidate: 600 }, // Cache for 10 minutes
+        next: { revalidate: 3600 }, // Cache for 1 hour (maximized)
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }

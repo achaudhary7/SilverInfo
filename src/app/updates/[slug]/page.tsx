@@ -13,7 +13,7 @@ import { LivePriceWidget } from "@/components/price";
 import AuthorBio from "@/components/AuthorBio";
 
 // ISR: Revalidate articles every hour (content rarely changes after publish)
-export const revalidate = 3600;
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (content doesn't change frequently)
 
 // Generate static paths for all posts
 export async function generateStaticParams() {

@@ -5,7 +5,7 @@ import { getAllLearnArticles, formatDate } from "@/lib/markdown";
 
 // Force static generation - articles change infrequently
 export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 28800; // ISR: Revalidate every 8 hours (content doesn't change frequently)
 
 export const metadata: Metadata = {
   title: "Learn About Silver - Guides & Education - SilverInfo.in",
