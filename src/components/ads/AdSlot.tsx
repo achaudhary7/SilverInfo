@@ -34,6 +34,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 // ============================================================================
 // TYPES
@@ -149,6 +150,9 @@ export function AdSlot({
   const [isVisible, setIsVisible] = useState(false);
   const [showAds, setShowAds] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  
+  // Get current path for key-based re-rendering on navigation
+  const pathname = usePathname();
 
   // ========================================================================
   // HYDRATION SAFETY - Check environment after mount
@@ -157,6 +161,15 @@ export function AdSlot({
     setIsMounted(true);
     setShowAds(shouldShowAds());
   }, []);
+
+  // ========================================================================
+  // RESET ON NAVIGATION - Force new ad on page change
+  // ========================================================================
+  useEffect(() => {
+    // Reset loaded state when path changes to allow new ad to load
+    setIsLoaded(false);
+    setIsVisible(false);
+  }, [pathname]);
 
   // ========================================================================
   // INTERSECTION OBSERVER - Lazy load ads (observe container, not ins)
@@ -324,6 +337,9 @@ export function AdSlot({
     width: "100%",
   };
 
+  // Create unique key for this ad instance - forces React to re-create on navigation
+  const adKey = `${pathname}-${slot}`;
+
   return (
     <div 
       ref={containerRef}
@@ -331,6 +347,7 @@ export function AdSlot({
       style={containerStyle}
     >
       <ins
+        key={adKey}
         ref={adRef}
         className="adsbygoogle"
         style={adStyle}

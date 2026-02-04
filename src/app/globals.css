@@ -691,3 +691,25 @@ select {
     border-color: #374151;
   }
 }
+
+/* ============================================================================
+   ADSENSE - Hide unfilled ads
+   ============================================================================ */
+
+/* Hide unfilled ad slots to prevent empty space */
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
+}
+
+/* Hide ad containers when the ad inside is unfilled */
+.ad-container:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+  display: none !important;
+}
+
+/* Hide ad wrapper divs when unfilled */
+.ad-header:has(ins.adsbygoogle[data-ad-status="unfilled"]),
+.ad-footer:has(ins.adsbygoogle[data-ad-status="unfilled"]),
+.ad-sidebar:has(ins.adsbygoogle[data-ad-status="unfilled"]),
+.ad-in-content:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+  display: none !important;
+}
