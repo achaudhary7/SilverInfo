@@ -8,6 +8,7 @@ import WhyPriceChanged from "@/components/WhyPriceChanged";
 import RelatedSearches from "@/components/RelatedSearches";
 import BookmarkCity from "@/components/BookmarkCity";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
+import { AdBanner } from "@/components/ads";
 
 export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
 
@@ -293,6 +294,9 @@ export default async function SilverRateTodayPage() {
           </div>
         </section>
 
+        {/* Ad: After Header */}
+        <AdBanner.Header />
+        
         {/* Main Content */}
         <section className="py-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -503,6 +507,9 @@ export default async function SilverRateTodayPage() {
 
                 {/* Market Status - Dynamic */}
                 <MarketStatus />
+                
+                {/* Ad: Sidebar */}
+                <AdBanner.Sidebar />
               </div>
             </div>
 
@@ -560,12 +567,18 @@ export default async function SilverRateTodayPage() {
               </p>
             </div>
 
+            {/* Ad: Before FAQ */}
+            <AdBanner.InContent />
+            
             {/* FAQ Section */}
             <div id="faq" className="mt-8 scroll-mt-20">
               <FAQ items={faqItems} />
             </div>
           </div>
         </section>
+        
+        {/* Ad: Footer */}
+        <AdBanner.Footer />
       </div>
     </>
   );

@@ -11,6 +11,7 @@ import {
 } from "@/lib/markdown";
 import { LivePriceWidget } from "@/components/price";
 import AuthorBio from "@/components/AuthorBio";
+import { AdBanner } from "@/components/ads";
 
 // ISR: Revalidate articles every hour (content rarely changes after publish)
 export const revalidate = 28800; // ISR: Revalidate every 8 hours (content doesn't change frequently)
@@ -236,6 +237,9 @@ export default async function UpdatePostPage({
                   />
                 </div>
 
+                {/* Ad: In-Article (after content, before tags) */}
+                <AdBanner.Article />
+                
                 {/* Tags */}
                 {post.tags && post.tags.length > 0 && (
                   <div className="mt-8 pt-6 border-t border-gray-200">
@@ -368,9 +372,20 @@ export default async function UpdatePostPage({
                   View All Updates →
                 </Link>
               </div>
+              
+              {/* Ad: Sidebar */}
+              <AdBanner.Sidebar />
             </div>
           </div>
+          
+          {/* Ad: Multiplex (Related Content Style) */}
+          <div className="mt-8">
+            <AdBanner.Multiplex />
+          </div>
         </div>
+        
+        {/* Ad: Footer */}
+        <AdBanner.Footer />
       </div>
     </>
   );

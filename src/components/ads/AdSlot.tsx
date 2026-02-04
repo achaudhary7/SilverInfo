@@ -78,9 +78,19 @@ export interface AdSlotProps {
 // CONFIGURATION
 // ============================================================================
 
-const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID || "ca-pub-7457883797698050";
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
-const SHOW_ADS = IS_PRODUCTION && ADSENSE_ID;
+// AdSense Publisher ID - hardcoded for reliability in static export
+const ADSENSE_ID = "ca-pub-7457883797698050";
+
+// In static export, NODE_ENV is 'production' at build time
+// For Cloudflare Pages, we check if we're in browser and not localhost
+const IS_BROWSER = typeof window !== "undefined";
+const IS_LOCALHOST = IS_BROWSER && (
+  window.location.hostname === "localhost" || 
+  window.location.hostname === "127.0.0.1"
+);
+
+// Show ads in production (not localhost)
+const SHOW_ADS = !IS_LOCALHOST;
 
 // Format-specific default styles
 const FORMAT_STYLES: Record<AdFormat, React.CSSProperties> = {

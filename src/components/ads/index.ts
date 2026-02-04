@@ -2,86 +2,82 @@
  * Ad Components - Google AdSense Integration
  * 
  * Reusable ad components for SilverInfo.in
+ * Publisher ID: ca-pub-7457883797698050
  * 
  * ============================================================================
- * SETUP INSTRUCTIONS
+ * AD SLOT IDS (Configured in AdBanner.tsx)
  * ============================================================================
  * 
- * 1. Add your AdSense credentials to .env.local:
- * 
- *    ```env
- *    # Google AdSense Publisher ID (from AdSense dashboard)
- *    NEXT_PUBLIC_ADSENSE_ID=ca-pub-XXXXXXXXXXXXXXXX
- *    
- *    # Individual Ad Slot IDs (create in AdSense dashboard)
- *    NEXT_PUBLIC_AD_SLOT_HEADER=1234567890
- *    NEXT_PUBLIC_AD_SLOT_FOOTER=2345678901
- *    NEXT_PUBLIC_AD_SLOT_INCONTENT=3456789012
- *    NEXT_PUBLIC_AD_SLOT_SIDEBAR=4567890123
- *    NEXT_PUBLIC_AD_SLOT_MOBILE=5678901234
- *    ```
- * 
- * 2. Add AdSenseScript to layout.tsx:
- * 
- *    ```tsx
- *    import { AdSenseScript } from "@/components/ads";
- *    
- *    export default function RootLayout({ children }) {
- *      return (
- *        <html>
- *          <body>
- *            {children}
- *            <AdSenseScript />
- *          </body>
- *        </html>
- *      );
- *    }
- *    ```
- * 
- * 3. Use AdBanner or AdSlot in pages:
- * 
- *    ```tsx
- *    import { AdBanner, AdSlot } from "@/components/ads";
- *    
- *    export default function Page() {
- *      return (
- *        <div>
- *          <AdBanner.Header />
- *          <main>
- *            <h1>Content</h1>
- *            <AdBanner.InContent />
- *            <p>More content...</p>
- *          </main>
- *          <AdBanner.Footer />
- *        </div>
- *      );
- *    }
- *    ```
+ * | Slot Name       | Slot ID      | Format      | Best Placement         |
+ * |-----------------|--------------|-------------|------------------------|
+ * | Horizontal      | 7333542685   | Auto        | Header, In-Content     |
+ * | Footer          | 7551626964   | Auto        | Before footer          |
+ * | Vertical        | 7368630887   | Auto        | Tall sidebars          |
+ * | Square          | 4798878684   | Auto        | Sidebar, Multiplex     |
+ * | In-Article      | 9115990072   | Fluid       | Within articles        |
+ * | In-Article 2    | 1406428581   | Fluid       | Second article ad      |
  * 
  * ============================================================================
- * BEST PLACEMENTS FOR SILVERINFO.IN
+ * AVAILABLE COMPONENTS
  * ============================================================================
  * 
- * | Page              | Recommended Placements           |
- * |-------------------|----------------------------------|
- * | Home              | Header, after price card, footer |
- * | Silver Rate       | Header, between sections, footer |
- * | City Pages        | Sidebar, in-content              |
- * | Calculators       | After calculator, sidebar        |
- * | Learn Articles    | In-article, multiplex at end     |
- * | Updates           | In-content, multiplex            |
+ * | Component            | Description                        |
+ * |----------------------|------------------------------------|
+ * | AdBanner.Header      | Horizontal ad after navigation     |
+ * | AdBanner.Footer      | Horizontal ad before footer        |
+ * | AdBanner.InContent   | Responsive ad between sections     |
+ * | AdBanner.Sidebar     | Square ad for desktop sidebars     |
+ * | AdBanner.Article     | In-article native ad               |
+ * | AdBanner.Article2    | Second in-article placement        |
+ * | AdBanner.Multiplex   | Related content style grid         |
+ * | AdBanner.Vertical    | Tall skyscraper for sidebars       |
+ * | AdBanner.MobileAnchor| Sticky bottom on mobile            |
+ * 
+ * ============================================================================
+ * USAGE
+ * ============================================================================
+ * 
+ * ```tsx
+ * import { AdBanner } from "@/components/ads";
+ * 
+ * export default function Page() {
+ *   return (
+ *     <div>
+ *       <AdBanner.Header />
+ *       <main>
+ *         <h1>Content</h1>
+ *         <AdBanner.InContent />
+ *         <article>
+ *           <p>Article content...</p>
+ *           <AdBanner.Article />
+ *           <p>More content...</p>
+ *         </article>
+ *       </main>
+ *       <AdBanner.Footer />
+ *     </div>
+ *   );
+ * }
+ * ```
+ * 
+ * ============================================================================
+ * CURRENT PLACEMENTS
+ * ============================================================================
+ * 
+ * | Page              | Placements                              |
+ * |-------------------|-----------------------------------------|
+ * | Home (/)          | Header, InContent x2, Sidebar, Footer   |
+ * | Silver Rate       | Header, Sidebar, InContent, Footer      |
+ * | Updates/[slug]    | Article, Sidebar, Multiplex, Footer     |
+ * | Learn/[slug]      | Article, Sidebar, Footer                |
  * 
  * ============================================================================
  * DEVELOPMENT MODE
  * ============================================================================
  * 
- * In development (NODE_ENV !== "production"), ads show as placeholders.
- * This allows you to:
- * - See ad positions without real ads
- * - Test layouts without AdSense errors
- * - Develop faster without ad loading delays
+ * On localhost, ads show as placeholders (gray dashed boxes).
+ * In production (silverinfo.in), real AdSense ads load.
  * 
- * To force test mode even in production:
+ * To force test mode in production:
  *    <AdBanner.Header testMode={true} />
  */
 
