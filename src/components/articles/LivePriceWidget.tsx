@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 import { fetchSilverPrice } from "@/lib/clientPriceApi";
@@ -24,6 +24,17 @@ interface PriceData {
 export default function LivePriceWidget() {
   const [price, setPrice] = useState<PriceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [updateTime, setUpdateTime] = useState<string>("--:--"); // Static for SSR
+  
+  // Update time after mount to avoid hydration mismatch
+  useEffect(() => {
+    const updateTimeDisplay = () => {
+      setUpdateTime(new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }));
+    };
+    updateTimeDisplay();
+    const interval = setInterval(updateTimeDisplay, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchPriceData = useCallback(async () => {
     try {
@@ -79,7 +90,7 @@ export default function LivePriceWidget() {
           <span className="text-sm font-medium text-gray-600">Live Silver Price</span>
         </div>
         <span className="text-xs text-gray-400">
-          Updated: {new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+          Updated: {updateTime}
         </span>
       </div>
 
