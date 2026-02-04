@@ -15,9 +15,10 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { CombinedUSDPrices } from "@/lib/metalApi";
 import LiveBadge from "@/components/ui/LiveBadge";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 interface LiveUSDPriceCardProps {
   initialPrices: CombinedUSDPrices;
@@ -68,12 +69,15 @@ export default function LiveUSDPriceCard({ initialPrices }: LiveUSDPriceCardProp
     }
   }, []);
 
-  // Poll every 30 seconds
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 30000);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrices,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: true,
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   return (
     <section className="mb-8">

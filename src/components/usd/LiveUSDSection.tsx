@@ -12,11 +12,12 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { CombinedUSDPrices } from "@/lib/metalApi";
 import LiveBadge from "@/components/ui/LiveBadge";
 import USDPriceTable from "./USDPriceTable";
 import CurrencyConverter from "./CurrencyConverter";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 interface LiveUSDSectionProps {
   initialPrices: CombinedUSDPrices;
@@ -74,12 +75,15 @@ export default function LiveUSDSection({ initialPrices }: LiveUSDSectionProps) {
     }
   }, []);
 
-  // Poll every 30 seconds
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 30000);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrices,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: true,
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   return (
     <div className="space-y-8">
@@ -205,7 +209,7 @@ export default function LiveUSDSection({ initialPrices }: LiveUSDSectionProps) {
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                30-Second Updates
+                Live Updates
               </span>
               <span className="px-3 py-1.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

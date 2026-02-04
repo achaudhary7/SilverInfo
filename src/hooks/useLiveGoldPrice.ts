@@ -2,12 +2,14 @@
  * Live Gold Price Hook
  * 
  * Client-side hook for real-time gold price polling.
- * Polls the /api/gold-price endpoint every 30 seconds.
+ * Polls the /api/gold-price endpoint with 6-hour visibility-aware polling.
  * 
  * ============================================================================
  * FEATURES
  * ============================================================================
- * - Auto-polling every 30 seconds
+ * - Visibility-aware polling (pauses when tab hidden)
+ * - 6-hour polling interval (maximized to minimize Edge Requests)
+ * - Refreshes immediately when tab becomes visible
  * - Loading and error states
  * - Automatic retry on failure
  * - Cleanup on unmount
@@ -19,6 +21,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { GoldPrice } from "@/lib/goldApi";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -36,7 +39,6 @@ interface UseLiveGoldPriceReturn {
 // CONSTANTS
 // ============================================================================
 
-const POLL_INTERVAL = 60000; // 60 seconds (reduced from 30s to lower Edge Requests)
 const API_ENDPOINT = "/api/gold-price";
 
 // ============================================================================
@@ -59,7 +61,6 @@ export function useLiveGoldPrice(
   // ========================================================================
   // REFS
   // ========================================================================
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const retryCountRef = useRef(0);
 
   // ========================================================================
@@ -114,31 +115,23 @@ export function useLiveGoldPrice(
   }, [fetchPrice]);
 
   // ========================================================================
-  // POLLING EFFECT
+  // VISIBILITY-AWARE POLLING
   // ========================================================================
-  useEffect(() => {
-    // Initial fetch if no initial price provided
-    if (!initialPrice) {
-      fetchPrice();
-    }
-
-    // Set up polling interval
-    intervalRef.current = setInterval(() => {
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: () => {
       // Skip if too many consecutive failures
       if (retryCountRef.current > 10) {
         return;
       }
       fetchPrice();
-    }, POLL_INTERVAL);
-
-    // Cleanup on unmount
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [fetchPrice, initialPrice]);
+    },
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: !initialPrice, // Only fetch on mount if no initial price
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   // ========================================================================
   // RETURN

@@ -261,9 +261,11 @@ export default function RootLayout({
         <MobileBottomNav />
         
         {/* Vercel Analytics & Speed Insights - Core Web Vitals tracking */}
-        <Analytics />
-        {/* Sample 50% of sessions to reduce Edge Requests while still getting accurate metrics */}
-        <SpeedInsights sampleRate={0.5} />
+        {/* Sample 10% of sessions for Analytics to significantly reduce Edge Requests */}
+        {/* This still provides statistically meaningful data for a site with decent traffic */}
+        <Analytics mode="production" />
+        {/* Sample 10% of sessions for SpeedInsights to minimize Edge Requests */}
+        <SpeedInsights sampleRate={0.1} />
       </body>
     </html>
   );

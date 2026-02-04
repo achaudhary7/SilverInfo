@@ -2,17 +2,20 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ShanghaiSilverPrice } from "@/lib/shanghaiApi";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
 
 /**
  * useLiveShanghaiPrice Hook
  * 
  * Client-side hook for real-time Shanghai silver price polling.
- * Updates every 30 seconds for live price display.
+ * Uses visibility-aware polling with 6-hour interval.
  * 
  * ============================================================================
  * FEATURES
  * ============================================================================
- * - Automatic polling (30s interval)
+ * - Visibility-aware polling (pauses when tab hidden)
+ * - 6-hour polling interval (maximized to minimize Edge Requests)
+ * - Refreshes immediately when tab becomes visible
  * - Error handling with retry
  * - Loading states
  * - Manual refresh capability
@@ -27,7 +30,6 @@ interface UseLiveShanghaiPriceReturn {
   refresh: () => Promise<void>;
 }
 
-const POLL_INTERVAL = 60000; // 60 seconds (reduced from 30s to lower Edge Requests)
 const MAX_RETRIES = 3;
 
 export function useLiveShanghaiPrice(
@@ -41,7 +43,6 @@ export function useLiveShanghaiPrice(
   );
   
   const retryCountRef = useRef(0);
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchPrice = useCallback(async () => {
     try {
@@ -77,22 +78,15 @@ export function useLiveShanghaiPrice(
     await fetchPrice();
   }, [fetchPrice]);
 
-  // Initial fetch and polling
-  useEffect(() => {
-    // Fetch immediately if no initial price
-    if (!initialPrice) {
-      fetchPrice();
-    }
-
-    // Set up polling interval
-    pollIntervalRef.current = setInterval(fetchPrice, POLL_INTERVAL);
-
-    return () => {
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-      }
-    };
-  }, [fetchPrice, initialPrice]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrice,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: !initialPrice, // Only fetch on mount if no initial price
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   return {
     price,

@@ -556,7 +556,6 @@ export default async function HomePage() {
               {/* Left: Price Card */}
               <LivePriceCard 
                 initialPrice={price} 
-                pollInterval={30000} 
                 lastWeekPrice={historicalPrices.length >= 7 ? historicalPrices[historicalPrices.length - 7]?.price : undefined}
               />
               

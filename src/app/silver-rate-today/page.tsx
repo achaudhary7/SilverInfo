@@ -331,7 +331,6 @@ export default async function SilverRateTodayPage() {
                 <div id="live-price" className="scroll-mt-20">
                   <LivePriceCard 
                     initialPrice={price} 
-                    pollInterval={30000} 
                     lastWeekPrice={lastWeekPrice}
                   />
                 </div>

@@ -21,7 +21,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import type { CombinedMetalPrices } from "@/lib/metalApi";
 import LiveBadge from "@/components/ui/LiveBadge";
@@ -30,6 +30,7 @@ import Tooltip from "@/components/ui/Tooltip";
 import GoldSilverRatioCard from "./GoldSilverRatioCard";
 import CombinedPriceTable from "./CombinedPriceTable";
 import CombinedCurrencyConverter from "./CombinedCurrencyConverter";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 // ============================================================================
 // MAIN COMPONENT
@@ -107,12 +108,15 @@ export default function LiveCombinedSection({ initialPrices }: LiveCombinedSecti
     }
   }, []);
 
-  // Poll every 30 seconds
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 30000);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrices,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: true,
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   // Calculate comparison metrics
   const goldToSilverMultiple = Math.round(prices.gold.pricePerGram / prices.silver.pricePerGram);
@@ -391,7 +395,7 @@ export default function LiveCombinedSection({ initialPrices }: LiveCombinedSecti
               </div>
               <div className="flex items-center justify-center gap-1.5">
                 <span>⚡</span>
-                <span className="text-xs">30-Second Updates</span>
+                <span className="text-xs">Live Updates</span>
               </div>
               <div className="flex items-center justify-center gap-1.5">
                 <span>📊</span>

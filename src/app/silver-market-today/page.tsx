@@ -376,7 +376,6 @@ export default async function SilverMarketTodayPage() {
                 {/* Live Price Card */}
                 <LivePriceCard 
                   initialPrice={price} 
-                  pollInterval={30000}
                   lastWeekPrice={weekAgoPrice || undefined}
                 />
 

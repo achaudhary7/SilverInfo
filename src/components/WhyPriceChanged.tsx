@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 interface PriceDriver {
   factor: string;
@@ -71,13 +72,15 @@ export default function WhyPriceChanged() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchAndAnalyze();
-    
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchAndAnalyze, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [fetchAndAnalyze]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchAndAnalyze,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: true,
+    fetchOnVisible: true,
+  });
 
   if (isLoading) {
     return (

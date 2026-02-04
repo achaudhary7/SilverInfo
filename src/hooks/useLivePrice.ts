@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { SilverPrice } from "@/lib/metalApi";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
 
 interface UseLivePriceOptions {
   initialPrice: SilverPrice;
-  pollInterval?: number; // in milliseconds, default 60000 (60 seconds)
+  pollInterval?: number; // in milliseconds, default 6 hours (21600000ms)
   enabled?: boolean;
 }
 
@@ -114,7 +115,7 @@ function getInitialLow(price: SilverPrice): { value: number; time: string } {
 
 export function useLivePrice({
   initialPrice,
-  pollInterval = 60000, // 60 seconds - matches API route cache TTL
+  pollInterval = DEFAULT_POLL_INTERVAL, // 6 hours - maximized to minimize Edge Requests
   enabled = true,
 }: UseLivePriceOptions): UseLivePriceReturn {
   // Initialize with server data merged with any localStorage data
@@ -292,18 +293,15 @@ export function useLivePrice({
     await fetchPrice();
   }, [fetchPrice]);
 
-  // Fetch immediately on mount, then poll every pollInterval
-  useEffect(() => {
-    if (!enabled) return;
-
-    // Fetch immediately on mount (don't wait for first interval)
-    fetchPrice();
-
-    // Then continue polling at regular intervals
-    const interval = setInterval(fetchPrice, pollInterval);
-    
-    return () => clearInterval(interval);
-  }, [enabled, pollInterval, fetchPrice]);
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrice,
+    interval: pollInterval,
+    enabled,
+    fetchOnMount: true,
+    fetchOnVisible: true, // Refresh data when user returns to tab
+  });
 
   // Update "seconds ago" counter every second
   useEffect(() => {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 interface PriceData {
   pricePerGram: number;
@@ -14,35 +15,38 @@ interface PriceData {
 /**
  * LivePriceWidget - Embedded live price display for articles
  * 
- * Shows current silver price with 24h change, refreshes every 60 seconds.
+ * Shows current silver price with 24h change.
+ * Uses visibility-aware polling with 6-hour interval to minimize Edge Requests.
+ * Refreshes immediately when user returns to tab.
  * Used in blog posts and articles to show real-time data.
  */
 export default function LivePriceWidget() {
   const [price, setPrice] = useState<PriceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        // Use Edge cache to reduce requests
-        const response = await fetch("/api/price", {
-          next: { revalidate: 15 },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setPrice(data);
-        }
-      } catch (error) {
-        console.error("Error fetching price:", error);
-      } finally {
-        setIsLoading(false);
+  const fetchPrice = useCallback(async () => {
+    try {
+      const response = await fetch("/api/price");
+      if (response.ok) {
+        const data = await response.json();
+        setPrice(data);
       }
-    };
-
-    fetchPrice();
-    const interval = setInterval(fetchPrice, 60000); // Refresh every 60s
-    return () => clearInterval(interval);
+    } catch (error) {
+      console.error("Error fetching price:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  // Use visibility-aware polling - pauses when tab is hidden
+  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  useVisibilityAwarePolling({
+    callback: fetchPrice,
+    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    enabled: true,
+    fetchOnMount: true,
+    fetchOnVisible: true,
+  });
 
   if (isLoading) {
     return (

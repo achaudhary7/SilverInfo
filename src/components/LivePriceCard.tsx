@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useLivePrice, formatTimeAgo } from "@/hooks/useLivePrice";
 import { formatIndianPrice, type SilverPrice } from "@/lib/metalApi";
 import { PriceSourceInline } from "@/components/ui/PriceSourceBadge";
+import { DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
 
 // Extended price type with daily extremes from API
 interface ExtendedSilverPrice extends SilverPrice {
@@ -54,7 +55,7 @@ function getChangeIndicator(change: number) {
   return { icon: "→", direction: "neutral" as const, color: "text-gray-600", bg: "bg-gray-50", border: "border-gray-200" };
 }
 
-export default function LivePriceCard({ initialPrice, pollInterval = 60000, lastWeekPrice }: LivePriceCardProps) {
+export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POLL_INTERVAL, lastWeekPrice }: LivePriceCardProps) {
   const { price: basePrice, secondsAgo, isRefreshing, hasNewPrice, refresh } = useLivePrice({
     initialPrice,
     pollInterval,

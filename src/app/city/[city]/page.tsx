@@ -233,7 +233,7 @@ export default async function CityPage({
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Live Price Card */}
-                {price ? <LivePriceCard initialPrice={price} pollInterval={30000} /> : (
+                {price ? <LivePriceCard initialPrice={price} /> : (
                   <div className="card p-6 text-center text-gray-500">
                     <p>Unable to fetch live price</p>
                   </div>
