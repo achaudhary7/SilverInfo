@@ -81,16 +81,13 @@ export interface AdSlotProps {
 // AdSense Publisher ID - hardcoded for reliability in static export
 const ADSENSE_ID = "ca-pub-7457883797698050";
 
-// In static export, NODE_ENV is 'production' at build time
-// For Cloudflare Pages, we check if we're in browser and not localhost
-const IS_BROWSER = typeof window !== "undefined";
-const IS_LOCALHOST = IS_BROWSER && (
-  window.location.hostname === "localhost" || 
-  window.location.hostname === "127.0.0.1"
-);
-
-// Show ads in production (not localhost)
-const SHOW_ADS = !IS_LOCALHOST;
+// Check if we should show ads (runtime check to avoid hydration mismatch)
+function shouldShowAds(): boolean {
+  if (typeof window === "undefined") return false;
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+  return !isLocalhost;
+}
 
 // Format-specific default styles
 const FORMAT_STYLES: Record<AdFormat, React.CSSProperties> = {
@@ -146,15 +143,26 @@ export function AdSlot({
   fullWidthMobile = true,
   testMode = false,
 }: AdSlotProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const adRef = useRef<HTMLModElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showAds, setShowAds] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // ========================================================================
-  // INTERSECTION OBSERVER - Lazy load ads
+  // HYDRATION SAFETY - Check environment after mount
   // ========================================================================
   useEffect(() => {
-    if (!adRef.current) return;
+    setIsMounted(true);
+    setShowAds(shouldShowAds());
+  }, []);
+
+  // ========================================================================
+  // INTERSECTION OBSERVER - Lazy load ads (observe container, not ins)
+  // ========================================================================
+  useEffect(() => {
+    if (!containerRef.current || !showAds) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -166,31 +174,79 @@ export function AdSlot({
       { rootMargin: "200px" } // Start loading 200px before visible
     );
 
-    observer.observe(adRef.current);
+    observer.observe(containerRef.current);
 
     return () => observer.disconnect();
-  }, []);
+  }, [showAds]);
 
   // ========================================================================
-  // ADSENSE INITIALIZATION
+  // ADSENSE INITIALIZATION - Wait for container to have width
   // ========================================================================
   useEffect(() => {
-    if (!isVisible || !SHOW_ADS || testMode || isLoaded) return;
+    if (!isVisible || !showAds || testMode || isLoaded) return;
+    if (!containerRef.current) return;
 
-    try {
-      // Push ad to AdSense
-      ((window as unknown as { adsbygoogle: unknown[] }).adsbygoogle =
-        (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle || []).push({});
-      setIsLoaded(true);
-    } catch (error) {
-      console.error("[AdSlot] Error loading ad:", error);
-    }
-  }, [isVisible, testMode, isLoaded]);
+    // Wait for container to have actual width (avoid "availableWidth=0" error)
+    const checkAndPush = () => {
+      const container = containerRef.current;
+      if (!container) return false;
+      
+      const width = container.getBoundingClientRect().width;
+      if (width < 50) {
+        // Container too narrow, wait and retry
+        return false;
+      }
+
+      try {
+        // Push ad to AdSense
+        ((window as unknown as { adsbygoogle: unknown[] }).adsbygoogle =
+          (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle || []).push({});
+        setIsLoaded(true);
+        return true;
+      } catch (error) {
+        console.error("[AdSlot] Error loading ad:", error);
+        return false;
+      }
+    };
+
+    // Try immediately
+    if (checkAndPush()) return;
+
+    // Retry a few times with delay
+    let retries = 0;
+    const maxRetries = 5;
+    const interval = setInterval(() => {
+      retries++;
+      if (checkAndPush() || retries >= maxRetries) {
+        clearInterval(interval);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [isVisible, showAds, testMode, isLoaded]);
+
+  // ========================================================================
+  // SSR PLACEHOLDER (shown until mounted)
+  // ========================================================================
+  if (!isMounted) {
+    const placeholder = PLACEHOLDER_SIZES[format];
+    return (
+      <div
+        className={`ad-placeholder ${className}`}
+        style={{
+          width: placeholder.width,
+          minHeight: placeholder.height,
+          maxWidth: "100%",
+          ...style,
+        }}
+      />
+    );
+  }
 
   // ========================================================================
   // DEVELOPMENT PLACEHOLDER
   // ========================================================================
-  if (!SHOW_ADS || testMode) {
+  if (!showAds || testMode) {
     const placeholder = PLACEHOLDER_SIZES[format];
     return (
       <div
@@ -232,8 +288,21 @@ export function AdSlot({
   // Full-width responsive behavior for mobile
   const dataFullWidth = fullWidthMobile ? "true" : undefined;
 
+  // Ensure container has minimum dimensions to avoid "availableWidth=0" error
+  const containerStyle: React.CSSProperties = {
+    overflow: "hidden",
+    minWidth: format === "vertical" ? "160px" : format === "rectangle" ? "300px" : "320px",
+    minHeight: FORMAT_STYLES[format]?.minHeight || 
+      (format === "vertical" ? "600px" : format === "rectangle" ? "250px" : "90px"),
+    width: "100%",
+  };
+
   return (
-    <div className={`ad-container ${className}`} style={{ overflow: "hidden" }}>
+    <div 
+      ref={containerRef}
+      className={`ad-container ${className}`} 
+      style={containerStyle}
+    >
       <ins
         ref={adRef}
         className="adsbygoogle"
