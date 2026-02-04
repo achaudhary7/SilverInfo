@@ -514,60 +514,8 @@ function createPriceObject(pricePerGram: number, source: string): SilverPrice {
  */
 export async function getHistoricalPrices(days: number = 30): Promise<HistoricalPrice[]> {
   try {
-    // Only try to use local storage on server side
-    if (typeof window === "undefined") {
-      try {
-        // Import storage functions dynamically to avoid server/client issues
-        const { getStoredHistoricalPrices, getStoredDaysCount } = await import("./priceStorage");
-        
-        // Check how much stored data we have
-        const storedCount = await getStoredDaysCount();
-        
-        // If we have enough stored data, use it directly
-        if (storedCount >= days) {
-          const storedPrices = await getStoredHistoricalPrices(days);
-          if (storedPrices.length >= days * 0.8) { // At least 80% coverage
-            console.log(`Using ${storedPrices.length} days of locally stored data`);
-            return storedPrices.map(p => ({
-              date: p.date,
-              price: p.pricePerGram,
-            }));
-          }
-        }
-        
-        // Otherwise, fetch from Yahoo Finance and merge with stored data
-        const yahooData = await fetchYahooHistoricalPrices(days);
-        
-        // If we have some stored data, merge it (stored data takes priority for recent dates)
-        if (storedCount > 0) {
-          const storedPrices = await getStoredHistoricalPrices(Math.min(storedCount, days));
-          const storedMap = new Map(storedPrices.map(p => [p.date, p.pricePerGram]));
-          
-          // Merge: stored data overwrites Yahoo data for same dates
-          for (const yp of yahooData) {
-            if (!storedMap.has(yp.date)) {
-              storedMap.set(yp.date, yp.price);
-            }
-          }
-          
-          // Convert back to array and sort
-          const merged = Array.from(storedMap.entries())
-            .map(([date, price]) => ({ date, price }))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-          
-          console.log(`Merged ${storedPrices.length} stored + ${yahooData.length} Yahoo = ${merged.length} total days`);
-          return merged.slice(-days);
-        }
-        
-        return yahooData;
-      } catch (storageError) {
-        console.log("Local storage unavailable, using Yahoo Finance only");
-      }
-    }
-    
-    // Client-side or storage failed: use Yahoo Finance directly
+    // Fetch from Yahoo Finance directly
     return await fetchYahooHistoricalPrices(days);
-    
   } catch (error) {
     console.error("Error fetching historical prices, using fallback:", error);
     return generateFallbackHistoricalPrices(days);
@@ -706,49 +654,7 @@ export async function getSilverPriceWithChange(): Promise<SilverPrice | null> {
   // Result to be populated
   let result: SilverPrice = { ...price };
   
-  // Only try local storage on server side
-  if (typeof window === "undefined") {
-    try {
-      // Try to get yesterday's price and today's extremes from local storage
-      const { getYesterdayPrice, updateDailyExtremes } = await import("./priceStorage");
-      
-      // Update and get daily extremes (tracks actual high/low for today)
-      try {
-        const extremes = await updateDailyExtremes(price.pricePerGram);
-        if (extremes) {
-          result.todayHigh = extremes.high;
-          result.todayHighTime = extremes.highTime;
-          result.todayLow = extremes.low;
-          result.todayLowTime = extremes.lowTime;
-          result.todayOpen = extremes.openPrice;
-        }
-      } catch (extremesError) {
-        console.log("Could not update daily extremes:", extremesError);
-      }
-      
-      // Get yesterday's price for 24h change
-      const storedYesterday = await getYesterdayPrice();
-      
-      if (storedYesterday) {
-        const todayPrice = price.pricePerGram;
-        const yesterdayPrice = storedYesterday.pricePerGram;
-        
-        const change24h = todayPrice - yesterdayPrice;
-        const changePercent24h = (change24h / yesterdayPrice) * 100;
-        
-        console.log(`24h change from stored data: ₹${change24h.toFixed(2)} (${changePercent24h.toFixed(2)}%)`);
-        
-        result.change24h = Math.round(change24h * 100) / 100;
-        result.changePercent24h = Math.round(changePercent24h * 100) / 100;
-        
-        return result;
-      }
-    } catch (error) {
-      console.log("Local storage not available, falling back to API historical data");
-    }
-  }
-  
-  // Fallback: Use historical API data for 24h change
+  // Use historical API data for 24h change
   try {
     const historicalPrices = await getHistoricalPrices(7);
     

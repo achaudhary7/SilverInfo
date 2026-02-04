@@ -5,10 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npx serve out",
     "lint": "eslint",
-    "generate-assets": "node scripts/generate-assets.js",
-    "generate:weekly": "npx tsx scripts/generate-weekly-article.ts"
+    "generate-assets": "node scripts/generate-assets.js"
   },
   "browserslist": [
     "chrome >= 91",
@@ -20,14 +19,10 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@vercel/analytics": "^1.6.1",
-    "@vercel/speed-insights": "^1.3.1",
-    "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "recharts": "^3.7.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.1"

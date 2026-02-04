@@ -1,315 +1,116 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import type { SilverPrice } from "@/lib/metalApi";
-import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
+/**
+ * Live Silver Price Hook
+ * 
+ * Client-side hook for real-time silver price fetching.
+ * Fetches directly from Yahoo Finance + Frankfurter APIs.
+ * 
+ * ============================================================================
+ * FEATURES
+ * ============================================================================
+ * - Direct API calls (no server required)
+ * - Visibility-aware polling (pauses when tab hidden)
+ * - 1-hour polling interval with localStorage cache
+ * - Refreshes immediately when tab becomes visible
+ * - Loading and error states
+ */
 
-interface UseLivePriceOptions {
-  initialPrice: SilverPrice;
-  pollInterval?: number; // in milliseconds, default 6 hours (21600000ms)
-  enabled?: boolean;
-}
+import { useState, useEffect, useCallback, useRef } from "react";
+import { fetchSilverPrice, type SilverPrice } from "@/lib/clientPriceApi";
+import { useVisibilityAwarePolling } from "./useVisibilityAwarePolling";
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
 
 interface UseLivePriceReturn {
-  price: SilverPrice;
-  lastUpdated: Date;
+  price: SilverPrice | null;
+  lastUpdated: Date | null;
   secondsAgo: number;
+  isLoading: boolean;
   isRefreshing: boolean;
   hasNewPrice: boolean;
+  error: string | null;
   refresh: () => Promise<void>;
 }
 
-// =====================================================================
-// localStorage Keys for persisting high/low across page refreshes
-// =====================================================================
-const STORAGE_KEY_HIGH = 'silverinfo_today_high';
-const STORAGE_KEY_LOW = 'silverinfo_today_low';
-const STORAGE_KEY_DATE = 'silverinfo_tracking_date';
+// Polling interval: 1 hour (prices are cached in localStorage)
+const POLL_INTERVAL = 60 * 60 * 1000;
 
-interface StoredExtreme {
-  value: number;
-  time: string;
-}
+// ============================================================================
+// HOOK
+// ============================================================================
 
-// Get today's date in IST (YYYY-MM-DD)
-function getTodayIST(): string {
-  const now = new Date();
-  const istOffset = 5.5 * 60 * 60 * 1000;
-  const istDate = new Date(now.getTime() + istOffset);
-  return istDate.toISOString().split('T')[0];
-}
-
-// Load extreme from localStorage (if same day)
-function loadStoredExtreme(key: string): StoredExtreme | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
-    const todayIST = getTodayIST();
-    
-    // Clear if it's a new day
-    if (storedDate !== todayIST) {
-      localStorage.removeItem(STORAGE_KEY_HIGH);
-      localStorage.removeItem(STORAGE_KEY_LOW);
-      localStorage.setItem(STORAGE_KEY_DATE, todayIST);
-      return null;
-    }
-    
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      return JSON.parse(stored) as StoredExtreme;
-    }
-  } catch (e) {
-    console.warn('Failed to load from localStorage:', e);
-  }
-  return null;
-}
-
-// Save extreme to localStorage
-function saveStoredExtreme(key: string, extreme: StoredExtreme): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(key, JSON.stringify(extreme));
-    localStorage.setItem(STORAGE_KEY_DATE, getTodayIST());
-  } catch (e) {
-    console.warn('Failed to save to localStorage:', e);
-  }
-}
-
-// Helper to get initial high value
-// Priority: localStorage > todayHigh from server > current price
-function getInitialHigh(price: SilverPrice): { value: number; time: string } {
-  // Try localStorage first (most reliable)
-  const stored = loadStoredExtreme(STORAGE_KEY_HIGH);
-  if (stored && stored.value > 0) {
-    // Compare with server value and take the max
-    const serverHigh = price.todayHigh && price.todayHigh > 0 ? price.todayHigh : price.pricePerGram;
-    if (stored.value >= serverHigh) {
-      return stored;
-    }
-  }
-  
-  // Use server value
-  const high = price.todayHigh && price.todayHigh > 0 ? price.todayHigh : price.pricePerGram;
-  const time = price.todayHighTime || new Date().toISOString();
-  return { value: high, time };
-}
-
-// Helper to get initial low value
-// Priority: localStorage > todayLow from server > current price
-function getInitialLow(price: SilverPrice): { value: number; time: string } {
-  // Try localStorage first (most reliable)
-  const stored = loadStoredExtreme(STORAGE_KEY_LOW);
-  if (stored && stored.value > 0) {
-    // Compare with server value and take the min
-    const serverLow = price.todayLow && price.todayLow > 0 ? price.todayLow : price.pricePerGram;
-    if (stored.value <= serverLow) {
-      return stored;
-    }
-  }
-  
-  // Use server value
-  const low = price.todayLow && price.todayLow > 0 ? price.todayLow : price.pricePerGram;
-  const time = price.todayLowTime || new Date().toISOString();
-  return { value: low, time };
-}
-
-export function useLivePrice({
-  initialPrice,
-  pollInterval = DEFAULT_POLL_INTERVAL, // 6 hours - maximized to minimize Edge Requests
-  enabled = true,
-}: UseLivePriceOptions): UseLivePriceReturn {
-  // Initialize with server data merged with any localStorage data
-  const [price, setPrice] = useState<SilverPrice>(() => {
-    // On client, merge server data with localStorage
-    if (typeof window !== 'undefined') {
-      const storedHigh = loadStoredExtreme(STORAGE_KEY_HIGH);
-      const storedLow = loadStoredExtreme(STORAGE_KEY_LOW);
-      
-      const serverHigh = initialPrice.todayHigh || initialPrice.pricePerGram;
-      const serverLow = initialPrice.todayLow || initialPrice.pricePerGram;
-      
-      const mergedHigh = storedHigh ? Math.max(storedHigh.value, serverHigh) : serverHigh;
-      const mergedLow = storedLow ? Math.min(storedLow.value, serverLow) : serverLow;
-      
-      // If server has better data, save it
-      if (serverHigh > (storedHigh?.value || 0)) {
-        saveStoredExtreme(STORAGE_KEY_HIGH, { value: serverHigh, time: initialPrice.todayHighTime || new Date().toISOString() });
-      }
-      if (serverLow < (storedLow?.value || Infinity)) {
-        saveStoredExtreme(STORAGE_KEY_LOW, { value: serverLow, time: initialPrice.todayLowTime || new Date().toISOString() });
-      }
-      
-      return {
-        ...initialPrice,
-        todayHigh: mergedHigh,
-        todayHighTime: storedHigh?.time || initialPrice.todayHighTime,
-        todayLow: mergedLow,
-        todayLowTime: storedLow?.time || initialPrice.todayLowTime,
-      };
-    }
-    return initialPrice;
-  });
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date(initialPrice.timestamp));
+export function useLivePrice(): UseLivePriceReturn {
+  const [price, setPrice] = useState<SilverPrice | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasNewPrice, setHasNewPrice] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const previousPriceRef = useRef(initialPrice.pricePerGram);
-  
-  // Track the best high/low we've seen across all fetches (solves cold start issue)
-  // ALWAYS initialize with a valid value - never null
-  const bestHighRef = useRef<{ value: number; time: string }>(getInitialHigh(initialPrice));
-  const bestLowRef = useRef<{ value: number; time: string }>(getInitialLow(initialPrice));
-  
-  // Track if we've received valid API data with proper high/low tracking
-  const hasReceivedValidTrackingRef = useRef(false);
-  
-  // On mount, sync refs with localStorage (in case initial state missed something)
-  useEffect(() => {
-    const storedHigh = loadStoredExtreme(STORAGE_KEY_HIGH);
-    const storedLow = loadStoredExtreme(STORAGE_KEY_LOW);
-    
-    if (storedHigh && storedHigh.value > bestHighRef.current.value) {
-      bestHighRef.current = storedHigh;
-    }
-    if (storedLow && storedLow.value < bestLowRef.current.value) {
-      bestLowRef.current = storedLow;
-    }
-    
-    // Also save current best to localStorage in case server had better data
-    saveStoredExtreme(STORAGE_KEY_HIGH, bestHighRef.current);
-    saveStoredExtreme(STORAGE_KEY_LOW, bestLowRef.current);
-  }, []);
+  const previousPriceRef = useRef<number | null>(null);
 
-  // Fetch new price from API
+  // Fetch price from client API
   const fetchPrice = useCallback(async () => {
     try {
-      setIsRefreshing(true);
-      
-      // Fetch from API - server-side caching via unstable_cache + Edge caching via headers
-      // Note: Client-side fetches don't support `next: { revalidate }` option
-      const response = await fetch("/api/price");
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch price");
+      if (price) {
+        setIsRefreshing(true);
       }
       
-      const newPrice: SilverPrice = await response.json();
+      const newPrice = await fetchSilverPrice();
       
-      // Check if price actually changed
-      if (newPrice.pricePerGram !== previousPriceRef.current) {
-        setHasNewPrice(true);
-        previousPriceRef.current = newPrice.pricePerGram;
+      if (newPrice) {
+        // Check if price changed
+        if (previousPriceRef.current !== null && 
+            newPrice.pricePerGram !== previousPriceRef.current) {
+          setHasNewPrice(true);
+          setTimeout(() => setHasNewPrice(false), 1000);
+        }
         
-        // Reset the "new price" indicator after animation
-        setTimeout(() => setHasNewPrice(false), 1000);
+        previousPriceRef.current = newPrice.pricePerGram;
+        setPrice(newPrice);
+        setLastUpdated(new Date());
+        setSecondsAgo(0);
+        setError(null);
+      } else {
+        setError("Unable to fetch price. Please try again later.");
       }
-      
-      // =====================================================================
-      // FIX: Merge high/low with best values seen
-      // 
-      // Strategy:
-      // 1. If API returns valid todayHigh (> 0 and != todayLow), use it as a candidate
-      // 2. Compare with our best tracked high - keep the MAXIMUM
-      // 3. Also compare current price - it might be a new high
-      // 4. Never decrease high, never increase low
-      // =====================================================================
-      
-      const currentPrice = newPrice.pricePerGram;
-      const now = new Date().toISOString();
-      
-      // Check if API has valid tracking data (high != low means it's tracking)
-      const apiHasValidTracking = newPrice.todayHigh && newPrice.todayLow && 
-        newPrice.todayHigh > 0 && newPrice.todayLow > 0 &&
-        newPrice.todayHigh !== newPrice.todayLow;
-      
-      if (apiHasValidTracking) {
-        hasReceivedValidTrackingRef.current = true;
-      }
-      
-      // --- HIGH CALCULATION ---
-      // Candidate values for high
-      const apiHigh = newPrice.todayHigh && newPrice.todayHigh > 0 ? newPrice.todayHigh : currentPrice;
-      const ourHigh = bestHighRef.current.value;
-      
-      // Take the maximum of: our tracked high, API high, current price
-      const newHigh = Math.max(apiHigh, ourHigh, currentPrice);
-      
-      // Determine the time to use
-      let newHighTime = bestHighRef.current.time;
-      if (newHigh === apiHigh && newPrice.todayHighTime) {
-        newHighTime = newPrice.todayHighTime;
-      } else if (newHigh === currentPrice && newHigh > ourHigh) {
-        newHighTime = now;
-      }
-      
-      bestHighRef.current = { value: newHigh, time: newHighTime };
-      
-      // Save to localStorage for persistence across page refreshes
-      saveStoredExtreme(STORAGE_KEY_HIGH, bestHighRef.current);
-      
-      // --- LOW CALCULATION ---
-      // Candidate values for low
-      const apiLow = newPrice.todayLow && newPrice.todayLow > 0 ? newPrice.todayLow : currentPrice;
-      const ourLow = bestLowRef.current.value;
-      
-      // Take the minimum of: our tracked low, API low, current price
-      const newLow = Math.min(apiLow, ourLow, currentPrice);
-      
-      // Determine the time to use
-      let newLowTime = bestLowRef.current.time;
-      if (newLow === apiLow && newPrice.todayLowTime) {
-        newLowTime = newPrice.todayLowTime;
-      } else if (newLow === currentPrice && newLow < ourLow) {
-        newLowTime = now;
-      }
-      
-      bestLowRef.current = { value: newLow, time: newLowTime };
-      
-      // Save to localStorage for persistence across page refreshes
-      saveStoredExtreme(STORAGE_KEY_LOW, bestLowRef.current);
-      
-      // Merge the best values into the price object
-      const mergedPrice: SilverPrice = {
-        ...newPrice,
-        todayHigh: bestHighRef.current.value,
-        todayHighTime: bestHighRef.current.time,
-        todayLow: bestLowRef.current.value,
-        todayLowTime: bestLowRef.current.time,
-      };
-      
-      setPrice(mergedPrice);
-      setLastUpdated(new Date());
-      setSecondsAgo(0);
-    } catch (error) {
-      console.error("Error fetching live price:", error);
+    } catch (err) {
+      console.error("Error fetching silver price:", err);
+      setError("Failed to fetch price");
     } finally {
+      setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [price]);
 
   // Manual refresh function
   const refresh = useCallback(async () => {
+    setIsRefreshing(true);
     await fetchPrice();
   }, [fetchPrice]);
 
-  // Use visibility-aware polling - pauses when tab is hidden
-  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  // Visibility-aware polling
   useVisibilityAwarePolling({
     callback: fetchPrice,
-    interval: pollInterval,
-    enabled,
+    interval: POLL_INTERVAL,
+    enabled: true,
     fetchOnMount: true,
-    fetchOnVisible: true, // Refresh data when user returns to tab
+    fetchOnVisible: true,
   });
 
   // Update "seconds ago" counter every second
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date();
-      const diffMs = now.getTime() - lastUpdated.getTime();
-      const diffSeconds = Math.floor(diffMs / 1000);
-      setSecondsAgo(diffSeconds);
+      if (lastUpdated) {
+        const now = new Date();
+        const diffMs = now.getTime() - lastUpdated.getTime();
+        const diffSeconds = Math.floor(diffMs / 1000);
+        setSecondsAgo(diffSeconds);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
@@ -319,8 +120,10 @@ export function useLivePrice({
     price,
     lastUpdated,
     secondsAgo,
+    isLoading,
     isRefreshing,
     hasNewPrice,
+    error,
     refresh,
   };
 }
@@ -336,3 +139,5 @@ export function formatTimeAgo(seconds: number): string {
   const hours = Math.floor(minutes / 60);
   return `${hours}h ago`;
 }
+
+export default useLivePrice;

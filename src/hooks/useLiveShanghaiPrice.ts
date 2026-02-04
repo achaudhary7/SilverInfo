@@ -1,26 +1,29 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import type { ShanghaiSilverPrice } from "@/lib/shanghaiApi";
-import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
-
 /**
- * useLiveShanghaiPrice Hook
+ * Live Shanghai Silver Price Hook
  * 
- * Client-side hook for real-time Shanghai silver price polling.
- * Uses visibility-aware polling with 6-hour interval.
+ * Client-side hook for real-time Shanghai silver price fetching.
+ * Fetches directly from Yahoo Finance + Frankfurter APIs.
  * 
  * ============================================================================
  * FEATURES
  * ============================================================================
+ * - Direct API calls (no server required)
  * - Visibility-aware polling (pauses when tab hidden)
- * - 6-hour polling interval (maximized to minimize Edge Requests)
+ * - 1-hour polling interval with localStorage cache
  * - Refreshes immediately when tab becomes visible
- * - Error handling with retry
- * - Loading states
- * - Manual refresh capability
- * - Last update timestamp
+ * - SGE market status detection
+ * - Loading and error states
  */
+
+import { useState, useCallback, useRef } from "react";
+import { fetchShanghaiPrice, type ShanghaiSilverPrice } from "@/lib/clientPriceApi";
+import { useVisibilityAwarePolling } from "./useVisibilityAwarePolling";
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
 
 interface UseLiveShanghaiPriceReturn {
   price: ShanghaiSilverPrice | null;
@@ -30,36 +33,35 @@ interface UseLiveShanghaiPriceReturn {
   refresh: () => Promise<void>;
 }
 
+// Polling interval: 1 hour (prices are cached in localStorage)
+const POLL_INTERVAL = 60 * 60 * 1000;
 const MAX_RETRIES = 3;
 
-export function useLiveShanghaiPrice(
-  initialPrice?: ShanghaiSilverPrice | null
-): UseLiveShanghaiPriceReturn {
-  const [price, setPrice] = useState<ShanghaiSilverPrice | null>(initialPrice || null);
-  const [isLoading, setIsLoading] = useState(!initialPrice);
+// ============================================================================
+// HOOK
+// ============================================================================
+
+export function useLiveShanghaiPrice(): UseLiveShanghaiPriceReturn {
+  const [price, setPrice] = useState<ShanghaiSilverPrice | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(
-    initialPrice ? new Date() : null
-  );
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   
   const retryCountRef = useRef(0);
 
+  // Fetch price from client API
   const fetchPrice = useCallback(async () => {
     try {
-      // Fetch from API route - server-side caching via unstable_cache + Edge caching via headers
-      // Note: Client-side fetches don't support `next: { revalidate }` option
-      const response = await fetch("/api/shanghai-price");
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: ShanghaiSilverPrice = await response.json();
+      const newPrice = await fetchShanghaiPrice();
       
-      setPrice(data);
-      setLastUpdated(new Date());
-      setError(null);
-      retryCountRef.current = 0;
+      if (newPrice) {
+        setPrice(newPrice);
+        setLastUpdated(new Date());
+        setError(null);
+        retryCountRef.current = 0;
+      } else {
+        throw new Error("Unable to fetch Shanghai price");
+      }
     } catch (err) {
       console.error("Error fetching Shanghai price:", err);
       
@@ -73,19 +75,19 @@ export function useLiveShanghaiPrice(
     }
   }, []);
 
+  // Manual refresh function
   const refresh = useCallback(async () => {
     setIsLoading(true);
     await fetchPrice();
   }, [fetchPrice]);
 
-  // Use visibility-aware polling - pauses when tab is hidden
-  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  // Visibility-aware polling
   useVisibilityAwarePolling({
     callback: fetchPrice,
-    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    interval: POLL_INTERVAL,
     enabled: true,
-    fetchOnMount: !initialPrice, // Only fetch on mount if no initial price
-    fetchOnVisible: true, // Refresh data when user returns to tab
+    fetchOnMount: true,
+    fetchOnVisible: true,
   });
 
   return {

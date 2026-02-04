@@ -1,27 +1,25 @@
+"use client";
+
 /**
  * Live Gold Price Hook
  * 
- * Client-side hook for real-time gold price polling.
- * Polls the /api/gold-price endpoint with 6-hour visibility-aware polling.
+ * Client-side hook for real-time gold price fetching.
+ * Fetches directly from Yahoo Finance + Frankfurter APIs.
  * 
  * ============================================================================
  * FEATURES
  * ============================================================================
+ * - Direct API calls (no server required)
  * - Visibility-aware polling (pauses when tab hidden)
- * - 6-hour polling interval (maximized to minimize Edge Requests)
+ * - 1-hour polling interval with localStorage cache
  * - Refreshes immediately when tab becomes visible
  * - Loading and error states
- * - Automatic retry on failure
- * - Cleanup on unmount
- * 
- * Used By: GoldPriceCard, Gold page components
+ * - Support for 24K, 22K, 18K gold prices
  */
 
-"use client";
-
-import { useState, useEffect, useCallback, useRef } from "react";
-import type { GoldPrice } from "@/lib/goldApi";
-import { useVisibilityAwarePolling, DEFAULT_POLL_INTERVAL } from "./useVisibilityAwarePolling";
+import { useState, useCallback, useRef } from "react";
+import { fetchGoldPrice, type GoldPrice } from "@/lib/clientPriceApi";
+import { useVisibilityAwarePolling } from "./useVisibilityAwarePolling";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -35,107 +33,64 @@ interface UseLiveGoldPriceReturn {
   refresh: () => Promise<void>;
 }
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const API_ENDPOINT = "/api/gold-price";
+// Polling interval: 1 hour (prices are cached in localStorage)
+const POLL_INTERVAL = 60 * 60 * 1000;
 
 // ============================================================================
 // HOOK
 // ============================================================================
 
-export function useLiveGoldPrice(
-  initialPrice?: GoldPrice | null
-): UseLiveGoldPriceReturn {
-  // ========================================================================
-  // STATE
-  // ========================================================================
-  const [price, setPrice] = useState<GoldPrice | null>(initialPrice ?? null);
-  const [isLoading, setIsLoading] = useState(!initialPrice);
+export function useLiveGoldPrice(): UseLiveGoldPriceReturn {
+  const [price, setPrice] = useState<GoldPrice | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(
-    initialPrice ? new Date() : null
-  );
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  // ========================================================================
-  // REFS
-  // ========================================================================
   const retryCountRef = useRef(0);
 
-  // ========================================================================
-  // FETCH FUNCTION
-  // ========================================================================
+  // Fetch price from client API
   const fetchPrice = useCallback(async () => {
     try {
-      // Fetch from API - server-side caching via unstable_cache + Edge caching via headers
-      // Note: Client-side fetches don't support `next: { revalidate }` option
-      const response = await fetch(API_ENDPOINT);
+      const newPrice = await fetchGoldPrice();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (newPrice) {
+        setPrice(newPrice);
+        setError(null);
+        setLastUpdated(new Date());
+        retryCountRef.current = 0;
+      } else {
+        throw new Error("Unable to fetch gold price");
       }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      setPrice(data);
-      setError(null);
-      setLastUpdated(new Date());
-      retryCountRef.current = 0; // Reset retry counter on success
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch gold price";
       setError(errorMessage);
       console.error("[useLiveGoldPrice] Error:", errorMessage);
 
-      // Increment retry counter
       retryCountRef.current += 1;
-
-      // If too many retries, slow down polling
-      if (retryCountRef.current > 5) {
-        console.log(
-          "[useLiveGoldPrice] Too many failures, will continue with reduced frequency"
-        );
-      }
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // ========================================================================
-  // MANUAL REFRESH
-  // ========================================================================
+  // Manual refresh function
   const refresh = useCallback(async () => {
     setIsLoading(true);
     await fetchPrice();
   }, [fetchPrice]);
 
-  // ========================================================================
-  // VISIBILITY-AWARE POLLING
-  // ========================================================================
-  // Use visibility-aware polling - pauses when tab is hidden
-  // 6-hour interval maximizes cost savings, fetchOnVisible ensures fresh data
+  // Visibility-aware polling
   useVisibilityAwarePolling({
     callback: () => {
-      // Skip if too many consecutive failures
-      if (retryCountRef.current > 10) {
-        return;
-      }
+      if (retryCountRef.current > 10) return;
       fetchPrice();
     },
-    interval: DEFAULT_POLL_INTERVAL, // 6 hours
+    interval: POLL_INTERVAL,
     enabled: true,
-    fetchOnMount: !initialPrice, // Only fetch on mount if no initial price
-    fetchOnVisible: true, // Refresh data when user returns to tab
+    fetchOnMount: true,
+    fetchOnVisible: true,
   });
 
-  // ========================================================================
-  // RETURN
-  // ========================================================================
   return {
     price,
     isLoading,

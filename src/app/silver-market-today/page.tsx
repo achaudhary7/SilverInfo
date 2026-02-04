@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getSilverPriceWithChange, getHistoricalPrices } from "@/lib/metalApi";
+import { getSilverPriceWithChange } from "@/lib/metalApi";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 import LivePriceCard from "@/components/LivePriceCard";
-import { DynamicMiniChart } from "@/components/DynamicChart";
 
 // Revalidate frequently for fresh content - important for Discover
 export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness)
@@ -55,10 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SilverMarketTodayPage() {
-  const [priceData, historicalPrices] = await Promise.all([
-    getSilverPriceWithChange(),
-    getHistoricalPrices(30),
-  ]);
+  const priceData = await getSilverPriceWithChange();
 
   // If API completely fails, show error page - NO FAKE DATA
   if (!priceData) {
@@ -100,22 +96,6 @@ export default async function SilverMarketTodayPage() {
     year: "numeric",
   });
   const isoDate = today.toISOString();
-
-  // Calculate week-over-week change
-  const weekAgoPrice = historicalPrices.length >= 7 
-    ? historicalPrices[historicalPrices.length - 7]?.price 
-    : null;
-  const weekChange = weekAgoPrice 
-    ? ((price.pricePerGram - weekAgoPrice) / weekAgoPrice) * 100 
-    : null;
-
-  // Calculate month-over-month change
-  const monthAgoPrice = historicalPrices.length >= 30 
-    ? historicalPrices[0]?.price 
-    : null;
-  const monthChange = monthAgoPrice 
-    ? ((price.pricePerGram - monthAgoPrice) / monthAgoPrice) * 100 
-    : null;
 
   // Market status
   const isMarketOpen = (() => {
@@ -258,9 +238,6 @@ export default async function SilverMarketTodayPage() {
                       Silver is trading at <strong className="text-gray-900">₹{price.pricePerGram.toFixed(2)}</strong> per gram 
                       today, {price.change24h >= 0 ? "up" : "down"} <strong className={price.change24h >= 0 ? "text-green-600" : "text-red-600"}>
                       {Math.abs(price.change24h).toFixed(2)}%</strong> from yesterday&apos;s close.
-                      {weekChange !== null && (
-                        <> Over the past week, prices have moved {weekChange >= 0 ? "higher" : "lower"} by {Math.abs(weekChange).toFixed(2)}%.</>
-                      )}
                     </p>
 
                     <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-3">
@@ -289,7 +266,7 @@ export default async function SilverMarketTodayPage() {
                     📈 Price Performance
                   </h2>
                   
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-500 mb-1">24h Change</p>
                       <p className={`text-xl font-bold ${price.change24h >= 0 ? "text-green-600" : "text-red-600"}`}>
@@ -297,24 +274,18 @@ export default async function SilverMarketTodayPage() {
                       </p>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-500 mb-1">7d Change</p>
-                      <p className={`text-xl font-bold ${weekChange && weekChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                        {weekChange ? `${weekChange >= 0 ? "+" : ""}${weekChange.toFixed(2)}%` : "—"}
+                      <p className="text-sm text-gray-500 mb-1">Today High</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        ₹{price.high24h.toFixed(2)}
                       </p>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-500 mb-1">30d Change</p>
-                      <p className={`text-xl font-bold ${monthChange && monthChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                        {monthChange ? `${monthChange >= 0 ? "+" : ""}${monthChange.toFixed(2)}%` : "—"}
+                      <p className="text-sm text-gray-500 mb-1">Today Low</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        ₹{price.low24h.toFixed(2)}
                       </p>
                     </div>
                   </div>
-
-                  {/* Mini Chart */}
-                  <div className="h-[200px]">
-                    <DynamicMiniChart data={historicalPrices.slice(-7)} />
-                  </div>
-                  <p className="text-xs text-gray-400 text-center mt-2">7-day price trend</p>
                 </div>
 
                 {/* Market Context */}
@@ -374,10 +345,7 @@ export default async function SilverMarketTodayPage() {
               {/* Right Column - Sidebar */}
               <div className="space-y-6">
                 {/* Live Price Card */}
-                <LivePriceCard 
-                  initialPrice={price} 
-                  lastWeekPrice={weekAgoPrice || undefined}
-                />
+                <LivePriceCard initialPrice={price} />
 
                 {/* Quick Links */}
                 <div className="card p-6">

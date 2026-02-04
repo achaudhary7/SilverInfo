@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getInternationalSilverPrice, getHistoricalPrices } from "@/lib/metalApi";
-import { DynamicPriceChart } from "@/components/DynamicChart";
+import { getInternationalSilverPrice } from "@/lib/metalApi";
 import FAQ from "@/components/FAQ";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
@@ -92,7 +91,6 @@ const faqItems: FAQItem[] = [
 export default async function QatarSilverRatePage() {
   // Fetch Qatar price data
   const qatarPrice = await getInternationalSilverPrice("qatar");
-  const historicalPrices = await getHistoricalPrices(30);
 
   // Generate schemas
   const faqSchema = generateFAQSchema(faqItems);
@@ -337,14 +335,6 @@ export default async function QatarSilverRatePage() {
                   </div>
                   <p className="text-xs text-gray-400 mt-3">
                     💡 &quot;24 carat silver&quot; is a common search term but refers to gold purity. Silver is measured as 999/925/900.
-                  </p>
-                </div>
-
-                {/* Price Chart */}
-                <div id="chart" className="scroll-mt-20">
-                  <DynamicPriceChart data={historicalPrices} height={350} />
-                  <p className="text-xs text-gray-400 mt-2 text-center">
-                    * Chart shows prices in INR for reference. QAR prices follow similar trends.
                   </p>
                 </div>
 

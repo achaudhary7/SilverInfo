@@ -82,7 +82,8 @@ interface GoldPriceCardProps {
 // ============================================================================
 
 export function GoldPriceCard({ initialPrice }: GoldPriceCardProps) {
-  const { price, isLoading, lastUpdated } = useLiveGoldPrice(initialPrice);
+  const { price: fetchedPrice, isLoading, lastUpdated } = useLiveGoldPrice();
+  const price = fetchedPrice || initialPrice;
   
   // Defer market status calculation to client to avoid hydration mismatch
   const [marketStatus, setMarketStatus] = useState<{ isOpen: boolean; status: string; nextChange: string }>({

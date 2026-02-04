@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useLivePrice, formatTimeAgo } from "@/hooks/useLivePrice";
-import { formatIndianPrice, type SilverPrice } from "@/lib/metalApi";
+import { type SilverPrice } from "@/lib/clientPriceApi";
 import { PriceSourceInline } from "@/components/ui/PriceSourceBadge";
-import { DEFAULT_POLL_INTERVAL } from "@/hooks/useVisibilityAwarePolling";
+
+// Helper to format Indian price
+function formatIndianPrice(amount: number): string {
+  return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+}
 
 // Extended price type with daily extremes from API
 interface ExtendedSilverPrice extends SilverPrice {
@@ -17,9 +21,7 @@ interface ExtendedSilverPrice extends SilverPrice {
 }
 
 interface LivePriceCardProps {
-  initialPrice: SilverPrice;
-  pollInterval?: number;
-  lastWeekPrice?: number; // Price from 7 days ago for comparison
+  initialPrice?: SilverPrice;
 }
 
 // Check if MCX market is open (9 AM - 11:30 PM IST, Mon-Fri)
@@ -55,23 +57,14 @@ function getChangeIndicator(change: number) {
   return { icon: "→", direction: "neutral" as const, color: "text-gray-600", bg: "bg-gray-50", border: "border-gray-200" };
 }
 
-export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POLL_INTERVAL, lastWeekPrice }: LivePriceCardProps) {
-  const { price: basePrice, secondsAgo, isRefreshing, hasNewPrice, refresh } = useLivePrice({
-    initialPrice,
-    pollInterval,
-    enabled: true,
-  });
+export default function LivePriceCard({ initialPrice }: LivePriceCardProps) {
+  const { price: basePrice, secondsAgo, isLoading, isRefreshing, hasNewPrice, error, refresh } = useLivePrice();
   
   // Cast to extended type to access daily extremes
-  const price = basePrice as ExtendedSilverPrice;
+  const price = (basePrice || initialPrice) as ExtendedSilverPrice | null;
   
   const [marketStatus, setMarketStatus] = useState({ isOpen: true, label: "MCX Open" });
   const [showShareToast, setShowShareToast] = useState(false);
-  const changeIndicator = getChangeIndicator(price.change24h);
-  
-  // Calculate week-over-week change
-  const weekChange = lastWeekPrice ? price.pricePerGram - lastWeekPrice : null;
-  const weekChangePercent = lastWeekPrice ? ((price.pricePerGram - lastWeekPrice) / lastWeekPrice) * 100 : null;
   
   useEffect(() => {
     setMarketStatus(getMarketStatus());
@@ -81,32 +74,32 @@ export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POL
     return () => clearInterval(interval);
   }, []);
 
+  const shareUrl = "https://silverinfo.in";
+
   // Share price text generator
   const getShareText = () => {
+    if (!price) return "";
     return `🪙 Silver Rate Today: ₹${price.pricePerGram.toFixed(2)}/gram (${price.changePercent24h >= 0 ? "+" : ""}${price.changePercent24h.toFixed(2)}%)\n\n📊 Per 10g: ₹${price.pricePer10Gram.toFixed(2)}\n📊 Per Kg: ₹${price.pricePerKg.toLocaleString("en-IN")}\n\n✅ Live prices derived from COMEX + RBI rates\n\n🔗 Check live prices:`;
   };
-  
-  const shareUrl = "https://silverinfo.in";
 
   // Share via native share (mobile)
   const handleNativeShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Silver Rate Today - SilverInfo.in",
-          text: getShareText(),
-          url: shareUrl,
-        });
-        return true;
-      } catch {
-        return false;
-      }
+    if (!price || !navigator.share) return false;
+    try {
+      await navigator.share({
+        title: "Silver Rate Today - SilverInfo.in",
+        text: getShareText(),
+        url: shareUrl,
+      });
+      return true;
+    } catch {
+      return false;
     }
-    return false;
   };
 
   // Share via WhatsApp
   const handleWhatsAppShare = () => {
+    if (!price) return;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(getShareText() + " " + shareUrl)}`;
     window.open(whatsappUrl, "_blank");
     setShowShareToast(true);
@@ -115,6 +108,7 @@ export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POL
 
   // Share via Twitter/X
   const handleTwitterShare = () => {
+    if (!price) return;
     const tweetText = `Silver Rate Today: ₹${price.pricePerGram.toFixed(2)}/gram (${price.changePercent24h >= 0 ? "+" : ""}${price.changePercent24h.toFixed(2)}%) - Live from COMEX + RBI rates`;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(twitterUrl, "_blank");
@@ -127,6 +121,56 @@ export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POL
       handleWhatsAppShare();
     }
   };
+  
+  // Loading state
+  if (isLoading && !price) {
+    return (
+      <div className="card p-4 sm:p-6 animate-pulse">
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <div className="min-w-0 flex-1">
+            <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+            <div className="h-10 bg-gray-200 rounded w-48"></div>
+          </div>
+          <div className="h-8 bg-gray-200 rounded w-20"></div>
+        </div>
+        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+          <div className="h-12 bg-gray-200 rounded"></div>
+          <div className="h-12 bg-gray-200 rounded"></div>
+          <div className="h-12 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Error state
+  if (error && !price) {
+    return (
+      <div className="card p-4 sm:p-6">
+        <div className="text-center py-8">
+          <p className="text-red-500 mb-2">Unable to fetch price</p>
+          <button
+            onClick={refresh}
+            className="px-4 py-2 bg-[#1e3a5f] text-white rounded-lg hover:bg-[#2a4a6f] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // No price available (shouldn't happen but safety check)
+  if (!price) {
+    return (
+      <div className="card p-4 sm:p-6">
+        <div className="text-center py-8 text-gray-500">
+          Loading prices...
+        </div>
+      </div>
+    );
+  }
+  
+  const changeIndicator = getChangeIndicator(price.change24h);
   
   return (
     <div className="card p-4 sm:p-6 relative overflow-hidden">
@@ -294,57 +338,6 @@ export default function LivePriceCard({ initialPrice, pollInterval = DEFAULT_POL
         </div>
       </div>
       
-      {/* Week Comparison - Only show if lastWeekPrice is available */}
-      {weekChange !== null && weekChangePercent !== null && lastWeekPrice && (
-        <div 
-          className={`mt-4 p-3 rounded-lg border cursor-help relative group ${
-            weekChange > 0 
-              ? "bg-green-50/50 border-green-200" 
-              : weekChange < 0 
-              ? "bg-red-50/50 border-red-200"
-              : "bg-gray-50 border-gray-200"
-          }`}
-          title={`Today: ₹${price.pricePerGram.toFixed(2)} | 7 days ago: ₹${lastWeekPrice.toFixed(2)} | Change: ₹${weekChange.toFixed(2)} (${weekChangePercent.toFixed(2)}%)`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-600 flex items-center gap-1">
-              vs Last Week
-              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </span>
-            <span className={`text-sm font-semibold ${
-              weekChange > 0 ? "text-green-600" : weekChange < 0 ? "text-red-600" : "text-gray-600"
-            }`}>
-              {weekChange > 0 ? "↑" : weekChange < 0 ? "↓" : "→"} ₹{Math.abs(weekChange).toFixed(2)} ({weekChangePercent > 0 ? "+" : ""}{weekChangePercent.toFixed(2)}%)
-            </span>
-          </div>
-          
-          {/* Detailed Tooltip on Hover */}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap shadow-lg">
-            <div className="space-y-1">
-              <div className="flex justify-between gap-4">
-                <span className="text-gray-400">Today:</span>
-                <span className="font-semibold">₹{price.pricePerGram.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-gray-400">7 days ago:</span>
-                <span>₹{lastWeekPrice.toFixed(2)}</span>
-              </div>
-              <div className="border-t border-gray-700 pt-1 mt-1">
-                <div className="flex justify-between gap-4">
-                  <span className="text-gray-400">Difference:</span>
-                  <span className={weekChange > 0 ? "text-green-400" : weekChange < 0 ? "text-red-400" : ""}>
-                    {weekChange > 0 ? "+" : ""}₹{weekChange.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></span>
-          </div>
-        </div>
-      )}
-
       {/* Data Source Badges */}
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="flex flex-wrap items-center gap-2 mb-3">

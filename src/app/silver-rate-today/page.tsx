@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { getSilverPriceWithChange, getHistoricalPrices, getCityPrices } from "@/lib/metalApi";
+import { getSilverPriceWithChange, getCityPrices } from "@/lib/metalApi";
 import LivePriceCard from "@/components/LivePriceCard";
-import { DynamicPriceChart } from "@/components/DynamicChart";
 import CityTable from "@/components/CityTable";
 import FAQ from "@/components/FAQ";
 import MarketStatus from "@/components/MarketStatus";
 import WhyPriceChanged from "@/components/WhyPriceChanged";
 import RelatedSearches from "@/components/RelatedSearches";
-import SeasonalComparison from "@/components/SeasonalComparison";
 import BookmarkCity from "@/components/BookmarkCity";
 import { generateFAQSchema, generateBreadcrumbSchema, type FAQItem } from "@/lib/schema";
 
@@ -117,9 +115,8 @@ const UNIT_INFO = {
 };
 
 export default async function SilverRateTodayPage() {
-  const [priceData, historicalPrices, cityPricesData] = await Promise.all([
+  const [priceData, cityPricesData] = await Promise.all([
     getSilverPriceWithChange(),
-    getHistoricalPrices(365), // Full year of data
     getCityPrices(),
   ]);
   
@@ -155,11 +152,6 @@ export default async function SilverRateTodayPage() {
   // Use real API data only - no fallbacks
   const price = priceData;
   const cityPrices = cityPricesData || [];
-  
-  // Get last week's price for comparison
-  const lastWeekPrice = historicalPrices.length >= 7 
-    ? historicalPrices[historicalPrices.length - 7]?.price 
-    : undefined;
 
   const faqSchema = generateFAQSchema(faqItems);
   const breadcrumbSchema = generateBreadcrumbSchema([
@@ -329,15 +321,7 @@ export default async function SilverRateTodayPage() {
               <div className="lg:col-span-2 space-y-8">
                 {/* Price Card - with vs Last Week comparison */}
                 <div id="live-price" className="scroll-mt-20">
-                  <LivePriceCard 
-                    initialPrice={price} 
-                    lastWeekPrice={lastWeekPrice}
-                  />
-                </div>
-
-                {/* Full Chart */}
-                <div id="price-chart" className="scroll-mt-20">
-                  <DynamicPriceChart data={historicalPrices} height={400} />
+                  <LivePriceCard initialPrice={price} />
                 </div>
 
                 {/* Price Comparison Table - with tooltips */}
@@ -439,11 +423,6 @@ export default async function SilverRateTodayPage() {
                 <BookmarkCity cities={cityPrices} />
                 
                 {/* Seasonal Comparison - Uses real historical data */}
-                <SeasonalComparison 
-                  currentPrice={price.pricePerKg} 
-                  historicalPrices={historicalPrices}
-                />
-                
                 {/* Why Price Changed Today - Key Differentiator */}
                 <WhyPriceChanged />
                 

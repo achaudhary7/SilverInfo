@@ -4,8 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Explicit viewport configuration for SEO best practices
 export const viewport: Viewport = {
@@ -259,13 +257,6 @@ export default function RootLayout({
         <Footer />
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
-        
-        {/* Vercel Analytics & Speed Insights - Core Web Vitals tracking */}
-        {/* Sample 10% of sessions for Analytics to significantly reduce Edge Requests */}
-        {/* This still provides statistically meaningful data for a site with decent traffic */}
-        <Analytics mode="production" />
-        {/* Sample 10% of sessions for SpeedInsights to minimize Edge Requests */}
-        <SpeedInsights sampleRate={0.1} />
       </body>
     </html>
   );

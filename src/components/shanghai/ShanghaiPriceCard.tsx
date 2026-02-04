@@ -28,7 +28,8 @@ interface ShanghaiPriceCardProps {
 }
 
 export default function ShanghaiPriceCard({ initialPrice }: ShanghaiPriceCardProps) {
-  const { price, isLoading, lastUpdated } = useLiveShanghaiPrice(initialPrice);
+  const { price: fetchedPrice, isLoading, lastUpdated } = useLiveShanghaiPrice();
+  const price = fetchedPrice || initialPrice;
   
   // State for Beijing time (client-side only to avoid hydration mismatch)
   const [beijingTime, setBeijingTime] = useState<string>("");

@@ -2,6 +2,9 @@ import { MetadataRoute } from "next";
 import { INDIAN_CITIES } from "@/lib/metalApi";
 import { getAllUpdateSlugs, getAllLearnSlugs, getAllUpdates, getAllLearnArticles } from "@/lib/markdown";
 
+// Required for static export
+export const dynamic = "force-static";
+
 // Page last modified dates - update these when making significant content changes
 const PAGE_DATES: Record<string, string> = {
   "/": "2026-01-26",

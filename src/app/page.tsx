@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { getSilverPriceWithChange, getHistoricalPrices, getCityPrices } from "@/lib/metalApi";
+import { getSilverPriceWithChange, getCityPrices } from "@/lib/metalApi";
 import { getRecentUpdates } from "@/lib/markdown";
 import LivePriceCard from "@/components/LivePriceCard";
-import { DynamicPriceChart, DynamicMiniChart } from "@/components/DynamicChart";
 import { DynamicCityTable, DynamicCalculator, DynamicFAQ } from "@/components/DynamicComponents";
 import WhyPriceChangedTeaser from "@/components/WhyPriceChangedTeaser";
 import WhyPriceChangedFull from "@/components/WhyPriceChangedFull";
@@ -268,10 +267,8 @@ const faqItems: FAQItem[] = [
 
 export default async function HomePage() {
   // Fetch data - getSilverPriceWithChange includes 24h change calculation
-  // Fetch 365 days to support 7d, 30d, 90d, and 1y chart views
-  const [priceData, historicalPrices, cityPrices] = await Promise.all([
+  const [priceData, cityPrices] = await Promise.all([
     getSilverPriceWithChange(),
-    getHistoricalPrices(365),
     getCityPrices(),
   ]);
   
@@ -554,89 +551,36 @@ export default async function HomePage() {
             {/* Hero Grid - 2 columns */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Left: Price Card */}
-              <LivePriceCard 
-                initialPrice={price} 
-                lastWeekPrice={historicalPrices.length >= 7 ? historicalPrices[historicalPrices.length - 7]?.price : undefined}
-              />
+              <LivePriceCard initialPrice={price} />
               
               {/* Right: Stacked Sections */}
               <div className="space-y-4">
-                {/* Row 1: 7-Day Trend + Top Cities side by side */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Mini Chart */}
-                  <div className="card p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-sm font-semibold text-gray-900">7-Day Trend</h2>
-                      <Link href="/silver-rate-today" className="text-xs text-[#1e3a5f] hover:underline">
-                        Full Chart →
-                      </Link>
-                    </div>
-                    <div className="h-[80px]">
-                      <DynamicMiniChart data={historicalPrices} />
-                    </div>
-                    {(() => {
-                      const last7Days = historicalPrices.slice(-7).map((p) => p.price);
-                      // Include current live price AND today's tracked high in calculation
-                      // This ensures today's intraday extremes are reflected
-                      const currentPrice = price.pricePerGram;
-                      const todayHigh = price.todayHigh || currentPrice;
-                      const todayLow = price.todayLow || currentPrice;
-                      const allPricesForHigh = [...last7Days, todayHigh];
-                      const allPricesForLow = [...last7Days, todayLow];
-                      const weekLow = Math.min(...allPricesForLow);
-                      const weekHigh = Math.max(...allPricesForHigh);
-                      const weekAvg = last7Days.reduce((a, b) => a + b, 0) / last7Days.length;
-                      // Check if today's high is the week high
-                      const isAtHigh = todayHigh >= weekHigh;
-                      return (
-                        <div className="grid grid-cols-3 gap-2 mt-3 pt-2 border-t border-gray-100">
-                          <div className="text-center">
-                            <p className="text-[10px] text-gray-500">Low</p>
-                            <p className="text-xs font-semibold text-red-600">₹{weekLow.toFixed(0)}</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-[10px] text-gray-500">Avg</p>
-                            <p className="text-xs font-semibold text-gray-900">₹{weekAvg.toFixed(0)}</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-[10px] text-gray-500">High</p>
-                            <p className="text-xs font-semibold text-green-600">
-                              ₹{weekHigh.toFixed(0)}
-                              {isAtHigh && <span className="ml-0.5">🔥</span>}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })()}
+                {/* Top Cities - Full Width */}
+                <div className="card p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-sm font-semibold text-gray-900">City-wise Silver Rates</h2>
+                    <Link href="/silver-rate-today#cities" className="text-xs text-[#1e3a5f] hover:underline">
+                      All Cities →
+                    </Link>
                   </div>
-                  
-                  {/* Top Cities */}
-                  <div className="card p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-sm font-semibold text-gray-900">Top Cities</h2>
-                      <Link href="/silver-rate-today#cities" className="text-xs text-[#1e3a5f] hover:underline">
-                        All Cities →
+                  <div className="grid grid-cols-2 gap-2">
+                    {(cityPrices || []).slice(0, 8).map((city) => (
+                      <Link
+                        key={city.city}
+                        href={`/city/${city.city.toLowerCase()}`}
+                        className="flex justify-between text-xs py-1.5 px-2 hover:bg-gray-50 rounded transition-colors"
+                      >
+                        <span className="text-gray-600">{city.city}</span>
+                        <span className="font-semibold text-gray-900">₹{city.pricePerGram.toFixed(2)}</span>
                       </Link>
-                    </div>
-                    <div className="space-y-2">
-                      {(cityPrices || []).slice(0, 4).map((city) => (
-                        <Link
-                          key={city.city}
-                          href={`/city/${city.city.toLowerCase()}`}
-                          className="flex justify-between text-xs py-1 hover:text-[#1e3a5f] transition-colors"
-                        >
-                          <span className="text-gray-600">{city.city}</span>
-                          <span className="font-semibold text-gray-900">₹{city.pricePerGram.toFixed(2)}</span>
-                        </Link>
-                      ))}
-                    </div>
-                    <p className="text-[10px] text-gray-400 mt-2 pt-2 border-t border-gray-100 text-center">
-                      Prices vary by local taxes
-                    </p>
+                    ))}
                   </div>
+                  <p className="text-[10px] text-gray-400 mt-3 pt-2 border-t border-gray-100 text-center">
+                    Prices vary by local taxes and transportation
+                  </p>
                 </div>
                 
-                {/* Row 2: Why Price Changed - FULL Version */}
+                {/* Why Price Changed */}
                 <WhyPriceChangedTeaser />
               </div>
             </div>
@@ -703,15 +647,10 @@ export default async function HomePage() {
               </a>
             </nav>
             
-            {/* Price History + Updates + Calculator - 3 Column Layout */}
-            <div id="price-history" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8 scroll-mt-20">
-              {/* Price Chart - Takes 50% on XL, 100% on MD */}
-              <div className="md:col-span-2 xl:col-span-6">
-                <DynamicPriceChart data={historicalPrices} />
-              </div>
-              
-              {/* Latest Updates + Quick Links - Takes 25% on XL, 50% on MD */}
-              <div className="md:col-span-1 xl:col-span-3 space-y-4">
+            {/* Updates + Calculator - 2 Column Layout */}
+            <div id="price-history" className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 scroll-mt-20">
+              {/* Latest Updates + Quick Links */}
+              <div className="space-y-4">
                 {/* Recent Updates */}
                 <div className="card p-4">
                   <div className="flex items-center justify-between mb-3">
@@ -787,8 +726,8 @@ export default async function HomePage() {
                 </div>
               </div>
               
-              {/* Quick Calculator - Takes 25% on XL, 50% on MD */}
-              <div className="md:col-span-1 xl:col-span-3">
+              {/* Quick Calculator */}
+              <div>
                 <DynamicCalculator currentPrice={price.pricePerGram} compact />
               </div>
             </div>

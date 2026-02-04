@@ -408,30 +408,6 @@ export async function getGoldPriceWithChange(): Promise<GoldPrice | null> {
     return null;
   }
   
-  // Only try local storage on server side
-  if (typeof window === "undefined") {
-    try {
-      const { getYesterdayGoldPrice } = await import("./goldPriceStorage");
-      const storedYesterday = await getYesterdayGoldPrice();
-      
-      if (storedYesterday) {
-        const todayPrice = price.price24KPerGram;
-        const yesterdayPrice = storedYesterday.price24KPerGram;
-        
-        const change24h = todayPrice - yesterdayPrice;
-        const changePercent24h = (change24h / yesterdayPrice) * 100;
-        
-        return {
-          ...price,
-          change24h: Math.round(change24h * 100) / 100,
-          changePercent24h: Math.round(changePercent24h * 100) / 100,
-        };
-      }
-    } catch (error) {
-      // Storage not available, use default
-    }
-  }
-  
   return price;
 }
 
