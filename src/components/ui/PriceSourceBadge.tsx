@@ -9,6 +9,7 @@
  * ============================================================================
  * - COMEX: New York Mercantile Exchange (official futures)
  * - calculated: Self-calculated from COMEX + forex
+ * - snapshot: Manually updated local snapshot (no runtime API calls)
  * - fallback: Static fallback when APIs fail
  * - simulated: Demo/test data
  */
@@ -43,7 +44,14 @@ const SOURCE_CONFIG: Record<string, {
     color: "text-blue-400",
     bgColor: "bg-blue-500/10",
     borderColor: "border-blue-500/30",
-    tooltip: "Price calculated from COMEX spot + USD/INR exchange rate + import duties (10%) + GST (3%) + MCX premium (~10%).",
+    tooltip: "Price calculated from COMEX spot + USD/INR exchange rate + import duty (6%) + IGST (3%) + local premium (3%).",
+  },
+  snapshot: {
+    label: "Snapshot",
+    color: "text-indigo-400",
+    bgColor: "bg-indigo-500/10",
+    borderColor: "border-indigo-500/30",
+    tooltip: "Price loaded from a manually maintained local snapshot file. No runtime API calls are used for this value.",
   },
   goldapi: {
     label: "GoldAPI",

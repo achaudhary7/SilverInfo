@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { getSilverPriceWithChange, getCityPrices } from "@/lib/metalApi";
 import { getRecentUpdates } from "@/lib/markdown";
-import LivePriceCard from "@/components/LivePriceCard";
+import SnapshotPriceCard from "@/components/SnapshotPriceCard";
 import { DynamicCityTable, DynamicCalculator, DynamicFAQ } from "@/components/DynamicComponents";
-import WhyPriceChangedTeaser from "@/components/WhyPriceChangedTeaser";
-import WhyPriceChangedFull from "@/components/WhyPriceChangedFull";
+import WhyPriceChangedTeaserStatic from "@/components/WhyPriceChangedTeaserStatic";
+import WhyPriceChangedFullStatic from "@/components/WhyPriceChangedFullStatic";
 import PriceDifferenceExplainer from "@/components/PriceDifferenceExplainer";
 import SilverPurityGuide from "@/components/SilverPurityGuide";
 import MarketFactorsDetailed from "@/components/MarketFactorsDetailed";
@@ -14,6 +13,7 @@ import PriceSourceBadge from "@/components/ui/PriceSourceBadge";
 import MarketStatus from "@/components/ui/MarketStatus";
 import PriceFormulaCard from "@/components/ui/PriceFormulaCard";
 import { AdHeader, AdFooter, AdInContent, AdSidebar } from "@/components/ads";
+import { getHomePriceSnapshot, getSnapshotCityPrices } from "@/lib/priceSnapshot";
 
 // Enable ISR - revalidate every 10 minutes (matches Yahoo Finance cache)
 export const revalidate = 28800; // ISR: Revalidate every 8 hours (client polling handles freshness, SSR provides initial data)
@@ -22,11 +22,10 @@ export const revalidate = 28800; // ISR: Revalidate every 8 hours (client pollin
 // DYNAMIC METADATA - Prices update automatically
 // ============================================================================
 
-export async function generateMetadata(): Promise<Metadata> {
-  const priceData = await getSilverPriceWithChange();
-  
-  const pricePerGram = priceData?.pricePerGram?.toFixed(2) || "95.00";
-  const pricePerKg = priceData?.pricePerKg?.toFixed(0) || "95000";
+export function generateMetadata(): Metadata {
+  const snapshot = getHomePriceSnapshot();
+  const pricePerGram = snapshot.pricePerGram.toFixed(2);
+  const pricePerKg = snapshot.pricePerKg.toFixed(0);
   
   const dateString = new Date().toLocaleDateString('en-US', {
     month: 'long',
@@ -36,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: `Silver Rate Today ₹${pricePerGram}/g (${dateString}) | Live Silver Price India - SilverInfo.in`,
-    description: `Live silver rate today in India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Real-time silver price updated every 30 seconds. Check 999/925 silver rates, city prices, calculator & daily updates.`,
+    description: `Silver rate snapshot for India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Calculated from COMEX + USD/INR with local market adjustments. Check city prices, calculator, and updates.`,
     keywords: [
       "silver rate today",
       "silver price in india",
@@ -52,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     openGraph: {
       title: `Silver Rate Today ₹${pricePerGram}/g (${dateString}) | SilverInfo.in`,
-      description: `Live silver rate in India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Real-time prices updated every 30 seconds.`,
+      description: `Silver rate snapshot in India: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Based on COMEX + USD/INR conversion.`,
       url: "https://silverinfo.in",
       siteName: "SilverInfo.in",
       locale: "en_IN",
@@ -62,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: `Silver Rate Today ₹${pricePerGram}/g | SilverInfo.in`,
-      description: `Live silver rate: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Updated every 30 seconds.`,
+      description: `Silver rate snapshot: ₹${pricePerGram}/gram, ₹${pricePerKg}/kg. Based on COMEX + USD/INR.`,
       images: ["/og-image.png"],
     },
     alternates: {
@@ -267,50 +266,8 @@ const faqItems: FAQItem[] = [
 ];
 
 export default async function HomePage() {
-  // Fetch data - getSilverPriceWithChange includes 24h change calculation
-  const [priceData, cityPrices] = await Promise.all([
-    getSilverPriceWithChange(),
-    getCityPrices(),
-  ]);
-  
-  // If API completely fails, show error page - NO FAKE DATA
-  if (!priceData) {
-    return (
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-5xl mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Silver Rate Today in India
-            </h1>
-            <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-lg mx-auto">
-              <p className="text-red-600 text-lg mb-4">
-                ⚠️ Unable to fetch live prices
-              </p>
-              <p className="text-gray-600 mb-4">
-                We&apos;re having trouble connecting to our price sources (COMEX/Forex APIs). 
-                Please refresh the page or try again in a few minutes.
-              </p>
-              <Link 
-                href="/"
-                className="inline-block px-6 py-2 bg-[#1e3a5f] text-white rounded-lg hover:bg-[#2a4a6f] transition-colors"
-              >
-                Refresh Page
-              </Link>
-            </div>
-            <p className="mt-6 text-sm text-gray-500">
-              For official rates, visit{" "}
-              <a href="https://www.mcxindia.com" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f] underline">
-                MCX India
-              </a>
-            </p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-  
-  // Use real API data only - no fallbacks
-  const price = priceData;
+  const price = getHomePriceSnapshot();
+  const cityPrices = getSnapshotCityPrices(price.pricePerGram);
   
   // Get recent blog updates
   const recentUpdates = getRecentUpdates(3);
@@ -328,7 +285,7 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "Product",
     name: "Silver Price Today in India",
-    description: "Live silver price per gram in India. Real-time rates from COMEX with INR conversion.",
+    description: "Indicative silver price per gram in India from COMEX + USD/INR conversion.",
     image: "https://silverinfo.in/og-image.png",
     category: "Precious Metals",
     brand: {
@@ -364,7 +321,7 @@ export default async function HomePage() {
       item: {
         "@type": "Product",
         name: `Silver in ${city.city}`,
-        description: `Live silver price per gram in ${city.city}, India. Real-time rates from COMEX.`,
+        description: `Indicative silver price per gram in ${city.city}, India from COMEX + USD/INR conversion.`,
         image: "https://silverinfo.in/og-image.png",
         category: "Precious Metals",
         brand: {
@@ -472,7 +429,7 @@ export default async function HomePage() {
               priceCurrency: "INR",
             },
             description:
-              "Track live silver prices in India. Get real-time rates per gram, historical charts, city-wise prices, and a silver calculator.",
+              "Track indicative silver prices in India with city-wise rates, calculators, and transparent methodology.",
           }),
         }}
       />
@@ -515,7 +472,7 @@ export default async function HomePage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
                   </span>
-                  Live • 30s Refresh
+                  Snapshot • Manual Update
                 </span>
                 
                 {/* Price Source Badge with Tooltip */}
@@ -538,21 +495,28 @@ export default async function HomePage() {
                 Calculated, Not Copied.
               </p>
               <p className="text-xs sm:text-base text-gray-600 max-w-3xl mb-2 sm:mb-3">
-                Live silver price per gram, per kg with historical charts and city-wise prices. 
-                Prices derived from COMEX futures + USD/INR exchange rates.{" "}
+                Latest silver snapshot per gram, per kg with city-wise prices and calculators.
+                Values are derived from COMEX + USD/INR with local adjustments.{" "}
                 <Link href="/how-we-calculate" className="text-[#1e3a5f] font-medium hover:underline">
                   See Our Formula →
                 </Link>
               </p>
               <p className="text-[10px] sm:text-xs text-gray-400">
-                Content last reviewed: <time dateTime={new Date().toISOString().split('T')[0]}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+                Snapshot updated:{" "}
+                <time dateTime={price.timestamp}>
+                  {new Date(price.timestamp).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </time>
               </p>
             </div>
             
             {/* Hero Grid - 2 columns */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Left: Price Card */}
-              <LivePriceCard initialPrice={price} />
+              <SnapshotPriceCard price={price} />
               
               {/* Right: Stacked Sections */}
               <div className="space-y-4">
@@ -582,7 +546,7 @@ export default async function HomePage() {
                 </div>
                 
                 {/* Why Price Changed */}
-                <WhyPriceChangedTeaser />
+                <WhyPriceChangedTeaserStatic price={price} />
               </div>
             </div>
           </div>
@@ -741,7 +705,7 @@ export default async function HomePage() {
             
             {/* Why Price Changed - Full Width Section */}
             <div id="market-factors" className="mb-6 sm:mb-8 scroll-mt-20">
-              <WhyPriceChangedFull />
+              <WhyPriceChangedFullStatic price={price} />
             </div>
             
             {/* Global Silver Comparison - New Section for SEO */}
@@ -792,7 +756,7 @@ export default async function HomePage() {
                   </div>
                 </div>
                 <p className="text-xs text-gray-400 mt-4 text-center">
-                  Prices vary due to import duties, local demand, and exchange rates. India: 10% duty + 3% GST. China: 3-8% duty + 13% VAT.
+                  Prices vary due to import duties, local demand, and exchange rates. India formula here uses 6% duty + 3% IGST + 3% local premium.
                 </p>
               </div>
             </div>
@@ -967,8 +931,8 @@ export default async function HomePage() {
                 <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
                   Welcome to SilverInfo.in, India&apos;s trusted source for indicative silver prices
                   (<span className="font-medium">chandi ka bhav</span>). Our platform provides silver rate estimates
-                  calculated from international spot prices (COMEX) and USD/INR exchange rates, with live updates
-                  every 30 seconds. Whether you&apos;re searching for &quot;aaj ka chandi rate&quot; or &quot;silver price today&quot;,
+                  calculated from international spot prices (COMEX) and USD/INR exchange rates, using a regularly
+                  updated local snapshot. Whether you&apos;re searching for &quot;aaj ka chandi rate&quot; or &quot;silver price today&quot;,
                   we&apos;ve got you covered.
                 </p>
 
@@ -1033,7 +997,7 @@ export default async function HomePage() {
                     Our Data Sources & Methodology
                   </h2>
                   <p className="text-xs text-gray-500">
-                    Last verified: {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} • Updated every 30 seconds
+                    Last verified: {new Date(price.timestamp).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} • Snapshot mode
                   </p>
                 </div>
               </div>
@@ -1098,16 +1062,16 @@ export default async function HomePage() {
               {/* Transparency Badges */}
               <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
-                  ✓ Real-time API Data
+                  ✓ Snapshot Data
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                  ✓ No Manual Intervention
+                  ✓ Manual Update Friendly
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
                   ✓ Indicative Prices
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs">
-                  ✓ 30-Second Updates
+                  ✓ No Runtime API Calls
                 </span>
               </div>
               
