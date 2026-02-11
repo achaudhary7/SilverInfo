@@ -1,7 +1,7 @@
 /**
  * Shanghai Silver Price Page
  * 
- * Live Shanghai silver price with SGE market data, COMEX comparison,
+ * Shanghai silver snapshot with SGE market data, COMEX comparison,
  * and multi-currency support (CNY, USD, INR).
  * 
  * ============================================================================
@@ -24,7 +24,7 @@
  * ============================================================================
  * FEATURES
  * ============================================================================
- * - Real-time Shanghai silver price (30s updates)
+ * - Snapshot Shanghai silver price (manual updates)
  * - CNY, USD, INR price display
  * - Shanghai vs COMEX premium tracker
  * - US Investor section with COMEX comparison
@@ -34,8 +34,8 @@
  */
 
 import { Metadata } from "next";
-import { getShanghaiSilverPrice, getShanghaiHistoricalPrices, formatCnyPrice, formatUsdPrice } from "@/lib/shanghaiApi";
-import ShanghaiPriceCard from "@/components/shanghai/ShanghaiPriceCard";
+import { getShanghaiSnapshotPrice } from "@/lib/shanghaiSnapshot";
+import ShanghaiPriceCardSnapshot from "@/components/shanghai/ShanghaiPriceCardSnapshot";
 import { USFlag, ChinaFlag, UKFlag, IndiaFlag, AustraliaFlag } from "@/components/Flags";
 import { LiveTimeDisplay, LiveDateDisplay } from "@/components/shanghai/LiveTimeDisplay";
 import ShareButtons from "@/components/ui/ShareButtons";
@@ -53,8 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
     year: 'numeric'
   });
   
-  // Fetch real price for dynamic metadata
-  const price = await getShanghaiSilverPrice();
+  const price = getShanghaiSnapshotPrice();
   const priceUsd = price?.pricePerOzUsd?.toFixed(0) || "102";
   const priceCny = price?.pricePerKgCny?.toFixed(0) || "22000";
   const premium = price?.premiumPercent?.toFixed(0) || "4";
@@ -65,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
     // Title: Answer-first with price and date, optimized for CTR
     title: `Shanghai Silver Price Today ${todayStr} - $${priceUsd}/oz | +${premium}% Premium`,
     // Description: Answer-first, unique value, clear CTA
-    description: `Shanghai Silver: $${priceUsd}/oz (¥${priceCny}/kg) vs COMEX $${comexUsd}/oz. Premium +${premium}%. Live 60s updates, 7-day chart, trading hours tracker. Excludes 13% VAT. Compare SGE vs COMEX now.`,
+    description: `Shanghai Silver: $${priceUsd}/oz (¥${priceCny}/kg) vs COMEX $${comexUsd}/oz. Premium +${premium}%. Snapshot mode, trading hours tracker, and benchmark context. Excludes 13% VAT. Compare SGE vs COMEX now.`,
     keywords: [
       // Primary keywords
       "shanghai silver price",
@@ -449,11 +448,7 @@ function getComexStatus(): { isOpen: boolean; message: string } {
 // ============================================================================
 
 export default async function ShanghaiSilverPricePage() {
-  // Fetch data on server
-  const [price, historicalPrices] = await Promise.all([
-    getShanghaiSilverPrice(),
-    getShanghaiHistoricalPrices(7),
-  ]);
+  const price = getShanghaiSnapshotPrice();
   
   const marketStatus = getMarketStatus();
   const comexStatus = getComexStatus();
@@ -596,7 +591,7 @@ export default async function ShanghaiSilverPricePage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
                   </span>
-                  Live
+                  Snapshot
                 </span>
                 <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${marketStatus.isOpen ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
                   🇨🇳 SGE {marketStatus.isOpen ? 'Open' : 'Closed'}
@@ -606,8 +601,8 @@ export default async function ShanghaiSilverPricePage() {
                 </span>
               </div>
               
-              <p className="text-xs sm:text-sm text-gray-600">
-                <span className="text-[#1e3a5f] font-semibold">Calculated, Not Copied.</span> Live SGE rate • Shanghai vs COMEX premium • 30s updates • 
+                <p className="text-xs sm:text-sm text-gray-600">
+                  <span className="text-[#1e3a5f] font-semibold">Calculated, Not Copied.</span> Snapshot SGE estimate • Shanghai vs COMEX premium • manual updates • 
                 <span className="font-semibold text-amber-700">¥{price?.pricePerKgCny?.toLocaleString()}/kg</span>
               </p>
             </div>
@@ -773,7 +768,7 @@ export default async function ShanghaiSilverPricePage() {
 
               {/* Right: Shanghai Price Card */}
               <section id="live-price" className="scroll-mt-24 h-full">
-                <ShanghaiPriceCard initialPrice={price} />
+                <ShanghaiPriceCardSnapshot price={price} />
               </section>
             </div>
           </div>
@@ -925,7 +920,7 @@ export default async function ShanghaiSilverPricePage() {
             <section id="usd-price" className="mb-4 scroll-mt-24">
               <div className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">💵 Shanghai Silver Price in USD (Dollars)</h2>
-                <p className="text-xs text-gray-500 mb-4">Live Shanghai silver price converted to US Dollars • Updated every 30 seconds</p>
+                <p className="text-xs text-gray-500 mb-4">Shanghai silver snapshot converted to US Dollars • Manual update mode</p>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                   {/* Per Troy Ounce */}
@@ -1284,8 +1279,8 @@ export default async function ShanghaiSilverPricePage() {
                 <div className="space-y-3 mb-4">
                   <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
                     <p className="text-sm font-semibold text-gray-700 mb-1">📈 Silver Price Source</p>
-                    <p className="text-sm text-gray-600">COMEX Futures via Yahoo Finance</p>
-                    <p className="text-xs text-gray-400">Real-time • 30 second updates</p>
+                      <p className="text-sm text-gray-600">Snapshot inputs from COMEX and FX</p>
+                      <p className="text-xs text-gray-400">Manual update workflow</p>
                   </div>
                   <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
                     <p className="text-sm font-semibold text-gray-700 mb-1">💱 Exchange Rate Sources</p>
@@ -1315,6 +1310,26 @@ export default async function ShanghaiSilverPricePage() {
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">📚 Related Articles & Guides</h2>
                 
                 <div className="grid grid-cols-2 gap-2">
+                  <Link href="/shanghai-silver-price-in-usd" className="block rounded-lg p-3 bg-gradient-to-r from-cyan-50 to-cyan-100 border border-cyan-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">💵 Shanghai in USD</h3>
+                    <p className="text-xs text-gray-500">Dollar price target page</p>
+                  </Link>
+
+                  <Link href="/shanghai-silver-price-per-ounce" className="block rounded-lg p-3 bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">⚖️ Per Ounce Price</h3>
+                    <p className="text-xs text-gray-500">Shanghai ounce view</p>
+                  </Link>
+
+                  <Link href="/shanghai-vs-comex-silver-premium" className="block rounded-lg p-3 bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">📈 Premium vs COMEX</h3>
+                    <p className="text-xs text-gray-500">Spread and premium tracker</p>
+                  </Link>
+
+                  <Link href="/shfe-silver-price-today" className="block rounded-lg p-3 bg-gradient-to-r from-violet-50 to-violet-100 border border-violet-200 hover:shadow-md transition-all">
+                    <h3 className="font-semibold text-sm text-gray-800">🏛️ SHFE Price Today</h3>
+                    <p className="text-xs text-gray-500">SHFE-focused landing page</p>
+                  </Link>
+
                   <Link href="/" className="block rounded-lg p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:shadow-md transition-all">
                     <h3 className="font-semibold text-sm text-gray-800">📈 Live Silver Rate</h3>
                     <p className="text-xs text-gray-500">India city-wise prices</p>
@@ -1362,7 +1377,7 @@ export default async function ShanghaiSilverPricePage() {
                 </div>
                 <p className="text-xs text-gray-300 mb-2">
                   Aktueller Shanghai Silberpreis: <span className="font-bold text-yellow-400">${price?.pricePerOzUsd?.toFixed(2) || "81"}/oz</span> (¥{price?.pricePerKgCny?.toLocaleString() || "18,256"}/kg CNY). 
-                  Shanghai Gold Exchange Silberpreis mit +{price?.premiumPercent?.toFixed(0) || "6"}% Aufschlag über COMEX. Live-Updates alle 30 Sekunden.
+                  Shanghai Gold Exchange Silberpreis mit +{price?.premiumPercent?.toFixed(0) || "6"}% Aufschlag über COMEX. Snapshot-Modus mit manuellen Updates.
                 </p>
                 <p className="text-[10px] text-gray-400">
                   Silberpreis Shanghai in Dollar • Shanghai Gold Exchange Silberpreis heute • Aktueller Silberpreis Shanghai
@@ -1421,11 +1436,11 @@ export default async function ShanghaiSilverPricePage() {
             {/* Footer Note */}
             <footer className="card p-4 sm:p-6 shadow-2xl border-2 border-gray-300 text-center">
               <p className="text-sm text-gray-500 mb-2">
-                <strong>Data Sources:</strong> COMEX via Yahoo Finance • Exchange rates via Frankfurter/ExchangeRate APIs
+                <strong>Data Sources:</strong> Snapshot values maintained by SilverInfo team (COMEX + FX inputs)
               </p>
               <p className="text-xs text-gray-400">
-                Prices shown are near-real-time indicators calculated from COMEX + estimated Shanghai premium.
-                Actual SGE benchmark may vary ±5%. For official rates, visit{" "}
+                Prices shown are indicative snapshot values calculated from COMEX + estimated Shanghai premium.
+                Actual SGE benchmark may vary. For official rates, visit{" "}
                 <a href="https://www.sge.com.cn" target="_blank" rel="noopener noreferrer" className="text-[#1e3a5f] hover:underline">
                   sge.com.cn
                 </a>

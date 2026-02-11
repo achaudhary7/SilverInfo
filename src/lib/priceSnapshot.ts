@@ -42,19 +42,19 @@ const TOLA_TO_GRAM = 11.6638;
 
 // Update these values whenever you want to refresh homepage prices.
 export const HOME_PRICE_SNAPSHOT: SnapshotPrice = {
-  pricePerGram: 275.92,
-  pricePerKg: 275920,
-  pricePer10Gram: 2759.2,
-  pricePerTola: 3218.28,
+  pricePerGram: 97.46,
+  pricePerKg: 97460,
+  pricePer10Gram: 974.6,
+  pricePerTola: 1136.75,
   currency: "INR",
-  timestamp: "2026-02-11T17:28:16.832Z",
-  change24h: 12.27,
-  changePercent24h: 4.65,
-  high24h: 275.92,
-  low24h: 263.65,
+  timestamp: "2026-02-11T17:49:20.852Z",
+  change24h: 1.8,
+  changePercent24h: 1.88,
+  high24h: 97.46,
+  low24h: 95.66,
   source: "snapshot",
-  usdInr: 90.71,
-  comexUsd: 84.13,
+  usdInr: 86.4,
+  comexUsd: 31.2,
 };
 
 const CITY_CONFIG: CityConfig[] = [
